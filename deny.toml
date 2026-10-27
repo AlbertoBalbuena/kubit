@@ -23,7 +23,13 @@ allow = [
     "Unicode-3.0",
 ]
 # MPL-2.0 needs a review: add a crate-specific entry here, never a global allow.
-exceptions = []
+# UI-layer only (egui/eframe). BSL-1.0 is a permissive OSI licence (clipboard on Windows);
+# OFL-1.1 and Ubuntu-font-1.0 cover the bundled default fonts. None reach crates below L5.
+exceptions = [
+    { crate = "clipboard-win", allow = ["BSL-1.0"] },
+    { crate = "error-code", allow = ["BSL-1.0"] },
+    { crate = "epaint_default_fonts", allow = ["OFL-1.1", "Ubuntu-font-1.0"] },
+]
 
 [bans]
 multiple-versions = "warn"
@@ -44,7 +50,15 @@ deny = [
 [advisories]
 version = 2
 yanked = "deny"
-ignore = []
+# "Unmaintained" notices (no known vulnerability) pulled in transitively by egui/eframe/winit,
+# UI layer only. Review when egui updates.
+ignore = [
+    { id = "RUSTSEC-2024-0436", reason = "paste, via egui_dock (proc-macro, no runtime code)" },
+    { id = "RUSTSEC-2026-0192", reason = "ttf-parser, via winit window decorations on Linux" },
+    { id = "RUSTSEC-2026-0370", reason = "zvariant, via accesskit/zbus on Linux" },
+    { id = "RUSTSEC-2026-0371", reason = "zbus_names, via accesskit/zbus on Linux" },
+    { id = "RUSTSEC-2026-0372", reason = "zvariant_derive, via accesskit/zbus on Linux" },
+]
 
 [sources]
 unknown-registry = "deny"

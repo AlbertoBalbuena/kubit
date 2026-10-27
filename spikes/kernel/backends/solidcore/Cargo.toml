@@ -1,0 +1,11 @@
+[package]
+name = "backend-solidcore"
+version = "0.0.0"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+harness.workspace = true
+solidcore = { git = "https://github.com/tangency-labs/solidcore", rev = "dbaedda4abc4b390494d2e86f79cc5115168e889" }
+step-brep = { git = "https://github.com/tangency-labs/solidcore", rev = "dbaedda4abc4b390494d2e86f79cc5115168e889" }

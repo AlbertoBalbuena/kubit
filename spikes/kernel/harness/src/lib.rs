@@ -2,11 +2,11 @@
 //! measurements every backend is judged by.
 
 pub mod corpus;
+#[cfg(feature = "hostile")]
 pub mod hostile;
 pub mod measure;
 
 use serde::{Deserialize, Serialize};
-use std::time::Instant;
 
 /// Triangle mesh handed over by a backend. Positions in mm.
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -102,10 +102,19 @@ pub trait Backend {
 }
 
 /// Runs `f` and returns its value together with the elapsed seconds.
+///
+/// On `wasm32-unknown-unknown` there is no clock (`Instant::now` panics), so the
+/// time is reported as 0 and the wasm probes measure time on the JS side.
+#[cfg(not(target_arch = "wasm32"))]
 pub fn timed<T>(f: impl FnOnce() -> T) -> (T, f64) {
-    let start = Instant::now();
+    let start = std::time::Instant::now();
     let value = f();
     (value, start.elapsed().as_secs_f64())
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn timed<T>(f: impl FnOnce() -> T) -> (T, f64) {
+    (f(), 0.0)
 }
 
 pub fn not_exposed<T>(what: &str) -> SpikeResult<T> {

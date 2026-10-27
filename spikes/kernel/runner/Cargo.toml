@@ -1,0 +1,26 @@
+[package]
+name = "runner"
+version = "0.0.0"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "spike"
+path = "src/main.rs"
+
+[features]
+default = ["monstertruck", "truck", "solidcore", "arris"]
+monstertruck = ["dep:backend-monstertruck"]
+truck = ["dep:backend-truck"]
+solidcore = ["dep:backend-solidcore"]
+arris = ["dep:backend-arris"]
+
+[dependencies]
+harness = { workspace = true, features = ["hostile"] }
+serde.workspace = true
+serde_json.workspace = true
+backend-monstertruck = { path = "../backends/monstertruck", optional = true }
+backend-truck = { path = "../backends/truck", optional = true }
+backend-solidcore = { path = "../backends/solidcore", optional = true }
+backend-arris = { path = "../backends/arris", optional = true }

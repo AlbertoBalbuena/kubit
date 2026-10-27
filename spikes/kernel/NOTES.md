@@ -40,5 +40,15 @@ Exact public APIs used by each adapter, read from the dependency sources (2026-1
 - Mesh: `MeshableShape::triangulation(tol)` + `put_together_same_attrs` to close it (meshalgo doc). Volume/area: only from the mesh.
 - STEP: write via `out::CompleteStepDisplay::new(out::StepModel::from(&compressed), header)`; read via `ruststep::parser::parse` + `r#in::Table::from_data_section` + `to_compressed_shell`.
 
-## monstertruck 0.4.1 (Apache-2.0)
-See the section added after the API survey below.
+## monstertruck 0.4.1 (Apache-2.0), features `solid` + `step`
+- Types: cgmath `Point3/Vector3`; `TOLERANCE = 1e-6`.
+- Box: `builder::extrude` vertex→edge→face→solid, or `primitive::cuboid(BoundingBox)`. Cylinder: `revolve` a vertex (Closed) → `try_attach_plane` → `extrude`. Sphere/cone: `revolve_wire` of a half circle / lines + `Solid::new` (**panics** on an invalid shell; `Solid::try_new` returns Result). `revolve` **asserts** `division ≥ 2`.
+- Booleans: `monstertruck_solid::{and, or, difference, symmetric_difference}(&Solid, &Solid, tol) -> Result<Solid, ShapeOpsError>`; `tol` is a tessellation tolerance (tests use 0.05). **Panics**: `0 < tol < 1e-6` (triangulation assert) and an empty input solid (`unwrap`).
+- Fillet: `monstertruck_modeling::fillet_edges(&mut Shell, &[Edge], Option<&FilletOptions>) -> Result<(), FilletError>`; works on a Shell, re-matches edges by end points, converts the whole shell to NURBS. `RadiusSpec::{Constant, Variable(Box<dyn Fn>), PerEdge}`; `FilletProfile::{Round, Chamfer, …}`. Chains automatic. **Vertex blend: N/E.** Chamfer = equal-setback ruled; **d-d / d-angle: N/E**.
+- Shell/hollow: **N/E** (surface offsets only). Offset/move/delete face (push/pull): **N/E**.
+- Sweep along a curve / helix: **N/E** for B-rep (surface-only `sweep_rail`). Loft: `builder::try_skin_wires`/`try_wire_homotopy` → Shell, cap with `try_attach_plane` yourself. Revolve touching the axis: `builder::revolve_wire`.
+- Mass: **N/E** native; mesh via `MeshableShape::triangulation(tol).to_polygon()` (**panics** if `tol < TOLERANCE`, silently drops failed faces; `shell_to_polygon_strict` returns errors) + `put_together_same_attrs`; `CalcVolume::volume()`.
+- Topology: `boundaries()`, `face_iter/edge_iter/vertex_iter` (dedupe by `id()`), `shell_condition()`, `check_solid_boundary()`, `is_geometric_consistent()`.
+- History: **none** (`Face::stable_id` exists but split faces lose it).
+- STEP: write `CompleteStepDisplay::new(StepModel::from(&solid.compress()), header)`; read `Table::from_step(&str)` (**panics** without a DATA section) → `to_compressed_solid` → `Solid::extract` + `try_mapped`.
+- wasm: rayon falls back to one thread; `StepHeaderDescriptor::default()` calls chrono `Utc::now()` (fill every field); getrandom `wasm_js` comes in through solid/fillet/healing (needs wasm-bindgen glue).

@@ -8,4 +8,9 @@ publish.workspace = true
 [dependencies]
 serde.workspace = true
 serde_json.workspace = true
-proptest.workspace = true
+proptest = { workspace = true, optional = true }
+
+[features]
+default = []
+# Hostile parameter generation (case 15); off for wasm probes.
+hostile = ["dep:proptest"]

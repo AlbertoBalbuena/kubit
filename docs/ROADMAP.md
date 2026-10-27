@@ -7,15 +7,15 @@ Cada fase tiene un **criterio de salida** verificable. No se abre una fase sin c
 ## Fase 0 — Fundaciones
 **Objetivo:** el esqueleto correcto, probado de punta a punta con una caja.
 
-- [ ] Spike de kernels (monstertruck, truck, solidcore) con el corpus de 16 pruebas → **ADR-0002**
+- [x] Spike de kernels (monstertruck, truck, solidcore) con el corpus de 16 pruebas → **ADR-0002**
 - [x] Workspace Cargo con las capas de `ARCHITECTURE.md`; `cargo xtask` con `ci`, `layers`, `wasm` y `deny`
 - [x] CI en GitHub Actions para macOS, Windows y Linux, con build wasm32 de las capas bajas
 - [x] `kubit-math`: unidades (mm internos, mm/in con fracciones en display), tolerancias, evaluador de expresiones (propio o `exmex`; **nunca evalexpr**, que es AGPL)
-- [ ] `kubit-kernel-api` + backend inicial + guard + `OpHistory`
+- [x] `kubit-kernel-api` + backend inicial + guard + `OpHistory`
 - [x] `kubit-engine`: `CommandSpec`, sesión, transacciones, undo/redo
 - [x] `kubit-doc` v0 y formato `.kubit` v1 (guardar y abrir)
 - [ ] Ventana egui con viewport wgpu: órbita, pan, zoom y selección de cara
-- [ ] `kubit-cli` (`run`, `export`, `mcp`) y `kubit-mcp` con tools generadas del registro
+- [x] `kubit-cli` (`run`, `export`, `mcp`) y `kubit-mcp` con tools generadas del registro
 - [x] `LICENSE` (Apache-2.0), `ATTRIBUTION.md`, `CONTRIBUTING.md` (DCO), `CODE_OF_CONDUCT.md`
 
 **Salida:** crear una caja desde la UI, desde la CLI y por MCP; push/pull de una cara; undo/redo; guardar, abrir y exportar STEP/STL.

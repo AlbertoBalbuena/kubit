@@ -5,7 +5,7 @@
     "test": 1,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.009432917,
+    "op_seconds": 0.010606167,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -49,7 +49,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.111759208
+    "wall_seconds": 0.142684
   },
   {
     "backend": "arris",
@@ -57,7 +57,7 @@
     "test": 1,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.0068315,
+    "op_seconds": 0.007462542,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -101,7 +101,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.081359125
+    "wall_seconds": 0.080301542
   },
   {
     "backend": "arris",
@@ -109,7 +109,7 @@
     "test": 2,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.000298833,
+    "op_seconds": 0.000241083,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -153,7 +153,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.024968458
+    "wall_seconds": 0.025601542
   },
   {
     "backend": "arris",
@@ -171,7 +171,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.022438125
+    "wall_seconds": 0.030165416
   },
   {
     "backend": "arris",
@@ -189,7 +189,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.022187666
+    "wall_seconds": 0.030220125
   },
   {
     "backend": "arris",
@@ -207,7 +207,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.030146125
+    "wall_seconds": 0.0263435
   },
   {
     "backend": "arris",
@@ -215,8 +215,8 @@
     "test": 4,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.665801375,
-    "runs": 5,
+    "op_seconds": 0.642635459,
+    "runs": 4,
     "eval": {
       "mesh": {
         "triangles": 40012,
@@ -261,7 +261,7 @@
     "notes": [
       "n-ary union: ops::fuse_many over plate + 100 pins"
     ],
-    "wall_seconds": 14.746193375
+    "wall_seconds": 14.148071291
   },
   {
     "backend": "arris",
@@ -269,7 +269,7 @@
     "test": 5,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.000174625,
+    "op_seconds": 0.000236125,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -313,7 +313,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.02861425
+    "wall_seconds": 0.030258041
   },
   {
     "backend": "arris",
@@ -321,7 +321,7 @@
     "test": 5,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.00535575,
+    "op_seconds": 0.006728167,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -367,7 +367,7 @@
     "notes": [
       "one top edge selected; fillet follows the tangent chain"
     ],
-    "wall_seconds": 1.493641708
+    "wall_seconds": 1.687309959
   },
   {
     "backend": "arris",
@@ -375,7 +375,7 @@
     "test": 5,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.000399959,
+    "op_seconds": 0.000409667,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -419,7 +419,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.05600375
+    "wall_seconds": 0.05378875
   },
   {
     "backend": "arris",
@@ -437,7 +437,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.030236709
+    "wall_seconds": 0.025365834
   },
   {
     "backend": "arris",
@@ -445,7 +445,7 @@
     "test": 6,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.014766834,
+    "op_seconds": 0.015768125,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -489,7 +489,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.286031583
+    "wall_seconds": 0.286318625
   },
   {
     "backend": "arris",
@@ -497,7 +497,7 @@
     "test": 7,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.000132625,
+    "op_seconds": 0.000112625,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -541,7 +541,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.029671208
+    "wall_seconds": 0.030055417
   },
   {
     "backend": "arris",
@@ -559,7 +559,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.02301075
+    "wall_seconds": 0.022621542
   },
   {
     "backend": "arris",
@@ -567,7 +567,7 @@
     "test": 8,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.000430167,
+    "op_seconds": 0.0005355,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -611,7 +611,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.030260417
+    "wall_seconds": 0.030051375
   },
   {
     "backend": "arris",
@@ -619,7 +619,7 @@
     "test": 8,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.016867125,
+    "op_seconds": 0.015649916,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -663,7 +663,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.653485334
+    "wall_seconds": 0.636504708
   },
   {
     "backend": "arris",
@@ -671,7 +671,7 @@
     "test": 9,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.005047917,
+    "op_seconds": 0.005582375,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -715,7 +715,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.070336334
+    "wall_seconds": 0.079591166
   },
   {
     "backend": "arris",
@@ -723,7 +723,7 @@
     "test": 9,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.005147375,
+    "op_seconds": 0.005550583,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -767,7 +767,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.080051084
+    "wall_seconds": 0.083167292
   },
   {
     "backend": "arris",
@@ -775,8 +775,8 @@
     "test": 10,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.184025625,
-    "runs": 5,
+    "op_seconds": 0.098007167,
+    "runs": 1,
     "eval": {
       "mesh": {
         "triangles": 688252,
@@ -821,7 +821,7 @@
     "notes": [
       "PathSegment::Helix + FrameLaw::FixedBinormal(Z); side face is a fitted NURBS"
     ],
-    "wall_seconds": 126.364193125
+    "wall_seconds": 12.754428125
   },
   {
     "backend": "arris",
@@ -829,7 +829,7 @@
     "test": 10,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.000177459,
+    "op_seconds": 0.000117875,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -873,7 +873,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.088206125
+    "wall_seconds": 0.052561209
   },
   {
     "backend": "arris",
@@ -881,7 +881,7 @@
     "test": 10,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.002672166,
+    "op_seconds": 0.001464583,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -925,7 +925,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 9.126360916
+    "wall_seconds": 5.609123916
   },
   {
     "backend": "arris",
@@ -933,7 +933,7 @@
     "test": 11,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.000100875,
+    "op_seconds": 0.000084541,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -979,7 +979,7 @@
     "notes": [
       "sphere = revolve of a half disc (no sphere primitive)"
     ],
-    "wall_seconds": 3.627441333
+    "wall_seconds": 1.3300164159999999
   },
   {
     "backend": "arris",
@@ -987,7 +987,7 @@
     "test": 11,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.000086375,
+    "op_seconds": 0.000062417,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -1031,7 +1031,465 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.060027708
+    "wall_seconds": 0.054842041
+  },
+  {
+    "backend": "arris",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_01_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 1.320806833,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 3280,
+        "volume": 14646067.87914113,
+        "area": 806998.5637121985,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 14644823.556306442,
+      "volume_rel_err": null,
+      "area": 807080.8179456858,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 206,
+      "edges": 318,
+      "faces": 117,
+      "loops": 140,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 1.3599121250000001
+  },
+  {
+    "backend": "arris",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_02_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 60.1266615,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 116252,
+        "volume": 44382611.80215476,
+        "area": 2490316.8467267253,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 46,
+        "misoriented_edges": 112,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 47106575.75010284,
+      "volume_rel_err": null,
+      "area": 2480620.7676330116,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 876,
+      "edges": 1416,
+      "faces": 637,
+      "loops": 753,
+      "shells": 3,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "mass_properties: degenerate result: the body is not a solid (+b0)",
+      "mass_properties: degenerate result: the body is not a solid (+b1)",
+      "3 solids in file: 3 read (2 sheets), 0 refused"
+    ],
+    "wall_seconds": 60.249969375
+  },
+  {
+    "backend": "arris",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_03_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.451119791,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 2888,
+        "volume": 332033.3298442898,
+        "area": 354763.0699054612,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 332122.9076266058,
+      "volume_rel_err": null,
+      "area": 354787.650175344,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 236,
+      "edges": 354,
+      "faces": 120,
+      "loops": 154,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.471441042
+  },
+  {
+    "backend": "arris",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_04_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 16.755177875,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 24468,
+        "volume": 17526493.009167895,
+        "area": 1023263.1621730027,
+        "boundary_edges": 42,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 17519780.334547516,
+      "volume_rel_err": null,
+      "area": 1022497.0512965468,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 664,
+      "edges": 1110,
+      "faces": 484,
+      "loops": 587,
+      "shells": 2,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "mass_properties: degenerate result: the body is not a solid (+b1)",
+      "2 solids in file: 2 read (1 sheets), 0 refused"
+    ],
+    "wall_seconds": 16.781705667
+  },
+  {
+    "backend": "arris",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_05_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 10.239401833,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 22098,
+        "volume": 12694627.148435121,
+        "area": 861051.7812409634,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 12694903.2465908,
+      "volume_rel_err": null,
+      "area": 861242.317381513,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 251,
+      "edges": 380,
+      "faces": 156,
+      "loops": 201,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 10.2922705
+  },
+  {
+    "backend": "arris",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_06_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 1.03935075,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 15252,
+        "volume": 3323269.309709802,
+        "area": 283321.7530137621,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 3323557.1934492695,
+      "volume_rel_err": null,
+      "area": 283413.0570204893,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 310,
+      "edges": 476,
+      "faces": 187,
+      "loops": 226,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 1.087551
+  },
+  {
+    "backend": "arris",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_07_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 31.511777708,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 11664,
+        "volume": 1726472.787897907,
+        "area": 391372.6961496913,
+        "boundary_edges": 6,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 1726248.290504814,
+      "volume_rel_err": null,
+      "area": 391371.3918422976,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 588,
+      "edges": 871,
+      "faces": 306,
+      "loops": 355,
+      "shells": 3,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "mass_properties: degenerate result: the body is not a solid (+b1)",
+      "mass_properties: degenerate result: the body is not a solid (+b2)",
+      "3 solids in file: 3 read (2 sheets), 0 refused"
+    ],
+    "wall_seconds": 31.541519125
+  },
+  {
+    "backend": "arris",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_08_asme1_ap242-e1-tg.stp",
+    "test": 12,
+    "status": "error",
+    "message": "2 solids in file: 0 read (0 sheets), 2 refused: #11436: TESSELLATED_SOLID is outside the subset the reader maps; #25216: TESSELLATED_SHELL is outside the subset the reader maps",
+    "op_seconds": 0.013217625,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.028839042
+  },
+  {
+    "backend": "arris",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_10_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 7.874326416,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 17328,
+        "volume": 187656.73361849252,
+        "area": 51190.14407869386,
+        "boundary_edges": 76,
+        "nonmanifold_edges": 1780,
+        "misoriented_edges": 3528,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 188318.06859220203,
+      "volume_rel_err": null,
+      "area": 48531.22446235987,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 708,
+      "edges": 957,
+      "faces": 282,
+      "loops": 361,
+      "shells": 13,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "mass_properties: degenerate result: the body is not a solid (+b1)",
+      "mass_properties: degenerate result: the body is not a solid (+b2)",
+      "mass_properties: degenerate result: the body is not a solid (+b3)",
+      "mass_properties: degenerate result: the body is not a solid (+b4)",
+      "mass_properties: degenerate result: the body is not a solid (+b5)",
+      "mass_properties: degenerate result: the body is not a solid (+b6)",
+      "mass_properties: degenerate result: the body is not a solid (+b7)",
+      "mass_properties: degenerate result: the body is not a solid (+b8)",
+      "mass_properties: degenerate result: the body is not a solid (+b9)",
+      "mass_properties: degenerate result: the body is not a solid (+b10)",
+      "mass_properties: degenerate result: the body is not a solid (+b11)",
+      "mass_properties: degenerate result: the body is not a solid (+b12)",
+      "13 solids in file: 13 read (12 sheets), 0 refused"
+    ],
+    "wall_seconds": 7.907883083
+  },
+  {
+    "backend": "arris",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_11_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.604129667,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 3252,
+        "volume": 5106.285443109248,
+        "area": 5459.0757780233125,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 5135.076195797813,
+      "volume_rel_err": null,
+      "area": 5473.577202785892,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 74,
+      "edges": 112,
+      "faces": 42,
+      "loops": 46,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.631793084
   },
   {
     "backend": "arris",
@@ -1078,7 +1536,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 52.288780458
+    "wall_seconds": 36.979726208
   },
   {
     "backend": "arris",
@@ -1125,7 +1583,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.027546875
+    "wall_seconds": 0.030301334
   },
   {
     "backend": "arris",
@@ -1172,7 +1630,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 3.344227625
+    "wall_seconds": 3.282411375
   },
   {
     "backend": "arris",
@@ -1219,7 +1677,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.776916542
+    "wall_seconds": 1.267745792
   },
   {
     "backend": "arris",
@@ -1266,7 +1724,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.030309166
+    "wall_seconds": 0.035830375
   },
   {
     "backend": "arris",
@@ -1313,7 +1771,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.079315875
+    "wall_seconds": 0.071277125
   },
   {
     "backend": "arris",
@@ -1360,7 +1818,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.056769042
+    "wall_seconds": 0.057230834
   },
   {
     "backend": "arris",
@@ -1407,7 +1865,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.02848075
+    "wall_seconds": 0.027317417
   },
   {
     "backend": "arris",
@@ -1454,7 +1912,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 14.518731083
+    "wall_seconds": 7.4445305
   },
   {
     "backend": "arris",
@@ -1501,7 +1959,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.027412792
+    "wall_seconds": 0.024645208
   },
   {
     "backend": "arris",
@@ -1548,7 +2006,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 1.321612167
+    "wall_seconds": 0.739219291
   },
   {
     "backend": "arris",
@@ -1595,7 +2053,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.0486925
+    "wall_seconds": 0.0302405
   },
   {
     "backend": "arris",
@@ -1613,7 +2071,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.030413042
+    "wall_seconds": 0.028680708
   },
   {
     "backend": "arris",
@@ -1660,7 +2118,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.235661917
+    "wall_seconds": 0.145497
   },
   {
     "backend": "arris",
@@ -1707,7 +2165,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.022998208
+    "wall_seconds": 0.033666292
   },
   {
     "backend": "arris",
@@ -1725,7 +2183,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.027577625
+    "wall_seconds": 0.023884459
   },
   {
     "backend": "arris",
@@ -1772,7 +2230,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.02740875
+    "wall_seconds": 0.028224542
   },
   {
     "backend": "arris",
@@ -1819,7 +2277,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.596366625
+    "wall_seconds": 0.341903584
   },
   {
     "backend": "arris",
@@ -1866,7 +2324,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.052462542
+    "wall_seconds": 0.054589459
   },
   {
     "backend": "arris",
@@ -1913,7 +2371,7 @@
     "notes": [
       "1 solids in file: 1 read (0 sheets), 0 refused"
     ],
-    "wall_seconds": 0.061115833
+    "wall_seconds": 0.03025025
   },
   {
     "backend": "arris",
@@ -1921,7 +2379,7 @@
     "test": 13,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.000078625,
+    "op_seconds": 0.000049083,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -1967,7 +2425,7 @@
     "notes": [
       "sphere = revolve of a half disc (no sphere primitive)"
     ],
-    "wall_seconds": 0.623357541
+    "wall_seconds": 0.182057208
   },
   {
     "backend": "arris",
@@ -1975,7 +2433,7 @@
     "test": 13,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.000065667,
+    "op_seconds": 0.000042333,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -2021,7 +2479,7 @@
     "notes": [
       "sphere = revolve of a half disc (no sphere primitive)"
     ],
-    "wall_seconds": 0.054158417
+    "wall_seconds": 0.028082208
   },
   {
     "backend": "arris",
@@ -2029,7 +2487,7 @@
     "test": 13,
     "status": "ok",
     "message": null,
-    "op_seconds": 0.018320084,
+    "op_seconds": 0.013013084,
     "runs": 5,
     "eval": {
       "mesh": {
@@ -2073,7 +2531,7 @@
     "roundtrip_rel_err": null,
     "hostile": null,
     "notes": [],
-    "wall_seconds": 0.377813208
+    "wall_seconds": 0.150556291
   },
   {
     "backend": "arris",
@@ -2098,7 +2556,7 @@
       "first_panic": null
     },
     "notes": [],
-    "wall_seconds": 0.0485065
+    "wall_seconds": 0.054691125
   },
   {
     "backend": "arris",
@@ -2123,7 +2581,7 @@
       "first_panic": null
     },
     "notes": [],
-    "wall_seconds": 0.029900375
+    "wall_seconds": 0.05209825
   },
   {
     "backend": "arris",
@@ -2148,6 +2606,5141 @@
       "first_panic": null
     },
     "notes": [],
-    "wall_seconds": 0.030276041
+    "wall_seconds": 0.030223209
+  },
+  {
+    "backend": "monstertruck",
+    "case": "1a",
+    "test": 1,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.088966708,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 62194,
+        "volume": 227435.2091207825,
+        "area": 26685.39834195887,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 227435.2091207825,
+      "volume_rel_err": 6.945917127345487e-6,
+      "area": 26685.39834195887,
+      "area_rel_err": 0.00001659173849723707,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 18,
+      "faces": 8,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "boolean tessellation tol = 0.05",
+      "Solid::is_geometric_consistent() == false",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 2.98538325
+  },
+  {
+    "backend": "monstertruck",
+    "case": "1b",
+    "test": 1,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.032050709,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 62332,
+        "volume": 233717.58181096392,
+        "area": 26056.701004685285,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 233717.58181096392,
+      "volume_rel_err": 3.282254828383103e-6,
+      "area": 26056.701004685285,
+      "area_rel_err": 2.454010055691796e-6,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 18,
+      "faces": 9,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "boolean tessellation tol = 0.05",
+      "Solid::is_geometric_consistent() == false",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 2.6978595419999998
+  },
+  {
+    "backend": "monstertruck",
+    "case": "2a",
+    "test": 2,
+    "status": "error",
+    "message": "or: invalid output shell for `or`: This shell is not oriented and closed..",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.0302705
+  },
+  {
+    "backend": "monstertruck",
+    "case": "2b",
+    "test": 2,
+    "status": "error",
+    "message": "or: invalid output shell for `or`: This shell is not oriented and closed..",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030210459
+  },
+  {
+    "backend": "monstertruck",
+    "case": "3a",
+    "test": 3,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.03444,
+    "runs": 3,
+    "eval": {
+      "mesh": {
+        "triangles": 248302,
+        "volume": 271412.117439423,
+        "area": 31711.23640440994,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 271412.117439423,
+      "volume_rel_err": 0.000014034167130768536,
+      "area": 31711.23640440994,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 18,
+      "faces": 10,
+      "loops": 10,
+      "shells": 2,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "boolean tessellation tol = 0.05",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 12.626756834
+  },
+  {
+    "backend": "monstertruck",
+    "case": "3b",
+    "test": 3,
+    "status": "error",
+    "message": "or: invalid output shell for `or`: This shell is not oriented and closed..",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.02627725
+  },
+  {
+    "backend": "monstertruck",
+    "case": "4",
+    "test": 4,
+    "status": "error",
+    "message": "or: invalid output shell for `or`: This shell is not oriented and closed..",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.026873625
+  },
+  {
+    "backend": "monstertruck",
+    "case": "5a",
+    "test": 5,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.001679625,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 15886,
+        "volume": 239462.69560849256,
+        "area": 24574.52468658085,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 239462.69560849256,
+      "volume_rel_err": 3.3399662845952608e-6,
+      "area": 24574.52468658085,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "Solid::is_geometric_consistent() == false",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 0.652490834
+  },
+  {
+    "backend": "monstertruck",
+    "case": "5b",
+    "test": 5,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.001994625,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": null,
+      "volume": null,
+      "volume_rel_err": null,
+      "area": null,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold); no NaN/inf coordinates in the written STEP"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "one edge (the straight y=−20 top edge) selected; tangent chain left to the kernel; observed: only that edge is filleted (6 → 7 faces), the chain is not propagated",
+      "strict tessellation refused: tessellation dropped face 6 (boundary-projection-failed): surface=monstertruck_modeling::geometry::surface::Surface -- the meshed shell is missing this face and its volume is understated",
+      "Solid::is_geometric_consistent() == false",
+      "result geometry has non-finite (NaN/inf) control points",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 0.520650041
+  },
+  {
+    "backend": "monstertruck",
+    "case": "5c",
+    "test": 5,
+    "status": "error",
+    "message": "fillet result is not a solid: This shell is not oriented and closed.",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.020895375
+  },
+  {
+    "backend": "monstertruck",
+    "case": "5d",
+    "test": 5,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.001822167,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 18136,
+        "volume": 239627.53150075147,
+        "area": 24619.673840136442,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 239627.53150075147,
+      "volume_rel_err": 2.0531090796888062e-6,
+      "area": 24619.673840136442,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "Solid::is_geometric_consistent() == false",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 0.827301041
+  },
+  {
+    "backend": "monstertruck",
+    "case": "6",
+    "test": 6,
+    "status": "error",
+    "message": "fillet_edges returned Ok on 2 edge(s) but added no face (8 faces before and after)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.075412333
+  },
+  {
+    "backend": "monstertruck",
+    "case": "7a",
+    "test": 7,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.001432167,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 16,
+        "volume": 238749.99999999994,
+        "area": 24482.10678118655,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 238749.99999999994,
+      "volume_rel_err": 2.438017211035284e-16,
+      "area": 24482.10678118655,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "FilletProfile::Chamfer with constant radius 5: equal setback (d–d symmetric only)",
+      "Solid::is_geometric_consistent() == false",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 0.020770792
+  },
+  {
+    "backend": "monstertruck",
+    "case": "7b",
+    "test": 7,
+    "status": "not_exposed",
+    "message": "distance–angle chamfer: FilletProfile::Chamfer is equal-setback only",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.023701542
+  },
+  {
+    "backend": "monstertruck",
+    "case": "8a",
+    "test": 8,
+    "status": "not_exposed",
+    "message": "shell/hollow solid: no B-rep shell operation (surface offsets only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030143875
+  },
+  {
+    "backend": "monstertruck",
+    "case": "8b",
+    "test": 8,
+    "status": "not_exposed",
+    "message": "shell/hollow solid: no B-rep shell operation (surface offsets only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030155625
+  },
+  {
+    "backend": "monstertruck",
+    "case": "9a",
+    "test": 9,
+    "status": "not_exposed",
+    "message": "push/pull: no face offset/move operation",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.0274035
+  },
+  {
+    "backend": "monstertruck",
+    "case": "9b",
+    "test": 9,
+    "status": "not_exposed",
+    "message": "push/pull: no face offset/move operation",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.023221625
+  },
+  {
+    "backend": "monstertruck",
+    "case": "10a",
+    "test": 10,
+    "status": "not_exposed",
+    "message": "sweep along a helix: no B-rep sweep along a curve (surface-only sweep_rail)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.02928275
+  },
+  {
+    "backend": "monstertruck",
+    "case": "10b",
+    "test": 10,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.00123525,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 90020,
+        "volume": 21989.766016453475,
+        "area": 4551.002569659881,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 21989.766016453475,
+      "volume_rel_err": 0.00006286887064366686,
+      "area": 4551.002569659881,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 4,
+      "edges": 6,
+      "faces": 4,
+      "loops": 4,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "try_skin_wires (ruled homotopy) + try_attach_plane caps",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 2.526232667
+  },
+  {
+    "backend": "monstertruck",
+    "case": "10c",
+    "test": 10,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000967541,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 28796,
+        "volume": 16234.96382797836,
+        "area": 3862.511971507147,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 16234.96382797836,
+      "volume_rel_err": null,
+      "area": 3862.511971507147,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "ruled loft: rectangle edges paired with 4 arcs split at the corner directions",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 0.379525166
+  },
+  {
+    "backend": "monstertruck",
+    "case": "11a",
+    "test": 11,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.001461084,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 73864,
+        "volume": 33502.49480731306,
+        "area": 5025.963743977945,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 33502.49480731306,
+      "volume_rel_err": 0.00023356478229457806,
+      "area": 5025.963743977945,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 12,
+      "faces": 8,
+      "loops": 8,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "revolve_wire of a half-circle arc with both ends on the axis (division 4)",
+      "revolve came out inward-oriented; flipped with Solid::not",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 1.031434166
+  },
+  {
+    "backend": "monstertruck",
+    "case": "11b",
+    "test": 11,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.00071875,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 13408,
+        "volume": 12564.579991925739,
+        "area": 3521.8175397523455,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 12564.579991925739,
+      "volume_rel_err": 0.00014249320574604002,
+      "area": 3521.8175397523455,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 12,
+      "faces": 8,
+      "loops": 8,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "revolve_wire of apex→rim→base-centre polyline (axis segment omitted, ends on axis)",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 0.1638265
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_01_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.66262175,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 107410,
+        "volume": 14645321.317248326,
+        "area": 807122.0291920574,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 32,
+        "misoriented_edges": 64,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 14645321.317248326,
+      "volume_rel_err": null,
+      "area": 807122.0291920574,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 206,
+      "edges": 318,
+      "faces": 117,
+      "loops": 140,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused",
+      "tessellated mesh is not closed"
+    ],
+    "wall_seconds": 0.728674875
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_02_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.25718225,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": null,
+      "volume": null,
+      "volume_rel_err": null,
+      "area": null,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 870,
+      "edges": 1410,
+      "faces": 635,
+      "loops": 750,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused",
+      "strict tessellation refused: tessellation dropped face 137 (boundary-projection-failed): surface=monstertruck_io::step::load::step_geometry::Surface -- the meshed shell is missing this face and its volume is understated"
+    ],
+    "wall_seconds": 0.28062375
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_03_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.147556,
+    "runs": 1,
+    "eval": {
+      "mesh": {
+        "triangles": 34828,
+        "volume": 332139.7255687904,
+        "area": 354832.74807339103,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 332139.7255687904,
+      "volume_rel_err": null,
+      "area": 354832.74807339103,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 236,
+      "edges": 354,
+      "faces": 120,
+      "loops": 154,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused"
+    ],
+    "wall_seconds": 0.169129459
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_04_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.121112542,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": null,
+      "volume": null,
+      "volume_rel_err": null,
+      "area": null,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 662,
+      "edges": 1108,
+      "faces": 483,
+      "loops": 586,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused",
+      "strict tessellation refused: tessellation dropped face 343 (boundary-projection-failed): surface=monstertruck_io::step::load::step_geometry::Surface -- the meshed shell is missing this face and its volume is understated"
+    ],
+    "wall_seconds": 0.147785833
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_05_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "error",
+    "message": "no solid read (1 manifold_solid_brep): #1205: extract: Two same vertices cannot construct an edge.",
+    "op_seconds": 0.032556125,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.058684708
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_06_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.105999625,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": null,
+      "volume": null,
+      "volume_rel_err": null,
+      "area": null,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 310,
+      "edges": 476,
+      "faces": 187,
+      "loops": 226,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused",
+      "strict tessellation refused: tessellation dropped face 11 (boundary-projection-failed): surface=monstertruck_io::step::load::step_geometry::Surface -- the meshed shell is missing this face and its volume is understated"
+    ],
+    "wall_seconds": 0.133938583
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_07_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.07272525,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": null,
+      "volume": null,
+      "volume_rel_err": null,
+      "area": null,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 582,
+      "edges": 865,
+      "faces": 304,
+      "loops": 353,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused",
+      "strict tessellation refused: tessellation dropped face 40 (boundary-projection-failed): surface=monstertruck_io::step::load::step_geometry::Surface -- the meshed shell is missing this face and its volume is understated"
+    ],
+    "wall_seconds": 0.082182916
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_08_asme1_ap242-e1-tg.stp",
+    "test": 12,
+    "status": "error",
+    "message": "no solid read (0 manifold_solid_brep): ",
+    "op_seconds": 0.095299792,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.106806791
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_10_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.099056708,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": null,
+      "volume": null,
+      "volume_rel_err": null,
+      "area": null,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 560,
+      "edges": 799,
+      "faces": 264,
+      "loops": 331,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused",
+      "strict tessellation refused: tessellation dropped face 29 (boundary-projection-failed): surface=monstertruck_io::step::load::step_geometry::Surface -- the meshed shell is missing this face and its volume is understated"
+    ],
+    "wall_seconds": 0.106745458
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_11_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "error",
+    "message": "no solid read (1 manifold_solid_brep): #1299: extract: Two same vertices cannot construct an edge.",
+    "op_seconds": 0.096041542,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.117540292
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:10a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: sweep along a helix: no B-rep sweep along a curve (surface-only sweep_rail)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.029123459
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:10b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 90020,
+        "volume": 21989.76601645348,
+        "area": 4551.002569659891,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 21989.76601645348,
+      "volume_rel_err": 0.00006286887064350142,
+      "area": 4551.002569659891,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 4,
+      "edges": 6,
+      "faces": 4,
+      "loops": 4,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 1.6543963243490887e-16,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused"
+    ],
+    "wall_seconds": 1.225599875
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:10c",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 28796,
+        "volume": 16234.96382797835,
+        "area": 3862.5119715071482,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 16234.96382797835,
+      "volume_rel_err": null,
+      "area": 3862.5119715071482,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 5.602074087812624e-16,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused"
+    ],
+    "wall_seconds": 0.1976335
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:11a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 199000,
+        "volume": 33507.291160340275,
+        "area": 5026.3209665142795,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 33507.291160340275,
+      "volume_rel_err": 0.00009043416483918987,
+      "area": 5026.3209665142795,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 12,
+      "faces": 8,
+      "loops": 8,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.00014316405553685207,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused"
+    ],
+    "wall_seconds": 0.938548084
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:11b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 47258,
+        "volume": 12564.03140036609,
+        "area": 3600.6892886285486,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 12564.03140036609,
+      "volume_rel_err": 0.00018614873497436646,
+      "area": 3600.6892886285486,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 12,
+      "faces": 8,
+      "loops": 8,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.000043661750731156623,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused"
+    ],
+    "wall_seconds": 0.270411917
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:1a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": null,
+      "volume_method": null,
+      "volume": null,
+      "volume_rel_err": null,
+      "area": null,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 18,
+      "faces": 8,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused",
+      "strict tessellation refused: tessellation dropped face 1 (boundary-projection-failed): surface=monstertruck_io::step::load::step_geometry::Surface -- the meshed shell is missing this face and its volume is understated"
+    ],
+    "wall_seconds": 0.436176083
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:1b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": null,
+      "volume_method": null,
+      "volume": null,
+      "volume_rel_err": null,
+      "area": null,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 18,
+      "faces": 9,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused",
+      "strict tessellation refused: tessellation dropped face 4 (boundary-projection-failed): surface=monstertruck_io::step::load::step_geometry::Surface -- the meshed shell is missing this face and its volume is understated"
+    ],
+    "wall_seconds": 0.384785417
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:2a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: failed: or: invalid output shell for `or`: This shell is not oriented and closed..",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.022424375
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:4",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: failed: or: invalid output shell for `or`: This shell is not oriented and closed..",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.025471167
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:5a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 15886,
+        "volume": 239462.69560849256,
+        "area": 24574.52468658085,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 239462.69560849256,
+      "volume_rel_err": 3.3399662845952608e-6,
+      "area": 24574.52468658085,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused"
+    ],
+    "wall_seconds": 0.294928666
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:5b",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parser error: Error while tokenizing STEP input\n0: at line 7, in Tag:\nDATA;\n^\n\n",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.112806208
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:5c",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: failed: fillet result is not a solid: This shell is not oriented and closed.",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.021243625
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:5d",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 18136,
+        "volume": 239627.53150075147,
+        "area": 24619.673840136442,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 239627.53150075147,
+      "volume_rel_err": 2.0531090796888062e-6,
+      "area": 24619.673840136442,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused"
+    ],
+    "wall_seconds": 0.366758833
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:6",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: failed: fillet_edges returned Ok on 2 edge(s) but added no face (8 faces before and after)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.06021775
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:7a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 16,
+        "volume": 238749.99999999994,
+        "area": 24482.10678118655,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 238749.99999999994,
+      "volume_rel_err": 2.438017211035284e-16,
+      "area": 24482.10678118655,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solid(s) read, 0 refused"
+    ],
+    "wall_seconds": 0.030162042
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:7b",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: distance–angle chamfer: FilletProfile::Chamfer is equal-setback only",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030132875
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:8a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: shell/hollow solid: no B-rep shell operation (surface offsets only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030136417
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:8b",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: shell/hollow solid: no B-rep shell operation (surface offsets only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.024230542
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:9a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: push/pull: no face offset/move operation",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.026972208
+  },
+  {
+    "backend": "monstertruck",
+    "case": "12rt:9b",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: push/pull: no face offset/move operation",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.021314625
+  },
+  {
+    "backend": "monstertruck",
+    "case": "13a",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.0013755,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 16128,
+        "volume": 33470.59612941336,
+        "area": 5023.554802059077,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": 0.014333417311249264
+      },
+      "volume_method": "mesh",
+      "volume": 33470.59612941336,
+      "volume_rel_err": null,
+      "area": 5023.554802059077,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 12,
+      "faces": 8,
+      "loops": 8,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "revolve_wire of a half-circle arc with both ends on the axis (division 4)",
+      "revolve came out inward-oriented; flipped with Solid::not",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 0.165501417
+  },
+  {
+    "backend": "monstertruck",
+    "case": "13b",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.001389625,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 11692,
+        "volume": 33453.19230924507,
+        "area": 5026.221870770957,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": 0.0775259694847179
+      },
+      "volume_method": "mesh",
+      "volume": 33453.19230924507,
+      "volume_rel_err": null,
+      "area": 5026.221870770957,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 12,
+      "faces": 8,
+      "loops": 8,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "revolve_wire of a half-circle arc with both ends on the axis (division 4)",
+      "revolve came out inward-oriented; flipped with Solid::not",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 0.118706333
+  },
+  {
+    "backend": "monstertruck",
+    "case": "13c",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.052974834,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 14586,
+        "volume": 227440.75015807594,
+        "area": 26685.116694507487,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 227440.75015807594,
+      "volume_rel_err": null,
+      "area": 26685.116694507487,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 18,
+      "faces": 8,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Shell::check_solid_boundary (non-empty, connected, closed, manifold)"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "boolean tessellation tol = 0.05",
+      "Solid::is_geometric_consistent() == false",
+      "no native mass properties: volume from the mesh"
+    ],
+    "wall_seconds": 0.542374834
+  },
+  {
+    "backend": "monstertruck",
+    "case": "15:1",
+    "test": 15,
+    "status": "timeout",
+    "message": "killed after 300s; last stderr: HOSTILE 30 [2.2250738585072014e-308, 82.91988993964058, -1.0, 1000000000.0]",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 300.025560292
+  },
+  {
+    "backend": "monstertruck",
+    "case": "15:5",
+    "test": 15,
+    "status": "panic",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": {
+      "total": 256,
+      "ok": 0,
+      "clean_error": 252,
+      "not_exposed": 0,
+      "panics": 4,
+      "first_panic": "[196.89693547573484, 1000000000.0, 175.2291554115495, 0.0]: The end point Vector4 [NaN, NaN, NaN, 1.0] of the first curve is different from the start point Vector4 [NaN, NaN, NaN, 1.0] of the second curve. at /Users/alberto/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/monstertruck-traits-0.4.1/src/traits/curve.rs:440"
+    },
+    "notes": [],
+    "wall_seconds": 0.249544833
+  },
+  {
+    "backend": "monstertruck",
+    "case": "15:9",
+    "test": 15,
+    "status": "not_exposed",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": {
+      "total": 256,
+      "ok": 0,
+      "clean_error": 0,
+      "not_exposed": 256,
+      "panics": 0,
+      "first_panic": null
+    },
+    "notes": [],
+    "wall_seconds": 0.051243666
+  },
+  {
+    "backend": "solidcore",
+    "case": "1a",
+    "test": 1,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.010495,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 227433.6295196783,
+      "volume_rel_err": 5.893477046633123e-10,
+      "area": 26684.91347917138,
+      "area_rel_err": 1.5781544903880494e-6,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 9,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.170205958
+  },
+  {
+    "backend": "solidcore",
+    "case": "1b",
+    "test": 1,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.007044333,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 233716.8147790676,
+      "volume_rel_err": 3.6902421592453697e-10,
+      "area": 26056.629303213886,
+      "area_rel_err": 2.9774456368141593e-7,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 8,
+      "loops": 9,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.125134667
+  },
+  {
+    "backend": "solidcore",
+    "case": "2a",
+    "test": 2,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.004214166,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 480000.0,
+      "volume_rel_err": 0.0,
+      "area": 44800.0,
+      "area_rel_err": 0.0,
+      "euler_ok": true,
+      "faces_ok": true,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.048624458
+  },
+  {
+    "backend": "solidcore",
+    "case": "2b",
+    "test": 2,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.003165042,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 480000.0,
+      "volume_rel_err": 0.0,
+      "area": 49600.0,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 14,
+      "edges": 23,
+      "faces": 12,
+      "loops": 12,
+      "shells": 2,
+      "backend_closed": false,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.056512833
+  },
+  {
+    "backend": "solidcore",
+    "case": "3a",
+    "test": 3,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.008013959,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 271415.9252640243,
+      "volume_rel_err": 4.686068612719349e-9,
+      "area": 31711.35956340885,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 11,
+      "edges": 17,
+      "faces": 9,
+      "loops": 9,
+      "shells": 2,
+      "backend_closed": false,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.143929333
+  },
+  {
+    "backend": "solidcore",
+    "case": "3b",
+    "test": 3,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.013987416,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 244188.7902860549,
+      "volume_rel_err": 3.328100702793596e-10,
+      "area": 26056.884284229705,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 13,
+      "faces": 7,
+      "loops": 8,
+      "shells": 2,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 2.108818542
+  },
+  {
+    "backend": "solidcore",
+    "case": "4",
+    "test": 4,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 1.191356291,
+    "runs": 4,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 500530.9639704123,
+      "volume_rel_err": 1.8869182916076143e-9,
+      "area": 138271.94929019557,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 208,
+      "edges": 312,
+      "faces": 206,
+      "loops": 306,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "n-ary union: boolean_lists([plate], [100 pins], union) → 1 body",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 10.364346667
+  },
+  {
+    "backend": "solidcore",
+    "case": "5a",
+    "test": 5,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.004689292,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 239463.49542960257,
+      "volume_rel_err": 8.815101436066034e-11,
+      "area": 24574.668710457,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "integrity::check: topology::integrity::check: cached face shell: face 10 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.075590625
+  },
+  {
+    "backend": "solidcore",
+    "case": "5b",
+    "test": 5,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.0371015,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 108418.76322772575,
+      "volume_rel_err": 2.3367131322885986e-9,
+      "area": 14145.459103395053,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 20,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "prism by create_linear_sweep; all 4 top edges passed to fillet_edges",
+      "integrity::check: topology::integrity::check: cached face shell: face 5 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.728141209
+  },
+  {
+    "backend": "solidcore",
+    "case": "5c",
+    "test": 5,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.0139955,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 238947.91636255,
+      "volume_rel_err": 4.137725038379103e-11,
+      "area": 24351.16737159264,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 13,
+      "edges": 21,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "integrity::check: topology::integrity::check: cached face shell: face 12 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.360326292
+  },
+  {
+    "backend": "solidcore",
+    "case": "5d",
+    "test": 5,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.01576075,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 239628.00523935552,
+      "volume_rel_err": 7.613411171823208e-8,
+      "area": 24619.76854145314,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "linear law; edge starts at x=0, radii passed (2, 6)",
+      "integrity::check: topology::integrity::check: cached face shell: face 10 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.128333084
+  },
+  {
+    "backend": "solidcore",
+    "case": "6",
+    "test": 6,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.017275458,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 227377.28448866121,
+      "volume_rel_err": 3.882124618500676e-10,
+      "area": 26632.807098723584,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 11,
+      "edges": 17,
+      "faces": 8,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "integrity::check: topology::integrity::check: cached face shell: face 0 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.536648875
+  },
+  {
+    "backend": "solidcore",
+    "case": "7a",
+    "test": 7,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.005202083,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 238749.99999999994,
+      "volume_rel_err": 2.438017211035284e-16,
+      "area": 24482.106781186547,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "chamfer = fillet_edges with xsect_type 0 (linear section, equal setback)",
+      "integrity::check: topology::integrity::check: cached face shell: face 10 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.056897333
+  },
+  {
+    "backend": "solidcore",
+    "case": "7b",
+    "test": 7,
+    "status": "not_exposed",
+    "message": "distance–angle chamfer: fillet_edges/chamfer_fillet take one distance (equal setback); no asymmetric or angle chamfer in the public API",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030536792
+  },
+  {
+    "backend": "solidcore",
+    "case": "8a",
+    "test": 8,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.027343208,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 35711.99999999997,
+      "volume_rel_err": 8.149594101907959e-16,
+      "area": 36351.99999999999,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 16,
+      "edges": 24,
+      "faces": 11,
+      "loops": 12,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "api_shell_brep_full with a hand-built OffsetNotifications (difftest template)",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.17035175
+  },
+  {
+    "backend": "solidcore",
+    "case": "8b",
+    "test": 8,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.048590166,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 11159.955997528958,
+      "volume_rel_err": 3.613818442057814e-8,
+      "area": 11406.924865752859,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 10,
+      "faces": 7,
+      "loops": 8,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "api_shell_brep_full with a hand-built OffsetNotifications (difftest template)",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.926260458
+  },
+  {
+    "backend": "solidcore",
+    "case": "9a",
+    "test": 9,
+    "status": "not_exposed",
+    "message": "push/pull: no public face offset/move (only low-level delete_face / replace_surface)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030201791
+  },
+  {
+    "backend": "solidcore",
+    "case": "9b",
+    "test": 9,
+    "status": "not_exposed",
+    "message": "push/pull: no public face offset/move (only low-level delete_face / replace_surface)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.025828958
+  },
+  {
+    "backend": "solidcore",
+    "case": "10a",
+    "test": 10,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.122772167,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 4737.399760339607,
+      "volume_rel_err": 2.185198882607785e-6,
+      "area": 4769.830744321747,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 3,
+      "faces": 3,
+      "loops": 3,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": {
+      "Partial": "sweep returns start/side/end faces: 1/1/1; no edge or vertex map"
+    },
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "create_helix (B-spline, tol 1e-4) + create_curve_sweep with move_profile_center_to_path (defaults: −6.3 % volume)",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 4.463109541
+  },
+  {
+    "backend": "solidcore",
+    "case": "10b",
+    "test": 10,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.003909625,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 21991.148557514618,
+      "volume_rel_err": 8.009555666691978e-10,
+      "area": 4551.071489306305,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 3,
+      "faces": 3,
+      "loops": 3,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": {
+      "Partial": "sweep returns start/side/end faces: 1/1/1; no edge or vertex map"
+    },
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "create_skin_primitive, degree 1 (ruled), capped",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.079585625
+  },
+  {
+    "backend": "solidcore",
+    "case": "10c",
+    "test": 10,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.010022083,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 7339.682157622852,
+      "volume_rel_err": null,
+      "area": 3273.4974384872885,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": {
+      "Partial": "sweep returns start/side/end faces: 1/4/1; no edge or vertex map"
+    },
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "create_skin_primitive, degree 1 (ruled), capped",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.690335625
+  },
+  {
+    "backend": "solidcore",
+    "case": "11a",
+    "test": 11,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.0024355,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 33510.32175190151,
+      "volume_rel_err": 3.390310101625148e-9,
+      "area": 5027.6100962605615,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 1,
+      "faces": 1,
+      "loops": 1,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.879313791
+  },
+  {
+    "backend": "solidcore",
+    "case": "11b",
+    "test": 11,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.001270458,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 12566.37113321825,
+      "volume_rel_err": 4.128949355656682e-8,
+      "area": 3522.05732138196,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 2,
+      "faces": 2,
+      "loops": 2,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.05161375
+  },
+  {
+    "backend": "solidcore",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_01_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.60707875,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 14660345.770002402,
+      "volume_rel_err": null,
+      "area": 808432.2357664322,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 206,
+      "edges": 318,
+      "faces": 117,
+      "loops": 140,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "step_brep::import read 1 bodies",
+      "integrity::check: topology::integrity::check: cached face shell: face 1 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.630831292
+  },
+  {
+    "backend": "solidcore",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_02_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "error",
+    "message": "step_brep::import: topology::brep::p8: upstream status 1001",
+    "op_seconds": 1.851591375,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 1.857171792
+  },
+  {
+    "backend": "solidcore",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_03_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.593162291,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 440750.7718068529,
+      "volume_rel_err": null,
+      "area": 354754.5004238328,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 236,
+      "edges": 354,
+      "faces": 120,
+      "loops": 154,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "step_brep::import read 1 bodies",
+      "integrity::check: topology::integrity::check: cached face shell: face 1 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.599658042
+  },
+  {
+    "backend": "solidcore",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_04_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 18.166762917,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 267749169.14053816,
+      "volume_rel_err": null,
+      "area": 29544021.368635822,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 664,
+      "edges": 1110,
+      "faces": 484,
+      "loops": 587,
+      "shells": 1,
+      "backend_closed": false,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "step_brep::import read 2 bodies",
+      "integrity::check: topology::integrity::check: cached face shell: face 1 not found",
+      "integrity::check: topology::integrity::check: cached shell faces: shell 0 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 18.194814833
+  },
+  {
+    "backend": "solidcore",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_05_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 7.484459166,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": null,
+      "volume": null,
+      "volume_rel_err": null,
+      "area": null,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 239,
+      "edges": 331,
+      "faces": 193,
+      "loops": 238,
+      "shells": 49,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "step_brep::import read 1 bodies",
+      "brep_volume: nurbs::b_spline_curve::p1::BSplineCurve::evaluate: upstream status 1001",
+      "brep_area: nurbs::b_spline_curve::p1::BSplineCurve::evaluate: upstream status 1001",
+      "integrity::check: topology::integrity::check: cached face shell: face 1 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 7.498846041
+  },
+  {
+    "backend": "solidcore",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_06_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 2.897196416,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 3310583.850699867,
+      "volume_rel_err": null,
+      "area": 363016.4989622632,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 310,
+      "edges": 476,
+      "faces": 187,
+      "loops": 226,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "step_brep::import read 1 bodies",
+      "integrity::check: topology::integrity::check: cached face shell: face 1 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 2.9296631250000003
+  },
+  {
+    "backend": "solidcore",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_07_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "error",
+    "message": "step_brep::import: topology::brep::p8: upstream status 1001",
+    "op_seconds": 0.131635792,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.167108875
+  },
+  {
+    "backend": "solidcore",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_08_asme1_ap242-e1-tg.stp",
+    "test": 12,
+    "status": "error",
+    "message": "step_brep::import returned no bodies",
+    "op_seconds": 0.015447375,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030210917
+  },
+  {
+    "backend": "solidcore",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_10_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "error",
+    "message": "step_brep::import: topology::brep::p8: upstream status 1001",
+    "op_seconds": 0.142294,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.167641583
+  },
+  {
+    "backend": "solidcore",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_11_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 2.446472875,
+    "runs": 1,
+    "eval": {
+      "mesh": null,
+      "volume_method": null,
+      "volume": null,
+      "volume_rel_err": null,
+      "area": null,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 72,
+      "edges": 104,
+      "faces": 48,
+      "loops": 52,
+      "shells": 6,
+      "backend_closed": true,
+      "backend_valid": false,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "step_brep::import read 1 bodies",
+      "brep_volume: nurbs::b_spline_curve::p1::BSplineCurve::evaluate: upstream status 1001",
+      "brep_area: nurbs::b_spline_curve::p1::BSplineCurve::evaluate: upstream status 1001",
+      "integrity::check: topology::integrity::check: cached face shell: face 2 not found",
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 2.46923575
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:10a",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.846603917
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:10b",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.023348958
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:10c",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.084947958
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:11a",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.168857167
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:11b",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.028674416
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:1a",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.02476275
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:1b",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.028745333
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:2a",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.025899834
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:4",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.955629542
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:5a",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.029236666
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:5b",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.077767125
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:5c",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.058282666
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:5d",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.023415125
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:6",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.059891541
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:7a",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.028309167
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:7b",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: distance–angle chamfer: fillet_edges/chamfer_fillet take one distance (equal setback); no asymmetric or angle chamfer in the public API",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030202917
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:8a",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.021748333
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:8b",
+    "test": 12,
+    "status": "not_exposed",
+    "message": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.14249225
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:9a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: push/pull: no public face offset/move (only low-level delete_face / replace_surface)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.029435875
+  },
+  {
+    "backend": "solidcore",
+    "case": "12rt:9b",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: push/pull: no public face offset/move (only low-level delete_face / replace_surface)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.024800791
+  },
+  {
+    "backend": "solidcore",
+    "case": "13a",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.00128925,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 33510.32232908825,
+      "volume_rel_err": null,
+      "area": 5027.61008630763,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 1,
+      "faces": 1,
+      "loops": 1,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.658371583
+  },
+  {
+    "backend": "solidcore",
+    "case": "13b",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.001238375,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 33510.32232908825,
+      "volume_rel_err": null,
+      "area": 5027.61008630763,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 1,
+      "faces": 1,
+      "loops": 1,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.647704166
+  },
+  {
+    "backend": "solidcore",
+    "case": "13c",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.00373025,
+    "runs": 5,
+    "eval": {
+      "mesh": null,
+      "volume_method": "native",
+      "volume": 227433.6295196783,
+      "volume_rel_err": null,
+      "area": 26684.91347917138,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 9,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "is_manifold_solid (closed) + topology::integrity::check (valid)"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": "solidcore has no STEP export of a B-rep (step-export writes the neutral step-import model, planar single-shell only)",
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "solidcore has no public B-rep tessellation (only the low-level TessSrfCache; the separate nurbs-grid-mesh crate would need a hand-written Brep→NURBS adapter), so mesh = None"
+    ],
+    "wall_seconds": 0.056359083
+  },
+  {
+    "backend": "solidcore",
+    "case": "15:1",
+    "test": 15,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": {
+      "total": 256,
+      "ok": 0,
+      "clean_error": 256,
+      "not_exposed": 0,
+      "panics": 0,
+      "first_panic": null
+    },
+    "notes": [],
+    "wall_seconds": 0.03024025
+  },
+  {
+    "backend": "solidcore",
+    "case": "15:5",
+    "test": 15,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": {
+      "total": 256,
+      "ok": 0,
+      "clean_error": 256,
+      "not_exposed": 0,
+      "panics": 0,
+      "first_panic": null
+    },
+    "notes": [],
+    "wall_seconds": 0.02676075
+  },
+  {
+    "backend": "solidcore",
+    "case": "15:9",
+    "test": 15,
+    "status": "not_exposed",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": {
+      "total": 256,
+      "ok": 0,
+      "clean_error": 0,
+      "not_exposed": 256,
+      "panics": 0,
+      "first_panic": null
+    },
+    "notes": [],
+    "wall_seconds": 0.021057209
+  },
+  {
+    "backend": "truck",
+    "case": "1a",
+    "test": 1,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.204037209,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 26119,
+        "volume": 227435.89498514688,
+        "area": 26684.903941484215,
+        "boundary_edges": 6,
+        "nonmanifold_edges": 1,
+        "misoriented_edges": 2,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 227435.89498514688,
+      "volume_rel_err": 9.961585330116507e-6,
+      "area": 26684.903941484215,
+      "area_rel_err": 1.935572629311151e-6,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 14,
+      "edges": 21,
+      "faces": 9,
+      "loops": 11,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": null,
+      "backend_check": "Shell::shell_condition == Closed; Solid::is_geometric_consistent"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "Solid::is_geometric_consistent panics (unimplemented!, geometry.rs:228) on IntersectionCurve edges, i.e. on every boolean result; backend_valid left None",
+      "no mass properties: volume from the closed mesh (triangulation + put_together_same_attrs)"
+    ],
+    "wall_seconds": 2.703294958
+  },
+  {
+    "backend": "truck",
+    "case": "1b",
+    "test": 1,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.112812833,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 25589,
+        "volume": 233717.9548891918,
+        "area": 26056.559609043186,
+        "boundary_edges": 9,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 233717.9548891918,
+      "volume_rel_err": 4.8785380413710455e-6,
+      "area": 26056.559609043186,
+      "area_rel_err": 2.972463121371659e-6,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 14,
+      "edges": 21,
+      "faces": 10,
+      "loops": 11,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": null,
+      "backend_check": "Shell::shell_condition == Closed; Solid::is_geometric_consistent"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "Solid::is_geometric_consistent panics (unimplemented!, geometry.rs:228) on IntersectionCurve edges, i.e. on every boolean result; backend_valid left None",
+      "no mass properties: volume from the closed mesh (triangulation + put_together_same_attrs)"
+    ],
+    "wall_seconds": 2.232231417
+  },
+  {
+    "backend": "truck",
+    "case": "2a",
+    "test": 2,
+    "status": "error",
+    "message": "truck_shapeops::or returned None",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.024381167
+  },
+  {
+    "backend": "truck",
+    "case": "2b",
+    "test": 2,
+    "status": "error",
+    "message": "truck_shapeops::or returned None",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.020230583
+  },
+  {
+    "backend": "truck",
+    "case": "3a",
+    "test": 3,
+    "status": "panic",
+    "message": "This shell is not oriented and closed. at /Users/alberto/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/truck-topology-0.6.0/src/lib.rs:186",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.020208709
+  },
+  {
+    "backend": "truck",
+    "case": "3b",
+    "test": 3,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.002778833,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 42880,
+        "volume": 244187.0858178213,
+        "area": 26056.382082943837,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 6,
+        "misoriented_edges": 12,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 244187.0858178213,
+      "volume_rel_err": 6.979792003066018e-6,
+      "area": 26056.382082943837,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 13,
+      "edges": 21,
+      "faces": 12,
+      "loops": 12,
+      "shells": 2,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Solid::is_geometric_consistent"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "no mass properties: volume from the closed mesh (triangulation + put_together_same_attrs)"
+    ],
+    "wall_seconds": 0.56740425
+  },
+  {
+    "backend": "truck",
+    "case": "4",
+    "test": 4,
+    "status": "timeout",
+    "message": "killed after 300s; last stderr: ",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 301.182716834
+  },
+  {
+    "backend": "truck",
+    "case": "5a",
+    "test": 5,
+    "status": "not_exposed",
+    "message": "truck has no fillet",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.028825875
+  },
+  {
+    "backend": "truck",
+    "case": "5b",
+    "test": 5,
+    "status": "not_exposed",
+    "message": "truck has no fillet",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.026338625
+  },
+  {
+    "backend": "truck",
+    "case": "5c",
+    "test": 5,
+    "status": "not_exposed",
+    "message": "truck has no fillet",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.029105042
+  },
+  {
+    "backend": "truck",
+    "case": "5d",
+    "test": 5,
+    "status": "not_exposed",
+    "message": "truck has no fillet",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.020324375
+  },
+  {
+    "backend": "truck",
+    "case": "6",
+    "test": 6,
+    "status": "not_exposed",
+    "message": "truck has no fillet",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.028264542
+  },
+  {
+    "backend": "truck",
+    "case": "7a",
+    "test": 7,
+    "status": "not_exposed",
+    "message": "truck has no chamfer",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.02309825
+  },
+  {
+    "backend": "truck",
+    "case": "7b",
+    "test": 7,
+    "status": "not_exposed",
+    "message": "truck has no chamfer",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.027519542
+  },
+  {
+    "backend": "truck",
+    "case": "8a",
+    "test": 8,
+    "status": "not_exposed",
+    "message": "truck has no shell/hollow",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.025642041
+  },
+  {
+    "backend": "truck",
+    "case": "8b",
+    "test": 8,
+    "status": "not_exposed",
+    "message": "truck has no shell/hollow",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.024538834
+  },
+  {
+    "backend": "truck",
+    "case": "9a",
+    "test": 9,
+    "status": "not_exposed",
+    "message": "truck has no fillet and no face offset/move",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030263666
+  },
+  {
+    "backend": "truck",
+    "case": "9b",
+    "test": 9,
+    "status": "not_exposed",
+    "message": "truck has no fillet and no face offset/move",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.028657542
+  },
+  {
+    "backend": "truck",
+    "case": "10a",
+    "test": 10,
+    "status": "not_exposed",
+    "message": "truck has no sweep along a curve (only tsweep/rsweep/homotopy)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030590042
+  },
+  {
+    "backend": "truck",
+    "case": "10b",
+    "test": 10,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000037292,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 86492,
+        "volume": 21990.13946410559,
+        "area": 4551.027259475218,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 21990.13946410559,
+      "volume_rel_err": 0.00004588714498084903,
+      "area": 4551.027259475218,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 9,
+      "faces": 5,
+      "loops": 5,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Solid::is_geometric_consistent"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "no mass properties: volume from the closed mesh (triangulation + put_together_same_attrs)"
+    ],
+    "wall_seconds": 4.281147959
+  },
+  {
+    "backend": "truck",
+    "case": "10c",
+    "test": 10,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.00003925,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 25842,
+        "volume": 16235.17226540642,
+        "area": 3862.516760787639,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 16235.17226540642,
+      "volume_rel_err": null,
+      "area": 3862.516760787639,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Solid::is_geometric_consistent"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "ruled loft (try_wire_homotopy) with 4 arcs on the circle",
+      "no mass properties: volume from the closed mesh (triangulation + put_together_same_attrs)"
+    ],
+    "wall_seconds": 0.324211334
+  },
+  {
+    "backend": "truck",
+    "case": "11a",
+    "test": 11,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000033,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 74330,
+        "volume": 33502.525462756945,
+        "area": 5025.971384800956,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 6,
+        "misoriented_edges": 12,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 33502.525462756945,
+      "volume_rel_err": 0.0002326499762769714,
+      "area": 5025.971384800956,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 5,
+      "edges": 9,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Solid::is_geometric_consistent"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "revolve via builder::cone: profile is the arc only; the on-axis segment would revolve into a degenerate face, cone() collapses the end points on the axis",
+      "no mass properties: volume from the closed mesh (triangulation + put_together_same_attrs)"
+    ],
+    "wall_seconds": 0.977554708
+  },
+  {
+    "backend": "truck",
+    "case": "11b",
+    "test": 11,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000015541,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 774,
+        "volume": 12565.797784128346,
+        "area": 3521.964807264471,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 6,
+        "misoriented_edges": 12,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 12565.797784128346,
+      "volume_rel_err": 0.00004558438139415697,
+      "area": 3521.964807264471,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 5,
+      "edges": 9,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": null,
+      "backend_check": "Shell::shell_condition == Closed; Solid::is_geometric_consistent"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "builder::cone on the open profile apex→rim→base centre",
+      "Solid::is_geometric_consistent overflows the stack (infinite recursion in Surface::include) on a RevolutedCurve generated by a Line (cone); backend_valid left None",
+      "no mass properties: volume from the closed mesh (triangulation + put_together_same_attrs)"
+    ],
+    "wall_seconds": 0.0260695
+  },
+  {
+    "backend": "truck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_01_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parse failed",
+    "op_seconds": 0.001085375,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.0297145
+  },
+  {
+    "backend": "truck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_02_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parse failed",
+    "op_seconds": 0.002662958,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.026969584
+  },
+  {
+    "backend": "truck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_03_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parse failed",
+    "op_seconds": 0.00213625,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.029752417
+  },
+  {
+    "backend": "truck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_04_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parse failed",
+    "op_seconds": 0.050693875,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.0796195
+  },
+  {
+    "backend": "truck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ctc_05_asme1_ap242-e1.stp",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parse failed",
+    "op_seconds": 0.000396458,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.024757959
+  },
+  {
+    "backend": "truck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_06_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parse failed",
+    "op_seconds": 0.00409375,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.029092791
+  },
+  {
+    "backend": "truck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_07_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parse failed",
+    "op_seconds": 0.038958375,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.058045125
+  },
+  {
+    "backend": "truck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_08_asme1_ap242-e1-tg.stp",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parse failed",
+    "op_seconds": 0.000185834,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.02403925
+  },
+  {
+    "backend": "truck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_10_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parse failed",
+    "op_seconds": 0.05868775,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.082744083
+  },
+  {
+    "backend": "truck",
+    "case": "12imp:/Users/alberto/Documents/Claude Code/Kubit/spikes/kernel/runner/../fixtures/step/nist/nist_ftc_11_asme1_ap242-e2.stp",
+    "test": 12,
+    "status": "error",
+    "message": "Table::from_step: STEP parse failed",
+    "op_seconds": 0.000588542,
+    "runs": 1,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.028733167
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:10a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no sweep along a curve (only tsweep/rsweep/homotopy)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.023345625
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:10b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 86492,
+        "volume": 21990.139458034588,
+        "area": 4551.027259496684,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 21990.139458034588,
+      "volume_rel_err": 0.00004588742104650358,
+      "area": 4551.027259496684,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 9,
+      "faces": 5,
+      "loops": 5,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": null,
+      "backend_check": "Shell::extract + shell_condition == Closed"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 2.7607832299214865e-10,
+    "hostile": null,
+    "notes": [
+      "1 shell(s) read, 0 refused; meshed with robust_triangulation"
+    ],
+    "wall_seconds": 1.7575699999999999
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:10c",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 25842,
+        "volume": 16235.172276597848,
+        "area": 3862.516760571352,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 16235.172276597848,
+      "volume_rel_err": null,
+      "area": 3862.516760571352,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": null,
+      "backend_check": "Shell::extract + shell_condition == Closed"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 6.893323045053696e-10,
+    "hostile": null,
+    "notes": [
+      "1 shell(s) read, 0 refused; meshed with robust_triangulation"
+    ],
+    "wall_seconds": 0.14932575
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:11a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 190791,
+        "volume": -68078.88700080216,
+        "area": 13674.939624523293,
+        "boundary_edges": 1080,
+        "nonmanifold_edges": 786,
+        "misoriented_edges": 2082,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": -68078.88700080216,
+      "volume_rel_err": 3.0315796349447957,
+      "area": 13674.939624523293,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 5,
+      "edges": 9,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": null,
+      "backend_check": "Shell::extract + shell_condition == Closed"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 3.0320523918855606,
+    "hostile": null,
+    "notes": [
+      "1 shell(s) read, 0 refused; meshed with robust_triangulation"
+    ],
+    "wall_seconds": 0.997589791
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:11b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 1029,
+        "volume": -25130.223483129434,
+        "area": 4996.407110899848,
+        "boundary_edges": 1074,
+        "nonmanifold_edges": 3,
+        "misoriented_edges": 6,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": -25130.223483129434,
+      "volume_rel_err": 2.9997996441720383,
+      "area": 4996.407110899848,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 5,
+      "edges": 9,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": null,
+      "backend_check": "Shell::extract + shell_condition == Closed"
+    },
+    "history": "None",
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 2.999890807957375,
+    "hostile": null,
+    "notes": [
+      "1 shell(s) read, 0 refused; meshed with robust_triangulation"
+    ],
+    "wall_seconds": 0.0867205
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:1a",
+    "test": 12,
+    "status": "timeout",
+    "message": "killed after 300s; last stderr: Lookup failed for #573",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 300.190810416
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:1b",
+    "test": 12,
+    "status": "timeout",
+    "message": "killed after 300s; last stderr: Lookup failed for #364",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 300.065932416
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:2a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: failed: truck_shapeops::or returned None",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.025345625
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:4",
+    "test": 12,
+    "status": "timeout",
+    "message": "killed after 300s; last stderr: ",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 301.310976625
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:5a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no fillet",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030462375
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:5b",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no fillet",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.023623125
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:5c",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no fillet",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.028541625
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:5d",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no fillet",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.028289417
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:6",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no fillet",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030215083
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:7a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no chamfer",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.02779775
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:7b",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no chamfer",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.025519083
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:8a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no shell/hollow",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030146334
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:8b",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no shell/hollow",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.022941417
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:9a",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no fillet and no face offset/move",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.020288792
+  },
+  {
+    "backend": "truck",
+    "case": "12rt:9b",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: truck has no fillet and no face offset/move",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.021369083
+  },
+  {
+    "backend": "truck",
+    "case": "13a",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000028917,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 12246,
+        "volume": 33460.45012615556,
+        "area": 5022.925123252434,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 6,
+        "misoriented_edges": 12,
+        "max_sphere_deviation": 0.04276877213360564
+      },
+      "volume_method": "mesh",
+      "volume": 33460.45012615556,
+      "volume_rel_err": null,
+      "area": 5022.925123252434,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 5,
+      "edges": 9,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Solid::is_geometric_consistent"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "revolve via builder::cone: profile is the arc only; the on-axis segment would revolve into a degenerate face, cone() collapses the end points on the axis",
+      "no mass properties: volume from the closed mesh (triangulation + put_together_same_attrs)"
+    ],
+    "wall_seconds": 0.135203583
+  },
+  {
+    "backend": "truck",
+    "case": "13b",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.00002375,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 1542,
+        "volume": 33131.1443988572,
+        "area": 5003.5543832244175,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 6,
+        "misoriented_edges": 12,
+        "max_sphere_deviation": 0.37029443089384273
+      },
+      "volume_method": "mesh",
+      "volume": 33131.1443988572,
+      "volume_rel_err": null,
+      "area": 5003.5543832244175,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": false
+    },
+    "topo": {
+      "vertices": 5,
+      "edges": 9,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "Shell::shell_condition == Closed; Solid::is_geometric_consistent"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "revolve via builder::cone: profile is the arc only; the on-axis segment would revolve into a degenerate face, cone() collapses the end points on the axis",
+      "no mass properties: volume from the closed mesh (triangulation + put_together_same_attrs)"
+    ],
+    "wall_seconds": 0.030214334
+  },
+  {
+    "backend": "truck",
+    "case": "13c",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.196785208,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 7056,
+        "volume": 227442.55084048305,
+        "area": 26684.66352362398,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "mesh",
+      "volume": 227442.55084048305,
+      "volume_rel_err": null,
+      "area": 26684.66352362398,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 14,
+      "edges": 21,
+      "faces": 9,
+      "loops": 11,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": null,
+      "backend_check": "Shell::shell_condition == Closed; Solid::is_geometric_consistent"
+    },
+    "history": "None",
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "Solid::is_geometric_consistent panics (unimplemented!, geometry.rs:228) on IntersectionCurve edges, i.e. on every boolean result; backend_valid left None",
+      "no mass properties: volume from the closed mesh (triangulation + put_together_same_attrs)"
+    ],
+    "wall_seconds": 1.510022416
+  },
+  {
+    "backend": "truck",
+    "case": "15:1",
+    "test": 15,
+    "status": "timeout",
+    "message": "killed after 300s; last stderr: HOSTILE 6 [83.53883526641387, -0.0, NaN, 71.09495333397464]",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 300.893497291
+  },
+  {
+    "backend": "truck",
+    "case": "15:5",
+    "test": 15,
+    "status": "not_exposed",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": {
+      "total": 256,
+      "ok": 0,
+      "clean_error": 0,
+      "not_exposed": 256,
+      "panics": 0,
+      "first_panic": null
+    },
+    "notes": [],
+    "wall_seconds": 0.027564084
+  },
+  {
+    "backend": "truck",
+    "case": "15:9",
+    "test": 15,
+    "status": "not_exposed",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": {
+      "total": 256,
+      "ok": 0,
+      "clean_error": 0,
+      "not_exposed": 256,
+      "panics": 0,
+      "first_panic": null
+    },
+    "notes": [],
+    "wall_seconds": 0.051934458
   }
 ]

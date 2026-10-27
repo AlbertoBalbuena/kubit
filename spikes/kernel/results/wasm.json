@@ -1,0 +1,34 @@
+[
+  {
+    "backend": "monstertruck",
+    "compiles": true,
+    "raw_bytes": 3117419,
+    "gzip_bytes": 818259,
+    "run": "6/18 ok, 1 invalid, 5 N/E, 6 failed, 0 trap in node",
+    "note": "sizes are the cargo wasm (pre wasm-bindgen, no wasm-opt); times in results[].ms from Node performance.now()"
+  },
+  {
+    "backend": "truck",
+    "compiles": true,
+    "raw_bytes": 1498321,
+    "gzip_bytes": 347462,
+    "run": "3/18 ok, 11 N/E, 2 error, 1 trap, 1 timeout in node",
+    "note": "2a: error truck_shapeops::or returned None; 2b: error truck_shapeops::or returned None; 3a: trap RuntimeError: unreachable; 4: timeout killed after 60s"
+  },
+  {
+    "backend": "solidcore",
+    "compiles": true,
+    "raw_bytes": 16426017,
+    "gzip_bytes": 5067176,
+    "run": "15/18 ok, 3 N/E, 0 failed, 0 trap in node",
+    "note": "raw = cdylib after wasm-bindgen input (opt-level s, lto); mesh/STEP not exercised (solidcore has neither for a Brep)"
+  },
+  {
+    "backend": "arris",
+    "compiles": true,
+    "raw_bytes": 4702077,
+    "gzip_bytes": 1472897,
+    "run": "13/18 ok, 2 N/E, 3 failed, 0 trap in node",
+    "note": "sizes are the wasm-bindgen output (release, lto); per-case detail in run.json; Rust-side timings are 0 on wasm (timed() has no clock), JS times in run.json"
+  }
+]

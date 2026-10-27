@@ -2214,6 +2214,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "kubit-sketch"
+version = "0.0.1"
+dependencies = [
+ "indexmap",
+ "nalgebra",
+ "proptest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "kubit-ui"
 version = "0.0.1"
 dependencies = [

@@ -38,7 +38,13 @@ fn standard_view(name: &str) -> Result<StandardView, CliError> {
 }
 
 /// Renders every body of the session and returns the PNG bytes.
-pub fn render(s: &mut Session, view: &str, width: u32, height: u32) -> Result<Vec<u8>, CliError> {
+pub fn render(
+    s: &mut Session,
+    view: &str,
+    width: u32,
+    height: u32,
+    grid: bool,
+) -> Result<Vec<u8>, CliError> {
     if width == 0 || height == 0 || width > MAX_SIDE || height > MAX_SIDE {
         return Err(CliError::Usage(format!(
             "image size must be 1..={MAX_SIDE} pixels per side"
@@ -65,7 +71,11 @@ pub fn render(s: &mut Session, view: &str, width: u32, height: u32) -> Result<Ve
     if let Some(bounds) = renderer.bounds() {
         camera.fit(&bounds, size.aspect());
     }
+    let style = RenderStyle {
+        show_grid: grid,
+        ..RenderStyle::default()
+    };
     renderer
-        .render_to_png(&camera, size, &RenderStyle::default())
+        .render_to_png(&camera, size, &style)
         .map_err(render_err)
 }

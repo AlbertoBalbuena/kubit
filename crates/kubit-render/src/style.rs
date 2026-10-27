@@ -44,6 +44,18 @@ pub struct RenderStyle {
     pub selected: Srgba,
     /// Feature-edge colour.
     pub edge: Srgba,
+    /// Minor grid lines (alpha is the strongest they get).
+    pub grid_minor: Srgba,
+    /// Major grid lines, every ten minor ones.
+    pub grid_major: Srgba,
+    /// World X axis.
+    pub axis_x: Srgba,
+    /// World Y axis.
+    pub axis_y: Srgba,
+    /// World Z axis.
+    pub axis_z: Srgba,
+    /// Whether the ground grid and axes are drawn.
+    pub show_grid: bool,
     /// Ambient light, 0..1.
     pub ambient: f32,
     /// Headlight diffuse strength, 0..1.
@@ -60,6 +72,12 @@ impl Default for RenderStyle {
             hover: Srgba::from_rgba8(0x7c, 0xc4, 0xff, 0xff),
             selected: Srgba::from_rgba8(0x2f, 0x8f, 0xff, 0xff),
             edge: Srgba::from_rgba8(0x10, 0x12, 0x16, 0xff),
+            grid_minor: Srgba::from_rgba8(0x8a, 0x93, 0xa3, 0x30),
+            grid_major: Srgba::from_rgba8(0x8a, 0x93, 0xa3, 0x70),
+            axis_x: Srgba::from_rgba8(0xe5, 0x4b, 0x4b, 0xd0),
+            axis_y: Srgba::from_rgba8(0x4c, 0xc2, 0x6a, 0xd0),
+            axis_z: Srgba::from_rgba8(0x4a, 0x8c, 0xf0, 0xd0),
+            show_grid: true,
             ambient: 0.35,
             diffuse: 0.65,
             hover_mix: 0.55,

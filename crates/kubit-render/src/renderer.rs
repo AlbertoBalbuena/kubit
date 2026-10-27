@@ -3,6 +3,7 @@
 #[cfg(not(target_arch = "wasm32"))]
 use crate::RenderTarget;
 use crate::edges::{DEFAULT_CREASE_ANGLE, feature_edges};
+use crate::grid::{MAX_GRID_VERTICES, grid_lines};
 use crate::ids::{FaceTable, IdMap, MeshId};
 use crate::readback::{Readback, ReadbackStatus};
 use crate::{Camera, DEPTH_FORMAT, RenderError, RenderStyle, Result, Viewport, math};
@@ -46,6 +47,16 @@ const FACE_ATTRIBUTES: [wgpu::VertexAttribute; 3] =
     wgpu::vertex_attr_array![0 => Float32x3, 1 => Float32x3, 2 => Uint32];
 const BASE_ATTRIBUTES: [wgpu::VertexAttribute; 1] = wgpu::vertex_attr_array![3 => Uint32];
 const EDGE_ATTRIBUTES: [wgpu::VertexAttribute; 1] = wgpu::vertex_attr_array![0 => Float32x3];
+const LINE_ATTRIBUTES: [wgpu::VertexAttribute; 2] =
+    wgpu::vertex_attr_array![0 => Float32x3, 1 => Float32x4];
+
+/// One vertex of the grid line buffer.
+#[repr(C)]
+#[derive(Clone, Copy, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+struct LineVertex {
+    position: [f32; 3],
+    color: [f32; 4],
+}
 
 #[derive(Debug)]
 struct GpuMesh {
@@ -136,6 +147,9 @@ pub struct Renderer {
     pick_bind: wgpu::BindGroup,
     face_pipeline: wgpu::RenderPipeline,
     edge_pipeline: wgpu::RenderPipeline,
+    grid_pipeline: wgpu::RenderPipeline,
+    /// Grid vertices, rewritten every frame (`MAX_GRID_VERTICES` capacity).
+    grid_buffer: wgpu::Buffer,
     id_pipeline: wgpu::RenderPipeline,
     pick_color: wgpu::TextureView,
     pick_texture: wgpu::Texture,
@@ -279,7 +293,8 @@ impl Renderer {
                         format,
                         topology,
                         depth_state,
-                        samples| {
+                        samples,
+                        blend| {
             device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
                 label: Some(label),
                 layout: Some(&pipeline_layout),
@@ -306,7 +321,7 @@ impl Renderer {
                     compilation_options: wgpu::PipelineCompilationOptions::default(),
                     targets: &[Some(wgpu::ColorTargetState {
                         format,
-                        blend: None,
+                        blend,
                         write_mask: wgpu::ColorWrites::ALL,
                     })],
                 }),
@@ -323,6 +338,7 @@ impl Renderer {
             wgpu::PrimitiveTopology::TriangleList,
             depth(true, wgpu::CompareFunction::Less, face_bias),
             sample_count,
+            None,
         );
         let edge_pipeline = pipeline(
             "kubit-render edges",
@@ -337,7 +353,34 @@ impl Renderer {
                 wgpu::DepthBiasState::default(),
             ),
             sample_count,
+            None,
         );
+        let line_buffers = [Some(wgpu::VertexBufferLayout {
+            array_stride: std::mem::size_of::<LineVertex>() as u64,
+            step_mode: wgpu::VertexStepMode::Vertex,
+            attributes: &LINE_ATTRIBUTES,
+        })];
+        let grid_pipeline = pipeline(
+            "kubit-render grid",
+            &line_buffers,
+            "vs_line",
+            "fs_line",
+            color_format,
+            wgpu::PrimitiveTopology::LineList,
+            depth(
+                false,
+                wgpu::CompareFunction::LessEqual,
+                wgpu::DepthBiasState::default(),
+            ),
+            sample_count,
+            Some(wgpu::BlendState::ALPHA_BLENDING),
+        );
+        let grid_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+            label: Some("kubit-render grid"),
+            size: (MAX_GRID_VERTICES * std::mem::size_of::<LineVertex>()) as u64,
+            usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
+        });
         // Integer targets cannot be multisampled or resolved: the id pass is 1×.
         let id_pipeline = pipeline(
             "kubit-render face ids",
@@ -352,6 +395,7 @@ impl Renderer {
                 wgpu::DepthBiasState::default(),
             ),
             1,
+            None,
         );
 
         let one_pixel = |label, format| {
@@ -385,6 +429,8 @@ impl Renderer {
             pick_bind,
             face_pipeline,
             edge_pipeline,
+            grid_pipeline,
+            grid_buffer,
             id_pipeline,
             pick_color: pick_texture.create_view(&wgpu::TextureViewDescriptor::default()),
             pick_texture,
@@ -659,6 +705,11 @@ impl Renderer {
         } else {
             style.background.0
         };
+        let grid_vertices = if style.show_grid {
+            self.write_grid(camera, viewport, style)
+        } else {
+            0
+        };
         let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: Some("kubit-render scene"),
             color_attachments: &[Some(wgpu::RenderPassColorAttachment {
@@ -693,6 +744,38 @@ impl Renderer {
             pass.set_vertex_buffer(0, mesh.edges.slice(..));
             pass.draw(0..mesh.edge_vertices, 0..1);
         }
+        // Blended after the opaque passes; the depth test hides it behind bodies.
+        if grid_vertices > 0 {
+            pass.set_pipeline(&self.grid_pipeline);
+            pass.set_vertex_buffer(0, self.grid_buffer.slice(..));
+            pass.draw(0..grid_vertices, 0..1);
+        }
+    }
+
+    /// Uploads this frame's grid; returns the vertex count to draw.
+    fn write_grid(&self, camera: &Camera, viewport: Viewport, style: &RenderStyle) -> u32 {
+        let srgb_target = self.color_format.is_srgb();
+        let vertices: Vec<LineVertex> = grid_lines(camera, viewport, style)
+            .into_iter()
+            .map(|v| {
+                let [r, g, b, a] = if srgb_target {
+                    v.color.to_linear()
+                } else {
+                    v.color.0
+                };
+                LineVertex {
+                    position: v.position.map(|c| c as f32),
+                    color: [r, g, b, a],
+                }
+            })
+            .take(MAX_GRID_VERTICES)
+            .collect();
+        if vertices.is_empty() {
+            return 0;
+        }
+        self.queue
+            .write_buffer(&self.grid_buffer, 0, bytemuck::cast_slice(&vertices));
+        u32::try_from(vertices.len()).unwrap_or(0)
     }
 
     /// Starts a pick at `cursor_px` (physical pixels, origin top-left). Renders the id

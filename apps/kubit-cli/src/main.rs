@@ -82,6 +82,9 @@ enum Cmd {
         /// Image height in pixels.
         #[arg(long, default_value_t = 600)]
         height: u32,
+        /// Hide the ground grid and axes.
+        #[arg(long)]
+        no_grid: bool,
     },
 }
 
@@ -209,13 +212,14 @@ fn run(cli: Cli) -> Result<(), CliError> {
             view,
             width,
             height,
+            no_grid,
         } => {
             if snapshot::is_script(&input)? {
                 run_script(&mut s, cli.json, &input)?;
             } else {
                 exec(&mut s, cli.json, "doc.open", json!({ "path": input }))?;
             }
-            let png = snapshot::render(&mut s, &view, width, height)?;
+            let png = snapshot::render(&mut s, &view, width, height, !no_grid)?;
             std::fs::write(&out, png)
                 .map_err(|e| CliError::Io(format!("{}: {e}", out.display())))?;
             if !cli.json {

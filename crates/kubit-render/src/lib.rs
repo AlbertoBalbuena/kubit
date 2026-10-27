@@ -10,6 +10,7 @@
 
 mod camera;
 mod edges;
+mod grid;
 mod ids;
 pub mod math;
 mod readback;
@@ -19,6 +20,7 @@ mod target;
 
 pub use camera::{Camera, Frame, Projection, StandardView, Viewport};
 pub use edges::{DEFAULT_CREASE_ANGLE, feature_edges};
+pub use grid::{GridVertex, MAX_GRID_VERTICES, grid_lines, grid_spacing};
 pub use ids::{BACKGROUND_ID, FaceTable, IdMap, MeshId};
 pub use kubit_mesh::FaceTag;
 pub use readback::ReadbackStatus;

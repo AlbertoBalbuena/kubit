@@ -73,7 +73,14 @@ impl Default for Forms {
 #[derive(Clone, Debug, PartialEq)]
 enum Status {
     Ready,
-    Info(String),
+    /// A command succeeded (shown through `ui.done.<command>`).
+    Done(String),
+    /// A command failed; `detail` is the engine's message.
+    Failed {
+        command: String,
+        detail: String,
+    },
+    /// An i18n key.
     Error(String),
 }
 
@@ -150,8 +157,11 @@ impl State {
     /// Runs a command and refreshes the views from its events.
     fn execute(&mut self, id: &str, params: Value) {
         self.status = match self.session.execute(id, params) {
-            Ok(outcome) => Status::Info(outcome.summary),
-            Err(e) => Status::Error(e.to_string()),
+            Ok(_) => Status::Done(id.to_owned()),
+            Err(e) => Status::Failed {
+                command: id.to_owned(),
+                detail: e.to_string(),
+            },
         };
         self.drain_events();
     }
@@ -334,8 +344,13 @@ impl State {
                 Status::Ready => {
                     ui.label(self.tr("ui.status.ready"));
                 }
-                Status::Info(s) => {
-                    ui.label(s);
+                Status::Done(command) => {
+                    ui.label(self.done_message(command));
+                }
+                Status::Failed { command, detail } => {
+                    let label = self.tr(&format!("cmd.{command}")).to_owned();
+                    let text = format!("{} {label}: {detail}", self.tr("ui.status.failed"));
+                    ui.label(RichText::new(text).color(p.error));
                 }
                 Status::Error(s) => {
                     ui.label(RichText::new(self.tr(s)).color(p.error));
@@ -352,6 +367,25 @@ impl State {
                 }
             });
         });
+    }
+
+    /// Status text after `command` succeeded.
+    fn done_message(&self, command: &str) -> String {
+        if command == "selection.set" {
+            let n = self.session.selection().faces.len();
+            return if n == 0 {
+                self.tr("ui.features.none_selected").to_owned()
+            } else {
+                format!("{}: {n}", self.tr("ui.status.selected"))
+            };
+        }
+        let key = format!("ui.done.{command}");
+        let text = self.tr(&key);
+        if text == key {
+            format!("{} ✓", self.tr(&format!("cmd.{command}")))
+        } else {
+            text.to_owned()
+        }
     }
 
     fn hovered_face(&self) -> Option<String> {
@@ -752,11 +786,25 @@ mod tests {
     }
 
     #[test]
+    fn status_messages_are_localized() {
+        let (_, mut app) = app_with_box();
+        app.state.i18n = I18n::new(Lang::Es);
+        assert_eq!(app.state.done_message("solid.box"), "Caja creada");
+        app.state
+            .execute("selection.set", json!({ "faces": ["F1:+Z"] }));
+        assert_eq!(
+            app.state.done_message("selection.set"),
+            "Caras seleccionadas: 1"
+        );
+        assert_eq!(app.state.done_message("body.measure"), "Medir ✓");
+    }
+
+    #[test]
     fn failed_command_shows_an_error_without_panicking() {
         let (_, mut app) = app_with_box();
         app.state
             .execute("solid.box", json!({ "size": [-1, 1, 1] }));
-        assert!(matches!(app.state.status, Status::Error(_)));
+        assert!(matches!(app.state.status, Status::Failed { .. }));
         assert_eq!(features(&app), 1);
     }
 

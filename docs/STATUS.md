@@ -15,7 +15,7 @@ Actualizado: 2026-10-27 03:40 CST. Coordina la sesión principal; las sesiones p
 - Revisión y aprobación de ADR-0003 (ADR-0002 aceptado el 2026-10-27).
 
 ## Deuda conocida
-- Algunos textos de la barra de estado no pasan por i18n todavía.
+- Los mensajes de error del motor se muestran en inglés dentro de un prefijo traducido.
 - La fusión de caras coplanares tras booleanas, el fillet de radio variable y el chaflán d-ángulo quedan para implementarse sobre arris (ADR-0002).
 - Los commits anteriores al 26-oct 23:55 no llevan `Signed-off-by` (DCO).
 

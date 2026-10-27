@@ -8,6 +8,7 @@ mod app;
 pub mod i18n;
 mod screenshot;
 pub mod theme;
+mod triad;
 pub mod viewport;
 
 pub use app::{AppOptions, KubitApp, ScriptStep, Tab, parse_shortcut};

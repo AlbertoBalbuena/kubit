@@ -6,6 +6,7 @@
 //! Picking is asynchronous: a pick is submitted on one frame and resolved on a later
 //! one, so hovering never blocks the UI thread on a GPU readback.
 
+use crate::triad;
 use eframe::egui_wgpu::{self, wgpu};
 use egui::{PointerButton, Rect, Sense, Ui};
 use kubit_doc::FeatureId;
@@ -308,10 +309,21 @@ impl Viewport3d {
         self.navigate(ui, &response, rect, size, ppp);
         self.update_hover(cursor, size, response.dragged());
 
+        let triad_center = rect.left_bottom() + egui::vec2(triad::INSET, -triad::INSET);
+        let frame = self.camera.frame();
+        let triad_hover = response
+            .hover_pos()
+            .and_then(|p| triad::hit(&frame, triad_center, p));
+
         let mut out = ViewportResponse::default();
         if response.clicked_by(PointerButton::Primary) {
-            out.clicked =
-                Some(cursor.and_then(|c| self.renderer.pick(&self.camera, size, c).ok().flatten()));
+            if let Some(tip) = triad_hover {
+                self.set_view(tip.view());
+            } else {
+                out.clicked = Some(
+                    cursor.and_then(|c| self.renderer.pick(&self.camera, size, c).ok().flatten()),
+                );
+            }
         }
 
         self.render(size, style);
@@ -323,6 +335,22 @@ impl Viewport3d {
                 egui::Color32::WHITE,
             );
         }
+        let opaque = |c: kubit_render::Srgba| {
+            let [r, g, b, _] = c.0.map(|v| (v.clamp(0.0, 1.0) * 255.0).round() as u8);
+            egui::Color32::from_rgb(r, g, b)
+        };
+        triad::paint(
+            &ui.painter().with_clip_rect(rect),
+            &self.camera.frame(),
+            triad_center,
+            [
+                opaque(style.axis_x),
+                opaque(style.axis_y),
+                opaque(style.axis_z),
+            ],
+            opaque(style.face),
+            triad_hover,
+        );
         out
     }
 

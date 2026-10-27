@@ -21,6 +21,7 @@ Cada fase tiene un **criterio de salida** verificable. No se abre una fase sin c
 **Salida:** crear una caja desde la UI, desde la CLI y por MCP; push/pull de una cara; undo/redo; guardar, abrir y exportar STEP/STL.
 
 ## Fase 1 — Modelado híbrido núcleo
+- [x] Viewport: grid adaptativo, ejes X/Y/Z, tríada de orientación, navegación con trackpad y tema consistente
 - [ ] Croquis: líneas, arcos, círculos, rectángulos, splines básicas
 - [ ] Solver propio (LM con descomposición de grafo y diagnóstico de DOF), con ezpz (MIT) como referencia
 - [ ] Inferencias, cotas sugeridas y bloqueadas, colores de DOF

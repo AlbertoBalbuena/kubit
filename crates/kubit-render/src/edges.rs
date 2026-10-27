@@ -152,6 +152,7 @@ pub(crate) mod tests {
             positions: vec![[0.0; 3], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
             triangles: vec![[0, 1, 2]],
             face_tags: vec![FaceTag(7)],
+            edges: Vec::new(),
         };
         assert_eq!(feature_edges(&mesh, DEFAULT_CREASE_ANGLE).len(), 3);
     }
@@ -162,6 +163,7 @@ pub(crate) mod tests {
             positions: vec![[f64::NAN; 3], [1.0, 0.0, 0.0]],
             triangles: vec![[0, 1, 9], [0, 0, 0], [0, 1, 1]],
             face_tags: vec![],
+            edges: Vec::new(),
         };
         let _ = feature_edges(&mesh, DEFAULT_CREASE_ANGLE);
     }

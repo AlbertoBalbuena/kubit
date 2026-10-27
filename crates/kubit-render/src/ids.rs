@@ -145,6 +145,7 @@ mod tests {
                 FaceTag(1 << 40),
                 FaceTag(u64::MAX),
             ],
+            edges: Vec::new(),
         };
         let (table, per_tri) = FaceTable::build(&mesh).unwrap();
         assert_eq!(per_tri, vec![0, 0, 1, 0]);

@@ -144,6 +144,7 @@ fn invalid_input_is_an_error_not_a_panic() {
         positions: vec![[f64::NAN; 3]],
         triangles: vec![[0, 0, 0]],
         face_tags: vec![FaceTag(1)],
+        edges: Vec::new(),
     };
     assert!(matches!(
         r.upload(MeshId(1), &bad),

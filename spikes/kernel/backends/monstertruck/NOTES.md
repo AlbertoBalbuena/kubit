@@ -61,8 +61,48 @@ connected, closed, manifold). V/E deduplicated by `id()`; loops = Σ `face.bound
 ## History
 None: no generated/modified/deleted information is returned by any operation.
 
-## Status (paused 2026-10-26)
-- Done: API survey above; adapter for every case (1a–13c), `import_step`, `hostile`; builds in release with the runner.
-- Not yet run: `spike all --backends monstertruck` was started and interrupted by the pause, so there are no results yet.
-- Next: run the corpus, fix geometry wherever volume errors are large (orientation of revolve/loft, 5b chain selection, 6 rim edges), record 5c behaviour.
-- Next: wasm probe in `wasm/monstertruck/` (cdylib, wasm-bindgen 0.2.129, getrandom `wasm_js`), `run.mjs`, `measure.sh`, `result.json`.
+## Results (run 2026-10-27, other backends running concurrently: timings indicative)
+Native (`spike all --backends monstertruck`, `results/table.md`):
+- ✅ 1a 1b 3a 5a 5d 7a 10b 10c 11a 11b 13a 13b 13c; εV ≤ 2.3e-4 (mesh volume).
+- ⚠️ 5b: `fillet_edges` returns `Ok`, but the new fillet surface has NaN control points
+  (visible in the written STEP). The strict mesher drops that face (`boundary-projection-failed`),
+  so there is no volume. Only the selected edge is filleted (6 → 7 faces): the tangent chain is
+  not propagated. The adapter marks it invalid via the NaN/inf scan of the STEP text.
+- ❌ 2a (shared face), 2b (shared edge), 3b (sphere tangent to a face): `or` fails with
+  "shell is not oriented and closed".
+- ❌ 4: the very first plate ∪ pin already fails. Bisected: box ∪ cylinder entering one face and
+  ending inside the solid fails or succeeds depending on dimensions alone. With box 100×60×40
+  and a cylinder r10 from z=20 upward: z1=41 fails, 42/45/50 work, 60 fails (`difference` too).
+  The marching SSI is fragile, not the adapter. The cylinder seam division (2/3/4), operand
+  order and tol (0.05/0.01) change nothing.
+- ❌ 5c: filleting the 3 edges at a corner in one call gives an open shell (no vertex blend);
+  `Solid::try_new` refuses it.
+- ❌ 6: `fillet_edges` on the 2 hole-rim edges returns `Ok` but adds no face (8 before/after):
+  a silent no-op. The adapter now checks that a fillet adds ≥ 1 face and fails otherwise.
+- 3a: the cylinder tangent to the top face along a line comes back as a 2-shell solid.
+- N/E 7b 8a 8b 9a 9b 10a (see above).
+- 12rt: 9 ✅ (round-trip εV ≤ 1.4e-4), ❌ 12rt:5b (the kernel's own STEP reader refuses the NaN
+  coordinates its writer emitted). 12rt:1a/1b/6 re-import fine topologically, but the strict mesher
+  drops a face on the re-imported `step_geometry::Surface`, so they have no volume.
+- `Solid::is_geometric_consistent()` is false for 1a 1b 5a 5b 5d 6 7a 13c, even 7a with
+  εV 2e-16, so it is too strict to use as a validity verdict. It is recorded as a note only.
+- 15:1 (box − cylinder): ⏱ the runner killed it after 120 s on
+  `[2.2250738585072014e-308, 82.92, -1.0, 1e9]` (denormal/negative box, 1e9 radius), so the
+  kernel hangs.
+- 15:5 (fillet): 4 💥/256, first `[196.9, 1e9, 175.2, 0.0]`. It panics in
+  `monstertruck-traits/src/traits/curve.rs:440` (NaN curve end points). The other 252 are clean
+  errors. Before the no-op check, 92 of them returned `Ok`: `fillet_edges` silently accepts
+  radii of 0, negative or huge and does nothing.
+- 15:9 N/E. 16: no history.
+
+wasm (`wasm/monstertruck/result.json`): compiles; 3 117 419 B raw, 818 259 B gzip (cargo output, no
+wasm-opt). Node 26: 6/18 ok, 1 invalid (5b), 5 N/E, 6 failed, 0 traps. The results match native
+exactly. Needs getrandom 0.3 and 0.4 with `wasm_js` plus `--cfg getrandom_backend="wasm_js"`.
+
+## Done / next
+- Done: adapter, corpus run, wasm probe; booleans at tol 0.05.
+- Kernel limits that matter for Kubit: fragile booleans in generic cases (case 4), silent fillet
+  no-ops and NaN fillet surfaces, no vertex blend, no shell/offset/sweep, panics on hostile
+  fillet input, a hang on hostile booleans.
+- Next (if monstertruck stays in the race): report the case-4 bisection and the 5b/6 fillet
+  defects upstream with the minimal inputs above.

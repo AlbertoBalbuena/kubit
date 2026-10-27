@@ -5,11 +5,15 @@ use std::collections::HashSet;
 use std::f64::consts::PI;
 
 use harness::corpus::{self, *};
-use harness::{failed, not_exposed, timed, Backend, Hostile, History, Produced, SpikeResult, Topo, TriMesh};
-use monstertruck::meshing::prelude::{shell_to_polygon_strict, MeshableSurface, OptimizingFilter, PolylineableCurve, Topology};
+use harness::{
+    failed, not_exposed, timed, Backend, History, Hostile, Produced, SpikeResult, Topo, TriMesh,
+};
+use monstertruck::meshing::prelude::{
+    shell_to_polygon_strict, MeshableSurface, OptimizingFilter, PolylineableCurve, Topology,
+};
 use monstertruck::modeling::{
-    builder, fillet_edges, primitive, BoundedCurve, BoundingBox, Curve, Edge, FilletOptions, FilletProfile,
-    ParametricCurve, Point3, Shell, Solid, Surface, Vector3, Wire, TOLERANCE,
+    builder, fillet_edges, primitive, BoundedCurve, BoundingBox, Curve, Edge, FilletOptions,
+    FilletProfile, ParametricCurve, Point3, Shell, Solid, Surface, Vector3, Wire, TOLERANCE,
 };
 use monstertruck::step::load::Table;
 use monstertruck::step::save::{CompleteStepDisplay, StepHeaderDescriptor, StepModel};
@@ -33,7 +37,10 @@ fn p(x: f64, y: f64, z: f64) -> Point3 {
 // ---------------------------------------------------------------- primitives
 
 fn cuboid(min: [f64; 3], max: [f64; 3]) -> MSolid {
-    primitive::cuboid(BoundingBox::from_iter([p(min[0], min[1], min[2]), p(max[0], max[1], max[2])]))
+    primitive::cuboid(BoundingBox::from_iter([
+        p(min[0], min[1], min[2]),
+        p(max[0], max[1], max[2]),
+    ]))
 }
 
 fn base_box() -> MSolid {
@@ -44,24 +51,45 @@ fn base_box() -> MSolid {
 /// revolve of a vertex (2 arcs), a planar cap, and an extrusion.
 fn cylinder_z(cx: f64, cy: f64, r: f64, z0: f64, z1: f64) -> SpikeResult<MSolid> {
     let v = builder::vertex(p(cx + r, cy, z0));
-    let circle: Wire = builder::revolve(&v, p(cx, cy, z0), Vector3::unit_z(), builder::SweepAngle::Closed, 2);
-    let disk = builder::try_attach_plane(vec![circle]).map_err(|e| harness::SpikeError::Failed(format!("attach_plane: {e}")))?;
+    let circle: Wire = builder::revolve(
+        &v,
+        p(cx, cy, z0),
+        Vector3::unit_z(),
+        builder::SweepAngle::Closed,
+        2,
+    );
+    let disk = builder::try_attach_plane(vec![circle])
+        .map_err(|e| harness::SpikeError::Failed(format!("attach_plane: {e}")))?;
     Ok(builder::extrude(&disk, Vector3::new(0.0, 0.0, z1 - z0)))
 }
 
 /// Cylinder of radius `r` along +X through (·, cy, cz), x ∈ [x0, x1].
 fn cylinder_x(cy: f64, cz: f64, r: f64, x0: f64, x1: f64) -> SpikeResult<MSolid> {
     let v = builder::vertex(p(x0, cy + r, cz));
-    let circle: Wire = builder::revolve(&v, p(x0, cy, cz), Vector3::unit_x(), builder::SweepAngle::Closed, 2);
-    let disk = builder::try_attach_plane(vec![circle]).map_err(|e| harness::SpikeError::Failed(format!("attach_plane: {e}")))?;
+    let circle: Wire = builder::revolve(
+        &v,
+        p(x0, cy, cz),
+        Vector3::unit_x(),
+        builder::SweepAngle::Closed,
+        2,
+    );
+    let disk = builder::try_attach_plane(vec![circle])
+        .map_err(|e| harness::SpikeError::Failed(format!("attach_plane: {e}")))?;
     Ok(builder::extrude(&disk, Vector3::new(x1 - x0, 0.0, 0.0)))
 }
 
 /// Revolves a wire whose two end vertices lie on the Z axis by 360° and makes
 /// a solid of it. Returns the solid and whether it had to be inverted.
 fn revolve_on_axis(wire: &Wire) -> SpikeResult<(MSolid, bool)> {
-    let shell: MShell = builder::revolve_wire(wire, p(0.0, 0.0, 0.0), Vector3::unit_z(), builder::SweepAngle::Closed, 4);
-    let solid = Solid::try_new(vec![shell]).map_err(|e| harness::SpikeError::Failed(format!("Solid::try_new: {e}")))?;
+    let shell: MShell = builder::revolve_wire(
+        wire,
+        p(0.0, 0.0, 0.0),
+        Vector3::unit_z(),
+        builder::SweepAngle::Closed,
+        4,
+    );
+    let solid = Solid::try_new(vec![shell])
+        .map_err(|e| harness::SpikeError::Failed(format!("Solid::try_new: {e}")))?;
     Ok(orient_outward(solid))
 }
 
@@ -78,7 +106,9 @@ fn sphere(r: f64) -> SpikeResult<(MSolid, bool)> {
 /// If the mesh of `solid` has negative signed volume, the builder produced an
 /// inward-oriented shell; flip it with the kernel's own `Solid::not`.
 fn orient_outward(mut solid: MSolid) -> (MSolid, bool) {
-    let vol = mesh_solid(&solid, 0.5).map(|(m, _)| signed_volume(&m)).unwrap_or(1.0);
+    let vol = mesh_solid(&solid, 0.5)
+        .map(|(m, _)| signed_volume(&m))
+        .unwrap_or(1.0);
     if vol < 0.0 {
         solid.not();
         (solid, true)
@@ -103,7 +133,8 @@ fn subtract(a: &MSolid, b: &MSolid) -> SpikeResult<MSolid> {
 
 fn near(a: Point3, b: Point3) -> bool {
     let d = a - b;
-    (d.x * d.x + d.y * d.y + d.z * d.z).sqrt() < 1e-6 * (1.0 + a.x.abs().max(a.y.abs()).max(a.z.abs()))
+    (d.x * d.x + d.y * d.y + d.z * d.z).sqrt()
+        < 1e-6 * (1.0 + a.x.abs().max(a.y.abs()).max(a.z.abs()))
 }
 
 /// First edge of the shell whose end points are `a` and `b` (either order).
@@ -117,14 +148,20 @@ fn find_edge(shell: &MShell, a: Point3, b: Point3) -> Option<Edge> {
 fn find_edges(shell: &MShell, pairs: &[(Point3, Point3)]) -> SpikeResult<Vec<Edge>> {
     pairs
         .iter()
-        .map(|&(a, b)| find_edge(shell, a, b).ok_or_else(|| harness::SpikeError::Failed(format!("edge {a:?}–{b:?} not found"))))
+        .map(|&(a, b)| {
+            find_edge(shell, a, b)
+                .ok_or_else(|| harness::SpikeError::Failed(format!("edge {a:?}–{b:?} not found")))
+        })
         .collect()
 }
 
 /// Unique edges (by id) of a shell matching `pred`.
 fn edges_where(shell: &MShell, pred: impl Fn(&Edge) -> bool) -> Vec<Edge> {
     let mut seen = HashSet::new();
-    shell.edge_iter().filter(|e| seen.insert(e.id()) && pred(e)).collect()
+    shell
+        .edge_iter()
+        .filter(|e| seen.insert(e.id()) && pred(e))
+        .collect()
 }
 
 fn edge_mid(e: &Edge) -> Point3 {
@@ -134,16 +171,29 @@ fn edge_mid(e: &Edge) -> Point3 {
 }
 
 /// Fillets `edges` of the single boundary shell of `solid` and rebuilds the solid.
-fn fillet(solid: MSolid, select: impl FnOnce(&MShell) -> SpikeResult<Vec<Edge>>, opts: impl FnOnce(&[Edge]) -> FilletOptions) -> SpikeResult<MSolid> {
+fn fillet(
+    solid: MSolid,
+    select: impl FnOnce(&MShell) -> SpikeResult<Vec<Edge>>,
+    opts: impl FnOnce(&[Edge]) -> FilletOptions,
+) -> SpikeResult<MSolid> {
     let mut shells = solid.into_boundaries();
     if shells.len() != 1 {
         return failed(format!("expected one boundary shell, got {}", shells.len()));
     }
-    let Some(mut shell) = shells.pop() else { return failed("no shell") };
+    let Some(mut shell) = shells.pop() else {
+        return failed("no shell");
+    };
     let edges = select(&shell)?;
     let opts = opts(&edges);
-    fillet_edges(&mut shell, &edges, Some(&opts)).map_err(|e| harness::SpikeError::Failed(format!("fillet_edges: {e}")))?;
-    Solid::try_new(vec![shell]).map_err(|e| harness::SpikeError::Failed(format!("fillet result is not a solid: {e}")))
+    let faces_before = shell.face_iter().count();
+    fillet_edges(&mut shell, &edges, Some(&opts))
+        .map_err(|e| harness::SpikeError::Failed(format!("fillet_edges: {e}")))?;
+    // A rolling-ball fillet always adds at least one face; `Ok` without one is a silent no-op.
+    if shell.face_iter().count() <= faces_before {
+        return failed(format!("fillet_edges returned Ok on {} edge(s) but added no face ({faces_before} faces before and after)", edges.len()));
+    }
+    Solid::try_new(vec![shell])
+        .map_err(|e| harness::SpikeError::Failed(format!("fillet result is not a solid: {e}")))
 }
 
 fn top_front_edge() -> (Point3, Point3) {
@@ -157,14 +207,20 @@ fn signed_volume(m: &TriMesh) -> f64 {
         .iter()
         .map(|t| {
             let [a, b, c] = t.map(|i| m.positions.get(i as usize).copied().unwrap_or([0.0; 3]));
-            (a[0] * (b[1] * c[2] - b[2] * c[1]) + a[1] * (b[2] * c[0] - b[0] * c[2]) + a[2] * (b[0] * c[1] - b[1] * c[0])) / 6.0
+            (a[0] * (b[1] * c[2] - b[2] * c[1])
+                + a[1] * (b[2] * c[0] - b[0] * c[2])
+                + a[2] * (b[0] * c[1] - b[1] * c[0]))
+                / 6.0
         })
         .sum()
 }
 
 /// Meshes every boundary shell with the strict tessellator (refuses instead of
 /// silently dropping a face) and welds coincident vertices.
-fn mesh_shells<'a, C, S>(shells: impl IntoIterator<Item = &'a TShell<Point3, C, S>>, tol: f64) -> Result<(TriMesh, bool), String>
+fn mesh_shells<'a, C, S>(
+    shells: impl IntoIterator<Item = &'a TShell<Point3, C, S>>,
+    tol: f64,
+) -> Result<(TriMesh, bool), String>
 where
     C: PolylineableCurve + 'a,
     S: MeshableSurface + 'a,
@@ -173,12 +229,19 @@ where
     let mut closed = true;
     for shell in shells {
         let mut poly = shell_to_polygon_strict(shell, tol).map_err(|e| e.to_string())?;
-        poly.put_together_same_attrs(TOLERANCE * 50.0).remove_degenerate_faces().remove_unused_attrs();
+        poly.put_together_same_attrs(TOLERANCE * 50.0)
+            .remove_degenerate_faces()
+            .remove_unused_attrs();
         closed &= poly.shell_condition() == ShellCondition::Closed;
         let base = u32::try_from(out.positions.len()).map_err(|e| e.to_string())?;
-        out.positions.extend(poly.positions().iter().map(|q| [q.x, q.y, q.z]));
+        out.positions
+            .extend(poly.positions().iter().map(|q| [q.x, q.y, q.z]));
         for tri in poly.faces().triangle_iter() {
-            let idx = |k: usize| u32::try_from(tri[k].pos).map(|i| i + base).map_err(|e| e.to_string());
+            let idx = |k: usize| {
+                u32::try_from(tri[k].pos)
+                    .map(|i| i + base)
+                    .map_err(|e| e.to_string())
+            };
             out.triangles.push([idx(0)?, idx(1)?, idx(2)?]);
         }
     }
@@ -239,7 +302,11 @@ fn step_text(solid: &MSolid) -> String {
 }
 
 fn produce(solid: &MSolid, op_seconds: f64, tol: f64, mut notes: Vec<String>) -> Produced {
-    let mut out = Produced { op_seconds, history: Some(History::None), ..Produced::default() };
+    let mut out = Produced {
+        op_seconds,
+        history: Some(History::None),
+        ..Produced::default()
+    };
     match mesh_solid(solid, tol) {
         Ok((m, closed)) => {
             if !closed {
@@ -253,7 +320,19 @@ fn produce(solid: &MSolid, op_seconds: f64, tol: f64, mut notes: Vec<String>) ->
     if !solid.is_geometric_consistent() {
         notes.push("Solid::is_geometric_consistent() == false".into());
     }
-    out.step = Some(step_text(solid));
+    let step = step_text(solid);
+    // The writer prints control points verbatim, so non-finite geometry shows up as NaN/inf here.
+    if step.contains("NaN") || step.contains("inf,") || step.contains("inf)") {
+        if let Some(t) = out.topo.as_mut() {
+            t.backend_valid = Some(false);
+            t.backend_check = t
+                .backend_check
+                .take()
+                .map(|c| format!("{c}; no NaN/inf coordinates in the written STEP"));
+        }
+        notes.push("result geometry has non-finite (NaN/inf) control points".into());
+    }
+    out.step = Some(step);
     notes.push("no native mass properties: volume from the mesh".into());
     out.notes = notes;
     out
@@ -270,7 +349,8 @@ fn stadium() -> SpikeResult<MSolid> {
     let (r, l) = (STADIUM_R, STADIUM_LS);
     let v = builder::vertices([p(0.0, -r, 0.0), p(l, -r, 0.0), p(l, r, 0.0), p(0.0, r, 0.0)]);
     let arc = |a: usize, b: usize, through: Point3| {
-        builder::try_circle_arc(&v[a], &v[b], through).map_err(|e| harness::SpikeError::Failed(format!("circle_arc: {e}")))
+        builder::try_circle_arc(&v[a], &v[b], through)
+            .map_err(|e| harness::SpikeError::Failed(format!("circle_arc: {e}")))
     };
     let wire: Wire = vec![
         builder::line(&v[0], &v[1]),
@@ -279,7 +359,8 @@ fn stadium() -> SpikeResult<MSolid> {
         arc(3, 0, p(-r, 0.0, 0.0))?,
     ]
     .into();
-    let face = builder::try_attach_plane(vec![wire]).map_err(|e| harness::SpikeError::Failed(format!("attach_plane: {e}")))?;
+    let face = builder::try_attach_plane(vec![wire])
+        .map_err(|e| harness::SpikeError::Failed(format!("attach_plane: {e}")))?;
     Ok(builder::extrude(&face, Vector3::new(0.0, 0.0, STADIUM_H)))
 }
 
@@ -289,11 +370,14 @@ fn stadium() -> SpikeResult<MSolid> {
 fn capped_loft(bottom: &Wire, top: &Wire) -> SpikeResult<(MSolid, bool)> {
     let mut shell: MShell = builder::try_skin_wires(&[bottom.clone(), top.clone()])
         .map_err(|e| harness::SpikeError::Failed(format!("try_skin_wires: {e}")))?;
-    let cap0 = builder::try_attach_plane(vec![bottom.inverse()]).map_err(|e| harness::SpikeError::Failed(format!("bottom cap: {e}")))?;
-    let cap1 = builder::try_attach_plane(vec![top.clone()]).map_err(|e| harness::SpikeError::Failed(format!("top cap: {e}")))?;
+    let cap0 = builder::try_attach_plane(vec![bottom.inverse()])
+        .map_err(|e| harness::SpikeError::Failed(format!("bottom cap: {e}")))?;
+    let cap1 = builder::try_attach_plane(vec![top.clone()])
+        .map_err(|e| harness::SpikeError::Failed(format!("top cap: {e}")))?;
     shell.push(cap0);
     shell.push(cap1);
-    let solid = Solid::try_new(vec![shell]).map_err(|e| harness::SpikeError::Failed(format!("Solid::try_new: {e}")))?;
+    let solid = Solid::try_new(vec![shell])
+        .map_err(|e| harness::SpikeError::Failed(format!("Solid::try_new: {e}")))?;
     Ok(orient_outward(solid))
 }
 
@@ -307,19 +391,35 @@ fn build(case_id: &str) -> SpikeResult<(MSolid, Vec<String>)> {
     let solid = match case_id {
         "1a" | "13c" => hole_through()?,
         "1b" => {
-            let tool = cylinder_z(BOX_A / 2.0, BOX_B / 2.0, HOLE_R, BOX_C - BLIND_DEPTH, BOX_C + 1.0)?;
+            let tool = cylinder_z(
+                BOX_A / 2.0,
+                BOX_B / 2.0,
+                HOLE_R,
+                BOX_C - BLIND_DEPTH,
+                BOX_C + 1.0,
+            )?;
             subtract(&base_box(), &tool)?
         }
-        "2a" => union(&base_box(), &cuboid([BOX_A, 0.0, 0.0], [2.0 * BOX_A, BOX_B, BOX_C]))?,
-        "2b" => union(&base_box(), &cuboid([BOX_A, BOX_B, 0.0], [2.0 * BOX_A, 2.0 * BOX_B, BOX_C]))?,
-        "3a" => union(&base_box(), &cylinder_x(BOX_B / 2.0, BOX_C + HOLE_R, HOLE_R, 0.0, BOX_A)?)?,
+        "2a" => union(
+            &base_box(),
+            &cuboid([BOX_A, 0.0, 0.0], [2.0 * BOX_A, BOX_B, BOX_C]),
+        )?,
+        "2b" => union(
+            &base_box(),
+            &cuboid([BOX_A, BOX_B, 0.0], [2.0 * BOX_A, 2.0 * BOX_B, BOX_C]),
+        )?,
+        "3a" => union(
+            &base_box(),
+            &cylinder_x(BOX_B / 2.0, BOX_C + HOLE_R, HOLE_R, 0.0, BOX_A)?,
+        )?,
         "3b" => {
             let (s, _) = sphere(HOLE_R)?;
             let s = builder::translated(&s, Vector3::new(BOX_A / 2.0, BOX_B / 2.0, BOX_C + HOLE_R));
             union(&base_box(), &s)?
         }
         "4" => {
-            notes.push("no n-ary union: plate ∪ pin folded one by one with `or` (100 calls)".into());
+            notes
+                .push("no n-ary union: plate ∪ pin folded one by one with `or` (100 calls)".into());
             let mut acc = cuboid([0.0; 3], PLATE);
             for [x, y] in corpus::pin_centres() {
                 acc = union(&acc, &cylinder_z(x, y, PIN_R, PIN_Z0, PIN_Z1)?)?;
@@ -335,10 +435,18 @@ fn build(case_id: &str) -> SpikeResult<(MSolid, Vec<String>)> {
             |_| FilletOptions::constant(FILLET_R),
         )?,
         "5b" => {
-            notes.push("one edge (the straight y=−20 top edge) selected; tangent chain left to the kernel".into());
+            notes.push("one edge (the straight y=−20 top edge) selected; tangent chain left to the kernel; observed: only that edge is filleted (6 → 7 faces), the chain is not propagated".into());
             fillet(
                 stadium()?,
-                |s| find_edges(s, &[(p(0.0, -STADIUM_R, STADIUM_H), p(STADIUM_LS, -STADIUM_R, STADIUM_H))]),
+                |s| {
+                    find_edges(
+                        s,
+                        &[(
+                            p(0.0, -STADIUM_R, STADIUM_H),
+                            p(STADIUM_LS, -STADIUM_R, STADIUM_H),
+                        )],
+                    )
+                },
                 |_| FilletOptions::constant(FILLET_R),
             )?
         }
@@ -350,7 +458,11 @@ fn build(case_id: &str) -> SpikeResult<(MSolid, Vec<String>)> {
                 |s| {
                     find_edges(
                         s,
-                        &[(p(0.0, BOX_B, BOX_C), c), (p(BOX_A, 0.0, BOX_C), c), (p(BOX_A, BOX_B, 0.0), c)],
+                        &[
+                            (p(0.0, BOX_B, BOX_C), c),
+                            (p(BOX_A, 0.0, BOX_C), c),
+                            (p(BOX_A, BOX_B, 0.0), c),
+                        ],
                     )
                 },
                 |_| FilletOptions::constant(FILLET_R),
@@ -365,7 +477,9 @@ fn build(case_id: &str) -> SpikeResult<(MSolid, Vec<String>)> {
             |edges| {
                 // RadiusSpec::Variable takes the normalised edge parameter; flip
                 // the law if the selected edge runs from x = 100 to x = 0.
-                let reversed = edges.first().is_some_and(|e| e.front().point().x > e.back().point().x);
+                let reversed = edges
+                    .first()
+                    .is_some_and(|e| e.front().point().x > e.back().point().x);
                 FilletOptions::variable(move |t| {
                     let s = if reversed { 1.0 - t } else { t };
                     VAR_R0 + (VAR_R1 - VAR_R0) * s
@@ -378,8 +492,14 @@ fn build(case_id: &str) -> SpikeResult<(MSolid, Vec<String>)> {
                 holed,
                 |s| {
                     let (cx, cy) = (BOX_A / 2.0, BOX_B / 2.0);
-                    let on_rim = |q: Point3| (q.z - BOX_C).abs() < 1e-6 && (((q.x - cx).powi(2) + (q.y - cy).powi(2)).sqrt() - HOLE_R).abs() < 1e-3;
-                    let edges = edges_where(s, |e| on_rim(e.front().point()) && on_rim(e.back().point()) && on_rim(edge_mid(e)));
+                    let on_rim = |q: Point3| {
+                        (q.z - BOX_C).abs() < 1e-6
+                            && (((q.x - cx).powi(2) + (q.y - cy).powi(2)).sqrt() - HOLE_R).abs()
+                                < 1e-3
+                    };
+                    let edges = edges_where(s, |e| {
+                        on_rim(e.front().point()) && on_rim(e.back().point()) && on_rim(edge_mid(e))
+                    });
                     if edges.is_empty() {
                         return failed("hole rim edges not found");
                     }
@@ -389,7 +509,10 @@ fn build(case_id: &str) -> SpikeResult<(MSolid, Vec<String>)> {
             )?
         }
         "7a" => {
-            notes.push("FilletProfile::Chamfer with constant radius 5: equal setback (d–d symmetric only)".into());
+            notes.push(
+                "FilletProfile::Chamfer with constant radius 5: equal setback (d–d symmetric only)"
+                    .into(),
+            );
             fillet(
                 base_box(),
                 |s| {
@@ -399,12 +522,27 @@ fn build(case_id: &str) -> SpikeResult<(MSolid, Vec<String>)> {
                 |_| FilletOptions::constant(CHAMFER_D).with_profile(FilletProfile::Chamfer),
             )?
         }
-        "7b" => return not_exposed("distance–angle chamfer: FilletProfile::Chamfer is equal-setback only"),
-        "8a" | "8b" => return not_exposed("shell/hollow solid: no B-rep shell operation (surface offsets only)"),
+        "7b" => {
+            return not_exposed(
+                "distance–angle chamfer: FilletProfile::Chamfer is equal-setback only",
+            )
+        }
+        "8a" | "8b" => {
+            return not_exposed(
+                "shell/hollow solid: no B-rep shell operation (surface offsets only)",
+            )
+        }
         "9a" | "9b" => return not_exposed("push/pull: no face offset/move operation"),
-        "10a" => return not_exposed("sweep along a helix: no B-rep sweep along a curve (surface-only sweep_rail)"),
+        "10a" => {
+            return not_exposed(
+                "sweep along a helix: no B-rep sweep along a curve (surface-only sweep_rail)",
+            )
+        }
         "10b" => {
-            let (s, flipped) = capped_loft(&circle_wire(LOFT_R0, 0.0, 2), &circle_wire(LOFT_R1, LOFT_H, 2))?;
+            let (s, flipped) = capped_loft(
+                &circle_wire(LOFT_R0, 0.0, 2),
+                &circle_wire(LOFT_R1, LOFT_H, 2),
+            )?;
             notes.push("try_skin_wires (ruled homotopy) + try_attach_plane caps".into());
             if flipped {
                 notes.push("loft came out inward-oriented; flipped with Solid::not".into());
@@ -414,9 +552,16 @@ fn build(case_id: &str) -> SpikeResult<(MSolid, Vec<String>)> {
         "10c" => {
             let [w, h] = LOFT_RECT;
             let (hw, hh) = (w / 2.0, h / 2.0);
-            let corners = [p(hw, -hh, 0.0), p(hw, hh, 0.0), p(-hw, hh, 0.0), p(-hw, -hh, 0.0)];
+            let corners = [
+                p(hw, -hh, 0.0),
+                p(hw, hh, 0.0),
+                p(-hw, hh, 0.0),
+                p(-hw, -hh, 0.0),
+            ];
             let rv = builder::vertices(corners);
-            let rect: Wire = (0..4).map(|i| builder::line(&rv[i], &rv[(i + 1) % 4])).collect();
+            let rect: Wire = (0..4)
+                .map(|i| builder::line(&rv[i], &rv[(i + 1) % 4]))
+                .collect();
             // Circle split at the rectangle's corner directions so edge i maps to arc i.
             let ang: Vec<f64> = corners.iter().map(|c| c.y.atan2(c.x)).collect();
             let at = |a: f64| p(LOFT_R1 * a.cos(), LOFT_R1 * a.sin(), LOFT_H);
@@ -434,7 +579,10 @@ fn build(case_id: &str) -> SpikeResult<(MSolid, Vec<String>)> {
             }
             let circle: Wire = arcs.into();
             let (s, flipped) = capped_loft(&rect, &circle)?;
-            notes.push("ruled loft: rectangle edges paired with 4 arcs split at the corner directions".into());
+            notes.push(
+                "ruled loft: rectangle edges paired with 4 arcs split at the corner directions"
+                    .into(),
+            );
             if flipped {
                 notes.push("loft came out inward-oriented; flipped with Solid::not".into());
             }
@@ -442,14 +590,20 @@ fn build(case_id: &str) -> SpikeResult<(MSolid, Vec<String>)> {
         }
         "11a" | "13a" | "13b" => {
             let (s, flipped) = sphere(REV_SPHERE_R)?;
-            notes.push("revolve_wire of a half-circle arc with both ends on the axis (division 4)".into());
+            notes.push(
+                "revolve_wire of a half-circle arc with both ends on the axis (division 4)".into(),
+            );
             if flipped {
                 notes.push("revolve came out inward-oriented; flipped with Solid::not".into());
             }
             s
         }
         "11b" => {
-            let v = builder::vertices([p(0.0, 0.0, REV_CONE_H), p(REV_CONE_R, 0.0, 0.0), p(0.0, 0.0, 0.0)]);
+            let v = builder::vertices([
+                p(0.0, 0.0, REV_CONE_H),
+                p(REV_CONE_R, 0.0, 0.0),
+                p(0.0, 0.0, 0.0),
+            ]);
             let wire: Wire = vec![builder::line(&v[0], &v[1]), builder::line(&v[1], &v[2])].into();
             let (s, flipped) = revolve_on_axis(&wire)?;
             notes.push("revolve_wire of apex→rim→base-centre polyline (axis segment omitted, ends on axis)".into());
@@ -471,20 +625,26 @@ impl Backend for Monstertruck {
     fn run(&self, case_id: &str, tol: f64) -> SpikeResult<Produced> {
         let (built, secs) = timed(|| build(case_id));
         let (solid, mut notes) = built?;
-        if matches!(case_id, "1a" | "1b" | "2a" | "2b" | "3a" | "3b" | "4" | "6" | "13c") {
+        if matches!(
+            case_id,
+            "1a" | "1b" | "2a" | "2b" | "3a" | "3b" | "4" | "6" | "13c"
+        ) {
             notes.push(format!("boolean tessellation tol = {BOOL_TOL}"));
         }
         Ok(produce(&solid, secs, tol, notes))
     }
 
     fn import_step(&self, text: &str, tol: f64) -> SpikeResult<Produced> {
-        let table = Table::from_step(text).map_err(|e| harness::SpikeError::Failed(format!("Table::from_step: {e}")))?;
+        let table = Table::from_step(text)
+            .map_err(|e| harness::SpikeError::Failed(format!("Table::from_step: {e}")))?;
         let mut keys: Vec<_> = table.manifold_solid_brep.keys().copied().collect();
         keys.sort_unstable();
         let mut shells = Vec::new();
         let mut refused = Vec::new();
         for k in &keys {
-            let Some(holder) = table.manifold_solid_brep.get(k) else { continue };
+            let Some(holder) = table.manifold_solid_brep.get(k) else {
+                continue;
+            };
             match table.to_compressed_solid(holder) {
                 Ok(cs) => match TSolid::extract(cs) {
                     Ok(s) => shells.extend(s.into_boundaries()),
@@ -494,11 +654,22 @@ impl Backend for Monstertruck {
             }
         }
         if shells.is_empty() {
-            return failed(format!("no solid read ({} manifold_solid_brep): {}", keys.len(), refused.join("; ")));
+            return failed(format!(
+                "no solid read ({} manifold_solid_brep): {}",
+                keys.len(),
+                refused.join("; ")
+            ));
         }
-        let mut notes = vec![format!("{} solid(s) read, {} refused", keys.len() - refused.len(), refused.len())];
+        let mut notes = vec![format!(
+            "{} solid(s) read, {} refused",
+            keys.len() - refused.len(),
+            refused.len()
+        )];
         notes.extend(refused);
-        let mut out = Produced { history: Some(History::None), ..Produced::default() };
+        let mut out = Produced {
+            history: Some(History::None),
+            ..Produced::default()
+        };
         match mesh_shells(shells.iter(), tol) {
             Ok((m, closed)) => {
                 if !closed {
@@ -508,6 +679,7 @@ impl Backend for Monstertruck {
             }
             Err(e) => notes.push(format!("strict tessellation refused: {e}")),
         }
+        // `is_geometric_consistent` is unavailable here: STEP `Surface` does not implement `IncludeCurve<Curve3D>`.
         out.topo = Some(topo_of(&shells));
         out.notes = notes;
         Ok(out)
@@ -521,14 +693,12 @@ impl Backend for Monstertruck {
                 let tool = cylinder_z(a / 2.0, b / 2.0, r, -1.0, c + 1.0)?;
                 subtract(&cuboid([0.0; 3], [a, b, c]), &tool).map(|_| ())
             }
-            Hostile::FilletEdge => {
-                fillet(
-                    cuboid([0.0; 3], [a, b, c]),
-                    |s| find_edges(s, &[(p(0.0, 0.0, c), p(a, 0.0, c))]),
-                    |_| FilletOptions::constant(r),
-                )
-                .map(|_| ())
-            }
+            Hostile::FilletEdge => fillet(
+                cuboid([0.0; 3], [a, b, c]),
+                |s| find_edges(s, &[(p(0.0, 0.0, c), p(a, 0.0, c))]),
+                |_| FilletOptions::constant(r),
+            )
+            .map(|_| ()),
             Hostile::PushPull => not_exposed("push/pull: no face offset/move operation"),
         }
     }

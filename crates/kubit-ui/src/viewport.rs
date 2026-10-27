@@ -41,6 +41,62 @@ fn render_format(adapter: &wgpu::Adapter) -> wgpu::TextureFormat {
 const ORBIT_RAD_PER_PT: f64 = 0.008;
 /// Zoom speed per point scrolled.
 const ZOOM_PER_PT: f64 = 0.0025;
+/// Points per wheel line (egui's default `line_scroll_speed` on native).
+const PT_PER_LINE: f64 = 40.0;
+
+/// Camera motion asked for by one frame's wheel and gesture input.
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct WheelNav {
+    /// Orbit drag, points.
+    orbit: [f64; 2],
+    /// Pan drag, points.
+    pan: [f64; 2],
+    /// Zoom factor (> 1 zooms in).
+    zoom: f64,
+}
+
+/// Maps wheel events and pinch zoom to camera motion.
+///
+/// A mouse wheel reports lines and zooms. A trackpad (and other smooth-scrolling
+/// devices) reports points: two-finger scroll orbits, Shift + two-finger scroll pans,
+/// and pinch zooms. Wheel events with the zoom modifier (Cmd / Ctrl) are skipped
+/// because egui already folds them into `zoom_delta`.
+fn wheel_nav(events: &[egui::Event], zoom_delta: f32) -> WheelNav {
+    let mut nav = WheelNav {
+        orbit: [0.0; 2],
+        pan: [0.0; 2],
+        zoom: f64::from(zoom_delta),
+    };
+    for event in events {
+        let egui::Event::MouseWheel {
+            unit,
+            delta,
+            modifiers,
+            ..
+        } = event
+        else {
+            continue;
+        };
+        if modifiers.command {
+            continue;
+        }
+        let (dx, dy) = (f64::from(delta.x), f64::from(delta.y));
+        match unit {
+            egui::MouseWheelUnit::Point if modifiers.shift => {
+                nav.pan[0] += dx;
+                nav.pan[1] += dy;
+            }
+            egui::MouseWheelUnit::Point => {
+                nav.orbit[0] += dx;
+                nav.orbit[1] += dy;
+            }
+            egui::MouseWheelUnit::Line | egui::MouseWheelUnit::Page => {
+                nav.zoom *= (dy * PT_PER_LINE * ZOOM_PER_PT).exp();
+            }
+        }
+    }
+    nav
+}
 
 /// A face of a document body, as the renderer sees it.
 pub type FaceHit = (MeshId, FaceTag);
@@ -298,21 +354,34 @@ impl Viewport3d {
         let delta = response.drag_delta();
         let (dx, dy) = (f64::from(delta.x), f64::from(delta.y));
         let middle = response.dragged_by(PointerButton::Middle);
-        if middle && shift {
+        let secondary = response.dragged_by(PointerButton::Secondary);
+        if (middle || secondary) && shift {
             self.camera.pan(dx * ppp, dy * ppp, size);
-        } else if middle || response.dragged_by(PointerButton::Secondary) {
+        } else if middle || secondary {
             self.camera
                 .orbit(-dx * ORBIT_RAD_PER_PT, dy * ORBIT_RAD_PER_PT);
         }
-        if response.hovered() {
-            let scroll = f64::from(ui.input(|i| i.smooth_scroll_delta.y));
-            if scroll != 0.0
-                && let Some(p) = response.hover_pos()
-            {
-                let [x, y] = to_px(p - rect.min, ppp);
-                let ndc = size.pixel_to_ndc(x, y);
-                self.camera.zoom((scroll * ZOOM_PER_PT).exp(), ndc, size);
-            }
+        if !response.hovered() {
+            return;
+        }
+        let nav = ui.input(|i| wheel_nav(&i.raw.events, i.zoom_delta()));
+        let [ox, oy] = nav.orbit;
+        if ox != 0.0 || oy != 0.0 {
+            self.camera
+                .orbit(-ox * ORBIT_RAD_PER_PT, oy * ORBIT_RAD_PER_PT);
+        }
+        let [px, py] = nav.pan;
+        if px != 0.0 || py != 0.0 {
+            self.camera.pan(px * ppp, py * ppp, size);
+        }
+        if nav.zoom.is_finite()
+            && nav.zoom > 0.0
+            && nav.zoom != 1.0
+            && let Some(p) = response.hover_pos()
+        {
+            let [x, y] = to_px(p - rect.min, ppp);
+            let ndc = size.pixel_to_ndc(x, y);
+            self.camera.zoom(nav.zoom, ndc, size);
         }
     }
 
@@ -388,5 +457,65 @@ mod tests {
         let body = FeatureId(7);
         assert_eq!(body_of(mesh_id(body)), Some(body));
         assert_eq!(body_of(MeshId(u64::MAX)), None);
+    }
+
+    fn wheel(
+        unit: egui::MouseWheelUnit,
+        x: f32,
+        y: f32,
+        modifiers: egui::Modifiers,
+    ) -> egui::Event {
+        egui::Event::MouseWheel {
+            unit,
+            delta: egui::vec2(x, y),
+            phase: egui::TouchPhase::Move,
+            modifiers,
+        }
+    }
+
+    #[test]
+    fn trackpad_scroll_orbits_and_shift_scroll_pans() {
+        let none = egui::Modifiers::NONE;
+        let events = [
+            wheel(egui::MouseWheelUnit::Point, 3.0, -2.0, none),
+            wheel(
+                egui::MouseWheelUnit::Point,
+                4.0,
+                5.0,
+                egui::Modifiers::SHIFT,
+            ),
+        ];
+        let nav = wheel_nav(&events, 1.0);
+        assert_eq!(nav.orbit, [3.0, -2.0]);
+        assert_eq!(nav.pan, [4.0, 5.0]);
+        assert_eq!(nav.zoom, 1.0);
+    }
+
+    #[test]
+    fn mouse_wheel_and_pinch_zoom() {
+        let events = [wheel(
+            egui::MouseWheelUnit::Line,
+            0.0,
+            1.0,
+            egui::Modifiers::NONE,
+        )];
+        let nav = wheel_nav(&events, 1.5);
+        assert_eq!(nav.orbit, [0.0, 0.0]);
+        assert_eq!(nav.pan, [0.0, 0.0]);
+        let expected = 1.5 * (PT_PER_LINE * ZOOM_PER_PT).exp();
+        assert!((nav.zoom - expected).abs() < 1e-12);
+    }
+
+    #[test]
+    fn zoom_modifier_wheel_is_left_to_egui() {
+        let events = [wheel(
+            egui::MouseWheelUnit::Point,
+            0.0,
+            9.0,
+            egui::Modifiers::COMMAND,
+        )];
+        let nav = wheel_nav(&events, 1.0);
+        assert_eq!(nav.orbit, [0.0, 0.0]);
+        assert_eq!(nav.zoom, 1.0);
     }
 }

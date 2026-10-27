@@ -238,6 +238,10 @@ dependencies = [
 [[package]]
 name = "kubit-math"
 version = "0.0.1"
+dependencies = [
+ "proptest",
+ "thiserror",
+]
 
 [[package]]
 name = "kubit-mcp"

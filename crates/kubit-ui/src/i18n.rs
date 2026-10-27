@@ -68,6 +68,11 @@ pub const EN: &[(&str, &str)] = &[
     // Commands (labels from the registry).
     ("cmd.solid.box", "Box"),
     ("cmd.face.push_pull", "Push/Pull"),
+    ("cmd.solid.cylinder", "Cylinder"),
+    ("cmd.edge.fillet", "Fillet"),
+    ("cmd.edge.chamfer", "Chamfer"),
+    ("cmd.body.shell", "Shell"),
+    ("cmd.body.boolean", "Combine"),
     ("cmd.edit.undo", "Undo"),
     ("cmd.edit.redo", "Redo"),
     ("cmd.selection.set", "Select"),
@@ -137,6 +142,11 @@ pub const EN: &[(&str, &str)] = &[
 pub const ES: &[(&str, &str)] = &[
     ("cmd.solid.box", "Caja"),
     ("cmd.face.push_pull", "Empujar/Jalar"),
+    ("cmd.solid.cylinder", "Cilindro"),
+    ("cmd.edge.fillet", "Redondeo"),
+    ("cmd.edge.chamfer", "Chaflán"),
+    ("cmd.body.shell", "Vaciado"),
+    ("cmd.body.boolean", "Combinar"),
     ("cmd.edit.undo", "Deshacer"),
     ("cmd.edit.redo", "Rehacer"),
     ("cmd.selection.set", "Seleccionar"),

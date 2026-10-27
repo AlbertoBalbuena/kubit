@@ -1,6 +1,6 @@
 # ADR-0004 — Nombres de arista v0 y aristas B-rep en la malla
 
-- Estado: **Propuesto** (implementado en el hito 1.2; pendiente de revisión del mantenedor)
+- Estado: **Aceptado** (aprobado por el mantenedor el 2026-10-27). Implementado en el hito 1.2.
 - Fecha: 2026-10-27
 - Relacionado: ADR-0003 (nombres persistentes v0 de cara), ADR-0002 (backend arris)
 

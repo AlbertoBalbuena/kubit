@@ -9,6 +9,7 @@
 //! Layer and rules: `docs/ARCHITECTURE.md`. Versions and licences: `README.md`.
 
 mod camera;
+mod edge_pick;
 mod edges;
 mod grid;
 mod ids;
@@ -19,6 +20,7 @@ mod style;
 mod target;
 
 pub use camera::{Camera, Frame, Projection, StandardView, Viewport};
+pub use edge_pick::{EDGE_PICK_TOLERANCE_PX, nearest_edge, polyline_distance_px, project_to_pixel};
 pub use edges::{DEFAULT_CREASE_ANGLE, feature_edges};
 pub use grid::{GridVertex, MAX_GRID_VERTICES, grid_lines, grid_spacing};
 pub use ids::{BACKGROUND_ID, FaceTable, IdMap, MeshId};

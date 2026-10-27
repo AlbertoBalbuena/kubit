@@ -9,3 +9,4 @@ publish.workspace = true
 harness.workspace = true
 solidcore = { git = "https://github.com/tangency-labs/solidcore", rev = "dbaedda4abc4b390494d2e86f79cc5115168e889" }
 step-brep = { git = "https://github.com/tangency-labs/solidcore", rev = "dbaedda4abc4b390494d2e86f79cc5115168e889" }
+step-import = { git = "https://github.com/tangency-labs/solidcore", rev = "dbaedda4abc4b390494d2e86f79cc5115168e889" }

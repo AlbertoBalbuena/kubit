@@ -1,7 +1,10 @@
 //! Built-in commands of Phase 0.
 
 use crate::error::CommandError;
-use crate::model::{BoxParams, PushPullParams, validate_box};
+use crate::model::{
+    BooleanParams, BoxParams, ChamferParams, CylinderParams, FilletParams, PushPullParams,
+    ShellParams, validate_box,
+};
 use crate::session::{Selection, Session};
 use crate::spec::{CommandOutcome, CommandSpec, Enablement, Registry, always, schema_of};
 use kubit_doc::{EdgeName, FeatureId, TopoName};
@@ -86,6 +89,30 @@ fn has_bodies(s: &Session) -> Enablement {
     }
 }
 
+fn has_two_bodies(s: &Session) -> Enablement {
+    if s.model().bodies.len() < 2 {
+        Enablement::Disabled("needs at least two bodies")
+    } else {
+        Enablement::Enabled
+    }
+}
+
+fn has_selected_edges(s: &Session) -> Enablement {
+    if s.selection().edges.is_empty() {
+        Enablement::Disabled("select at least one edge")
+    } else {
+        Enablement::Enabled
+    }
+}
+
+fn has_selected_faces(s: &Session) -> Enablement {
+    if s.selection().faces.is_empty() {
+        Enablement::Disabled("select at least one face")
+    } else {
+        Enablement::Enabled
+    }
+}
+
 fn can_undo(s: &Session) -> Enablement {
     if s.can_undo() {
         Enablement::Enabled
@@ -130,13 +157,80 @@ fn run_box(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, Comm
     })
 }
 
+fn run_cylinder(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, CommandError> {
+    let p: CylinderParams = parse("solid.cylinder", v)?;
+    let canonical = serde_json::to_value(&p).map_err(|e| CommandError::Format(e.to_string()))?;
+    let id = s.add_feature("solid.cylinder", canonical)?;
+    Ok(CommandOutcome {
+        summary: format!("Created cylinder {id} (r {} × h {} mm)", p.radius, p.height),
+        data: json!({ "feature": id.to_string(), "body": id.to_string() }),
+    })
+}
+
 fn run_push_pull(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, CommandError> {
     let p: PushPullParams = parse("face.push_pull", v)?;
     let canonical = serde_json::to_value(&p).map_err(|e| CommandError::Format(e.to_string()))?;
     let id = s.add_feature("face.push_pull", canonical)?;
+    let faces = p.all_faces().join(", ");
     Ok(CommandOutcome {
-        summary: format!("Moved face {} by {} mm ({id})", p.face, p.distance),
-        data: json!({ "feature": id.to_string(), "face": p.face }),
+        summary: format!("Moved face(s) {faces} by {} mm ({id})", p.distance),
+        data: json!({ "feature": id.to_string(), "faces": p.all_faces() }),
+    })
+}
+
+fn run_fillet(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, CommandError> {
+    let p: FilletParams = parse("edge.fillet", v)?;
+    let canonical = serde_json::to_value(&p).map_err(|e| CommandError::Format(e.to_string()))?;
+    let id = s.add_feature("edge.fillet", canonical)?;
+    Ok(CommandOutcome {
+        summary: format!(
+            "Filleted {} edge(s), r {} mm ({id})",
+            p.edges.len(),
+            p.radius
+        ),
+        data: json!({ "feature": id.to_string(), "edges": p.edges }),
+    })
+}
+
+fn run_chamfer(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, CommandError> {
+    let p: ChamferParams = parse("edge.chamfer", v)?;
+    let canonical = serde_json::to_value(&p).map_err(|e| CommandError::Format(e.to_string()))?;
+    let id = s.add_feature("edge.chamfer", canonical)?;
+    Ok(CommandOutcome {
+        summary: format!(
+            "Chamfered {} edge(s), {} mm ({id})",
+            p.edges.len(),
+            p.distance
+        ),
+        data: json!({ "feature": id.to_string(), "edges": p.edges }),
+    })
+}
+
+fn run_shell(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, CommandError> {
+    let p: ShellParams = parse("body.shell", v)?;
+    let canonical = serde_json::to_value(&p).map_err(|e| CommandError::Format(e.to_string()))?;
+    let id = s.add_feature("body.shell", canonical)?;
+    Ok(CommandOutcome {
+        summary: format!(
+            "Shelled body, {} open face(s), wall {} mm ({id})",
+            p.faces.len(),
+            p.thickness
+        ),
+        data: json!({ "feature": id.to_string(), "faces": p.faces }),
+    })
+}
+
+fn run_boolean(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, CommandError> {
+    let p: BooleanParams = parse("body.boolean", v)?;
+    let canonical = serde_json::to_value(&p).map_err(|e| CommandError::Format(e.to_string()))?;
+    let id = s.add_feature("body.boolean", canonical)?;
+    Ok(CommandOutcome {
+        summary: format!("{:?} of {} and {} ({id})", p.op, p.target, p.tool),
+        data: json!({
+            "feature": id.to_string(),
+            "body": p.target,
+            "consumed": p.tool,
+        }),
     })
 }
 
@@ -423,7 +517,7 @@ pub fn builtin() -> Registry {
         spec(
             "face.push_pull",
             "cmd.face.push_pull",
-            "Move a face along its outward normal by `distance` mm (negative pushes in). Faces are named like `F1:+Z`; list them with `body.faces`.",
+            "Move one face (`face`) or several faces of one body (`faces`) along their outward normals by `distance` mm (negative pushes in). Faces are named like `F1:+Z`; list them with `body.faces`.",
             Some("push_pull"),
             Some("P"),
             Some("modify"),
@@ -432,6 +526,71 @@ pub fn builtin() -> Registry {
             schema_of::<PushPullParams>,
             has_bodies,
             run_push_pull,
+        ),
+        spec(
+            "solid.cylinder",
+            "cmd.solid.cylinder",
+            "Create a cylinder along +Z: base centre `origin`, `radius` and `height` in mm.",
+            Some("cylinder"),
+            None,
+            Some("create"),
+            true,
+            false,
+            schema_of::<CylinderParams>,
+            always,
+            run_cylinder,
+        ),
+        spec(
+            "edge.fillet",
+            "cmd.edge.fillet",
+            "Round `edges` (persistent names like `F1:+X|F1:+Z`, all on one body) with a constant `radius` in mm.",
+            Some("fillet"),
+            None,
+            Some("modify"),
+            true,
+            false,
+            schema_of::<FilletParams>,
+            has_selected_edges,
+            run_fillet,
+        ),
+        spec(
+            "edge.chamfer",
+            "cmd.edge.chamfer",
+            "Bevel `edges` (persistent names, all on one body) with an equal `distance` in mm.",
+            Some("chamfer"),
+            None,
+            Some("modify"),
+            true,
+            false,
+            schema_of::<ChamferParams>,
+            has_selected_edges,
+            run_chamfer,
+        ),
+        spec(
+            "body.shell",
+            "cmd.body.shell",
+            "Hollow the body inwards with wall `thickness` mm, removing the open `faces` (at least one, all on one body).",
+            Some("shell"),
+            None,
+            Some("modify"),
+            true,
+            false,
+            schema_of::<ShellParams>,
+            has_selected_faces,
+            run_shell,
+        ),
+        spec(
+            "body.boolean",
+            "cmd.body.boolean",
+            "Combine two bodies: `op` is union, subtract (target − tool) or intersect. `target` and `tool` are body keys like `F1`; the result keeps the target's key and the tool body is consumed.",
+            Some("boolean"),
+            None,
+            Some("modify"),
+            true,
+            false,
+            schema_of::<BooleanParams>,
+            has_two_bodies,
+            run_boolean,
         ),
         spec(
             "edit.undo",

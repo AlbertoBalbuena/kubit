@@ -4,8 +4,8 @@
 use crate::error::CommandError;
 use kubit_doc::{EdgeName, Feature, FeatureId, TopoName};
 use kubit_kernel_api::{
-    BodyId, BoxSpec, EdgeId, EntityRef, FaceId, FaceInfo, Guarded, Kernel, KernelError,
-    KernelResult, OpOutput, check_length, check_point,
+    BodyId, BooleanOp, BoxSpec, CylinderSpec, EdgeId, EntityRef, FaceId, FaceInfo, Guarded, Kernel,
+    KernelError, KernelResult, OpOutput, SurfaceKind, check_length, check_point,
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -108,14 +108,99 @@ pub struct BoxParams {
     pub size: [f64; 3],
 }
 
-/// `face.push_pull` parameters.
+/// `face.push_pull` parameters. Give `faces`, or the single-face form `face`
+/// (kept for existing scripts and files); both may be combined.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub struct PushPullParams {
     /// Persistent face name, e.g. `F1:+Z` (see `body.faces`).
-    pub face: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub face: Option<String>,
+    /// Persistent face names of one body, moved together by one operation.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub faces: Vec<String>,
     /// Distance along the outward normal, mm (negative pushes in).
     pub distance: f64,
+}
+
+impl PushPullParams {
+    /// Every named face, `face` first, without repeats.
+    pub fn all_faces(&self) -> Vec<&str> {
+        let mut out: Vec<&str> = Vec::new();
+        for f in self.face.iter().chain(&self.faces) {
+            if !out.contains(&f.as_str()) {
+                out.push(f);
+            }
+        }
+        out
+    }
+}
+
+/// `solid.cylinder` parameters: a right circular cylinder along +Z.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct CylinderParams {
+    /// Centre of the base disc, mm. Default: the origin.
+    #[serde(default)]
+    pub origin: [f64; 3],
+    /// Radius in mm; > 0.
+    pub radius: f64,
+    /// Height along +Z in mm; > 0.
+    pub height: f64,
+}
+
+/// `edge.fillet` parameters.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct FilletParams {
+    /// Persistent edge names of one body, e.g. `F1:+X|F1:+Z` (see `selection.set`).
+    pub edges: Vec<String>,
+    /// Fillet radius in mm; > 0.
+    pub radius: f64,
+}
+
+/// `edge.chamfer` parameters.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct ChamferParams {
+    /// Persistent edge names of one body, e.g. `F1:+X|F1:+Z`.
+    pub edges: Vec<String>,
+    /// Equal chamfer distance in mm; > 0.
+    pub distance: f64,
+}
+
+/// `body.shell` parameters.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct ShellParams {
+    /// Faces of one body that are removed (open); at least one. Walls grow inwards.
+    pub faces: Vec<String>,
+    /// Wall thickness in mm; > 0.
+    pub thickness: f64,
+}
+
+/// Kind of `body.boolean`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum BoolKind {
+    /// target ∪ tool.
+    Union,
+    /// target − tool.
+    Subtract,
+    /// target ∩ tool.
+    Intersect,
+}
+
+/// `body.boolean` parameters.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct BooleanParams {
+    /// Operation.
+    pub op: BoolKind,
+    /// Body that keeps its id, e.g. `F1` (the feature that created it).
+    pub target: String,
+    /// Body that is consumed, e.g. `F2`.
+    pub tool: String,
 }
 
 /// Box face roles from the outward normal of a planar face.
@@ -289,6 +374,85 @@ pub fn validate_box(p: &BoxParams) -> Result<BoxSpec, CommandError> {
     Ok(BoxSpec { min: origin, max })
 }
 
+/// Resolves face names that must all belong to one body.
+fn resolve_faces(
+    model: &Model,
+    command: &'static str,
+    texts: &[&str],
+) -> Result<(FeatureId, BodyState, Vec<FaceId>), CommandError> {
+    if texts.is_empty() {
+        return Err(invalid(command, "no face given"));
+    }
+    let mut owner: Option<(FeatureId, &BodyState)> = None;
+    let mut faces = Vec::new();
+    for text in texts {
+        let name: TopoName = text.parse().map_err(|e| invalid(command, e))?;
+        let (key, body) = model
+            .body_of_face(&name)
+            .ok_or_else(|| CommandError::Reference(format!("face `{name}`")))?;
+        if owner.is_some_and(|(k, _)| k != key) {
+            return Err(invalid(command, "faces belong to different bodies"));
+        }
+        owner = Some((key, body));
+        let face = *body
+            .names
+            .get(&name)
+            .ok_or_else(|| CommandError::Reference(format!("face `{name}`")))?;
+        if !faces.contains(&face) {
+            faces.push(face);
+        }
+    }
+    let (key, body) = owner.ok_or_else(|| invalid(command, "no face given"))?;
+    Ok((key, body.clone(), faces))
+}
+
+/// Resolves edge names that must all belong to one body.
+fn resolve_edges(
+    model: &Model,
+    command: &'static str,
+    texts: &[String],
+) -> Result<(FeatureId, BodyState, Vec<EdgeId>), CommandError> {
+    if texts.is_empty() {
+        return Err(invalid(command, "no edge given"));
+    }
+    let mut owner: Option<(FeatureId, &BodyState)> = None;
+    let mut edges = Vec::new();
+    for text in texts {
+        let name: EdgeName = text.parse().map_err(|e| invalid(command, e))?;
+        let (key, body) = model
+            .body_of_edge(&name)
+            .ok_or_else(|| CommandError::Reference(format!("edge `{name}`")))?;
+        if owner.is_some_and(|(k, _)| k != key) {
+            return Err(invalid(command, "edges belong to different bodies"));
+        }
+        owner = Some((key, body));
+        let edge = *body
+            .edges
+            .get(&name)
+            .ok_or_else(|| CommandError::Reference(format!("edge `{name}`")))?;
+        if !edges.contains(&edge) {
+            edges.push(edge);
+        }
+    }
+    let (key, body) = owner.ok_or_else(|| invalid(command, "no edge given"))?;
+    Ok((key, body.clone(), edges))
+}
+
+/// Names the result of an operation on `old` and stores it under `key`.
+fn replace_body<K: Kernel>(
+    k: &Guarded<K>,
+    model: &mut Model,
+    key: FeatureId,
+    old: &BodyState,
+    out: &OpOutput,
+    feature: FeatureId,
+) -> Result<(), CommandError> {
+    let names = propagate(k, old, out, feature)?;
+    let state = BodyState::build(k, out.body, names, feature)?;
+    model.bodies.insert(key, state);
+    Ok(())
+}
+
 /// Applies one feature to the model. On error the model is left untouched
 /// (results already created in the kernel are freed by the caller's GC).
 pub fn apply_feature<K: Kernel>(
@@ -320,23 +484,121 @@ pub fn apply_feature<K: Kernel>(
             model.bodies.insert(f.id, state);
             Ok(())
         }
+        "solid.cylinder" => {
+            let p: CylinderParams = parse("solid.cylinder", &f.params)?;
+            let spec = CylinderSpec {
+                base: check_point("origin", p.origin).map_err(|e| invalid("solid.cylinder", e))?,
+                axis: [0.0, 0.0, 1.0],
+                radius: check_length("radius", p.radius, true)
+                    .map_err(|e| invalid("solid.cylinder", e))?,
+                height: check_length("height", p.height, true)
+                    .map_err(|e| invalid("solid.cylinder", e))?,
+            };
+            check_point(
+                "origin + height",
+                [spec.base[0], spec.base[1], spec.base[2] + spec.height],
+            )
+            .map_err(|e| invalid("solid.cylinder", e))?;
+            let out = k.make_cylinder(&spec)?;
+            let mut infos = face_infos(k, out.body)?;
+            geometric_order(&mut infos);
+            let mut names = BTreeMap::new();
+            let mut sides = 0u32;
+            for info in &infos {
+                let role = match (info.surface, box_role(info)) {
+                    (SurfaceKind::Plane, Some(r @ ("+Z" | "-Z"))) => r.to_owned(),
+                    (SurfaceKind::Plane, _) => {
+                        return Err(CommandError::Reference(format!(
+                            "cylinder face {} is not an end cap",
+                            info.id.0
+                        )));
+                    }
+                    _ => {
+                        sides += 1;
+                        if sides == 1 {
+                            "side".to_owned()
+                        } else {
+                            format!("side{}", sides - 1)
+                        }
+                    }
+                };
+                names.insert(
+                    TopoName::Primitive {
+                        feature: f.id,
+                        role,
+                    },
+                    info.id,
+                );
+            }
+            let state = BodyState::build(k, out.body, names, f.id)?;
+            model.bodies.insert(f.id, state);
+            Ok(())
+        }
         "face.push_pull" => {
             let p: PushPullParams = parse("face.push_pull", &f.params)?;
-            let name: TopoName = p.face.parse().map_err(|e| invalid("face.push_pull", e))?;
             let distance = check_length("distance", p.distance, false)
                 .map_err(|e| invalid("face.push_pull", e))?;
-            let (key, body) = model
-                .body_of_face(&name)
-                .ok_or_else(|| CommandError::Reference(format!("face `{name}`")))?;
-            let face = *body
-                .names
-                .get(&name)
-                .ok_or_else(|| CommandError::Reference(format!("face `{name}`")))?;
-            let old = body.clone();
-            let out = k.offset_faces(old.kernel, &[face], distance)?;
-            let names = propagate(k, &old, &out, f.id)?;
-            let state = BodyState::build(k, out.body, names, f.id)?;
-            model.bodies.insert(key, state);
+            let texts = p.all_faces();
+            let (key, old, faces) = resolve_faces(model, "face.push_pull", &texts)?;
+            let out = k.offset_faces(old.kernel, &faces, distance)?;
+            replace_body(k, model, key, &old, &out, f.id)
+        }
+        "edge.fillet" => {
+            let p: FilletParams = parse("edge.fillet", &f.params)?;
+            let radius =
+                check_length("radius", p.radius, true).map_err(|e| invalid("edge.fillet", e))?;
+            let (key, old, edges) = resolve_edges(model, "edge.fillet", &p.edges)?;
+            let out = k.fillet(old.kernel, &edges, radius)?;
+            replace_body(k, model, key, &old, &out, f.id)
+        }
+        "edge.chamfer" => {
+            let p: ChamferParams = parse("edge.chamfer", &f.params)?;
+            let distance = check_length("distance", p.distance, true)
+                .map_err(|e| invalid("edge.chamfer", e))?;
+            let (key, old, edges) = resolve_edges(model, "edge.chamfer", &p.edges)?;
+            let out = k.chamfer(old.kernel, &edges, distance)?;
+            replace_body(k, model, key, &old, &out, f.id)
+        }
+        "body.shell" => {
+            let p: ShellParams = parse("body.shell", &f.params)?;
+            let thickness = check_length("thickness", p.thickness, true)
+                .map_err(|e| invalid("body.shell", e))?;
+            let texts: Vec<&str> = p.faces.iter().map(String::as_str).collect();
+            let (key, old, faces) = resolve_faces(model, "body.shell", &texts)?;
+            let out = k.shell(old.kernel, &faces, thickness)?;
+            replace_body(k, model, key, &old, &out, f.id)
+        }
+        "body.boolean" => {
+            let p: BooleanParams = parse("body.boolean", &f.params)?;
+            let body_ref = |text: &str| -> Result<FeatureId, CommandError> {
+                let id: FeatureId = text.parse().map_err(|e| invalid("body.boolean", e))?;
+                if model.bodies.contains_key(&id) {
+                    Ok(id)
+                } else {
+                    Err(CommandError::Reference(format!("body {id}")))
+                }
+            };
+            let (target, tool) = (body_ref(&p.target)?, body_ref(&p.tool)?);
+            if target == tool {
+                return Err(invalid("body.boolean", "target and tool are the same body"));
+            }
+            let (Some(a), Some(b)) = (model.bodies.get(&target), model.bodies.get(&tool)) else {
+                return Err(CommandError::Reference("boolean operand".into()));
+            };
+            let op = match p.op {
+                BoolKind::Union => BooleanOp::Union,
+                BoolKind::Subtract => BooleanOp::Difference,
+                BoolKind::Intersect => BooleanOp::Intersection,
+            };
+            let out = k.boolean(op, a.kernel, b.kernel)?;
+            // Face names of both operands are unique (they embed feature ids), so
+            // the union of the two maps is the history's source naming.
+            let mut both = a.clone();
+            both.names
+                .extend(b.names.iter().map(|(n, f)| (n.clone(), *f)));
+            let tool_body = tool;
+            replace_body(k, model, target, &both, &out, f.id)?;
+            model.bodies.remove(&tool_body);
             Ok(())
         }
         other => Err(CommandError::UnknownFeature {
@@ -348,5 +610,14 @@ pub fn apply_feature<K: Kernel>(
 
 /// Whether a command id is a timeline feature (replayed on rebuild).
 pub fn is_feature(command: &str) -> bool {
-    matches!(command, "solid.box" | "face.push_pull")
+    matches!(
+        command,
+        "solid.box"
+            | "solid.cylinder"
+            | "face.push_pull"
+            | "edge.fillet"
+            | "edge.chamfer"
+            | "body.shell"
+            | "body.boolean"
+    )
 }

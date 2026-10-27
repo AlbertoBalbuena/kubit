@@ -57,3 +57,33 @@ fn run_box_example_exports_step_that_reimports_with_same_volume() {
     assert!(String::from_utf8_lossy(&out.stdout).contains("300000.000 mm³"));
     std::fs::remove_dir_all(&dir).ok();
 }
+
+/// Milestone 1.3: box → fillet the four vertical edges → push/pull the top →
+/// shell open at the top, driven by `run` with no selection.
+#[test]
+fn run_bracket_direct_example_has_the_analytic_volume() {
+    let corner = 1.0 - std::f64::consts::PI / 4.0;
+    let outer = 6000.0 - 4.0 * corner * 25.0;
+    let inner = 5376.0 - 4.0 * corner * 9.0;
+    let expected = outer * 50.0 - inner * 48.0;
+
+    let out = Command::new(env!("CARGO_BIN_EXE_kubit-cli"))
+        .arg("run")
+        .arg(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/bracket-direct.json"))
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    let volume: f64 = stdout
+        .split("Total volume ")
+        .nth(1)
+        .and_then(|rest| rest.split(" mm³").next())
+        .and_then(|v| v.trim().parse().ok())
+        .unwrap_or_else(|| panic!("no total volume in:\n{stdout}"));
+    // The summary prints three decimals.
+    assert!((volume - expected).abs() < 2e-3, "{volume} vs {expected}");
+}

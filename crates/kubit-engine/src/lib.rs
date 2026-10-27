@@ -12,7 +12,10 @@ mod session;
 mod spec;
 
 pub use error::CommandError;
-pub use model::{BodyState, BoxParams, FeatureStatus, Model, PushPullParams};
+pub use model::{
+    BodyState, BoolKind, BooleanParams, BoxParams, ChamferParams, CylinderParams, FeatureStatus,
+    FilletParams, Model, PushPullParams, ShellParams,
+};
 pub use session::{Event, KernelFactory, Selection, Session, UNDO_LIMIT};
 pub use spec::{CommandOutcome, CommandSpec, Enablement, Registry, RunFn, always, schema_of};
 

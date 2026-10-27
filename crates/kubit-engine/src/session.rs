@@ -112,7 +112,10 @@ impl Session {
             .registry
             .get(id)
             .ok_or_else(|| CommandError::UnknownCommand(id.to_owned()))?;
-        if let Enablement::Disabled(reason) = (spec.enabled)(self) {
+        // Selection-gated commands name their targets in the parameters, so a
+        // script, the CLI or MCP does not need a selection to run them.
+        let gated = !matches!(spec.id, "edge.fillet" | "edge.chamfer" | "body.shell");
+        if let (true, Enablement::Disabled(reason)) = (gated, (spec.enabled)(self)) {
             return Err(CommandError::Disabled {
                 command: spec.id,
                 reason,
@@ -298,6 +301,13 @@ impl Session {
             return Err(e);
         }
         model.status.insert(id, FeatureStatus::Ok);
+        // Drop selected names the operation made disappear.
+        self.selection
+            .faces
+            .retain(|n| model.body_of_face(n).is_some());
+        self.selection
+            .edges
+            .retain(|n| model.body_of_edge(n).is_some());
         self.doc = doc;
         self.model = model;
         self.commit(before);

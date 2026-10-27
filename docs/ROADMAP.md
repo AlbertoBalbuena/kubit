@@ -29,9 +29,9 @@ Cada fase tiene un **criterio de salida** verificable. No se abre una fase sin c
 - [x] Inferencias (H/V, snap a puntos, origen y grid), cotas y colores de DOF (cotas sugeridas pendientes)
 - [ ] Extrude, revolve, push/pull, booleanas, fillet, chamfer y shell (según lo que permita el kernel). Hecho: push/pull, booleanas, fillet, chamfer, shell y `solid.extrude` desde un perfil explícito y desde regiones de croquis (hito 1.4); falta revolve
 - [ ] Parámetros con expresiones, creados en línea
-- [ ] Timeline: editar, suprimir, reordenar, "congelar historia"
+- [x] Timeline: editar parámetros, suprimir, borrar y marcador de retroceso (reordenar y "congelar historia" pendientes)
 - [ ] Nombres persistentes v1 con pruebas de regresión
-- [ ] Menú contextual por selección, paleta de comandos, ciclo de selección
+- [x] UI: cinta con pestaña contextual de croquis, paleta de comandos, paneles colapsables y barra de historial; menú contextual de vista (ciclo de selección pendiente)
 - [ ] Medir; importar STEP
 - [ ] i18n es/en
 

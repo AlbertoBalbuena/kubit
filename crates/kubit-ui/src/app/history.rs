@@ -8,10 +8,9 @@ use kubit_engine::FeatureStatus;
 use serde_json::{Value, json};
 
 impl State {
-    /// The feature after which the marker sits (`None`: the end). The document has no
-    /// marker yet; this reads it once the engine stores one.
+    /// The feature after which the marker sits (`None`: the end).
     fn marker(&self) -> Option<FeatureId> {
-        None
+        self.session.doc().rollback
     }
 
     /// Moves the rollback marker (no-op until the engine has `timeline.set_marker`).
@@ -138,8 +137,25 @@ impl State {
                                 }
                             });
                             if has_marker && i + 1 == at && at < features.len() {
-                                ui.label(RichText::new("▼").color(p.accent))
-                                    .on_hover_text(self.tr("ui.history.marker"));
+                                let (rect, r) = ui.allocate_exact_size(
+                                    egui::vec2(10.0, 20.0),
+                                    egui::Sense::hover(),
+                                );
+                                let x = rect.center().x;
+                                ui.painter().line_segment(
+                                    [egui::pos2(x, rect.top()), egui::pos2(x, rect.bottom())],
+                                    egui::Stroke::new(2.5, p.accent),
+                                );
+                                ui.painter().add(egui::Shape::convex_polygon(
+                                    vec![
+                                        egui::pos2(x - 4.0, rect.top()),
+                                        egui::pos2(x + 4.0, rect.top()),
+                                        egui::pos2(x, rect.top() + 5.0),
+                                    ],
+                                    p.accent,
+                                    egui::Stroke::NONE,
+                                ));
+                                r.on_hover_text(self.tr("ui.history.marker"));
                             }
                         }
                     });

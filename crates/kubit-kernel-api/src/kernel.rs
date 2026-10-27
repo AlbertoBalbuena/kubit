@@ -121,6 +121,17 @@ pub trait Kernel {
     /// End points of an edge (equal for a closed edge).
     fn edge_endpoints(&self, edge: EdgeId) -> KernelResult<[[f64; 3]; 2]>;
 
+    /// The two faces of `body` that meet at `edge`, in the backend's order (both
+    /// the same face for a seam). Callers that need a canonical order sort.
+    ///
+    /// Scoped to a body because backends may share unchanged entities between a
+    /// body and the bodies derived from it: the same edge can border different
+    /// faces in each.
+    fn edge_faces(&self, body: BodyId, edge: EdgeId) -> KernelResult<[FaceId; 2]> {
+        let _ = (body, edge);
+        Err(self.unsupported("edge_faces"))
+    }
+
     /// Volume, area and centroid.
     fn mass_properties(&self, body: BodyId) -> KernelResult<MassProperties>;
 
@@ -210,6 +221,9 @@ impl<K: Kernel + ?Sized> Kernel for Box<K> {
     }
     fn edge_endpoints(&self, edge: EdgeId) -> KernelResult<[[f64; 3]; 2]> {
         (**self).edge_endpoints(edge)
+    }
+    fn edge_faces(&self, body: BodyId, edge: EdgeId) -> KernelResult<[FaceId; 2]> {
+        (**self).edge_faces(body, edge)
     }
     fn mass_properties(&self, body: BodyId) -> KernelResult<MassProperties> {
         (**self).mass_properties(body)

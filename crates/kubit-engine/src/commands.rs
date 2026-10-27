@@ -4,7 +4,7 @@ use crate::error::CommandError;
 use crate::model::{BoxParams, PushPullParams, validate_box};
 use crate::session::{Selection, Session};
 use crate::spec::{CommandOutcome, CommandSpec, Enablement, Registry, always, schema_of};
-use kubit_doc::{FeatureId, TopoName};
+use kubit_doc::{EdgeName, FeatureId, TopoName};
 use kubit_kernel_api::Kernel;
 use schemars::JsonSchema;
 use serde::Deserialize;
@@ -51,12 +51,17 @@ struct BodyParams {
     body: Option<String>,
 }
 
-/// A face selection.
+/// A selection of faces and edges.
 #[derive(Debug, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 struct SelectParams {
-    /// Persistent face names, e.g. `["F1:+Z"]`.
+    /// Persistent face names, e.g. `["F1:+Z"]`. Default: none.
+    #[serde(default)]
     faces: Vec<String>,
+    /// Persistent edge names, e.g. `["F1:+X|F1:+Z"]` (the two faces that meet
+    /// at the edge, in either order). Default: none.
+    #[serde(default)]
+    edges: Vec<String>,
 }
 
 fn parse<T: for<'de> Deserialize<'de>>(
@@ -161,9 +166,20 @@ fn run_select(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, C
         }
         sel.faces.insert(name);
     }
-    let n = sel.faces.len();
+    for e in &p.edges {
+        let name: EdgeName = e
+            .parse()
+            .map_err(|e: kubit_doc::EdgeNameParseError| CommandError::Reference(e.to_string()))?;
+        if s.model().body_of_edge(&name).is_none() {
+            return Err(CommandError::Reference(format!("edge `{name}`")));
+        }
+        sel.edges.insert(name);
+    }
+    let (faces, edges) = (sel.faces.len(), sel.edges.len());
     s.set_selection(sel);
-    Ok(CommandOutcome::text(format!("{n} face(s) selected")))
+    Ok(CommandOutcome::text(format!(
+        "{faces} face(s), {edges} edge(s) selected"
+    )))
 }
 
 // --- documents and files ----------------------------------------------------
@@ -285,6 +301,7 @@ fn run_inspect(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, 
         bodies.push(json!({
             "body": key.to_string(),
             "faces": b.names.len(),
+            "edges": b.edges.len(),
             "volume_mm3": mass.volume,
             "area_mm2": mass.area,
             "tip": b.tip.to_string(),
@@ -298,6 +315,7 @@ fn run_inspect(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, 
             "features": features,
             "bodies": bodies,
             "selection": s.selection().faces.iter().map(ToString::to_string).collect::<Vec<_>>(),
+            "selected_edges": s.selection().edges.iter().map(ToString::to_string).collect::<Vec<_>>(),
             "can_undo": s.can_undo(),
             "can_redo": s.can_redo(),
         }),
@@ -444,7 +462,7 @@ pub fn builtin() -> Registry {
         spec(
             "selection.set",
             "cmd.selection.set",
-            "Replace the selection with the given faces.",
+            "Replace the selection with the given faces and edges.",
             None,
             None,
             None,

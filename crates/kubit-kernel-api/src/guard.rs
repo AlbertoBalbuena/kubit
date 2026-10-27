@@ -363,6 +363,10 @@ impl<K: Kernel> Kernel for Guarded<K> {
         self.call_ref("edge_endpoints", |k| k.edge_endpoints(edge))
     }
 
+    fn edge_faces(&self, body: BodyId, edge: EdgeId) -> KernelResult<[FaceId; 2]> {
+        self.call_ref("edge_faces", |k| k.edge_faces(body, edge))
+    }
+
     fn mass_properties(&self, body: BodyId) -> KernelResult<MassProperties> {
         self.call_ref("mass_properties", |k| k.mass_properties(body))
     }

@@ -21,7 +21,7 @@ use kubit_kernel_api::{
     Interrupt, Kernel, KernelError, KernelInfo, KernelResult, MassProperties, OpHistory, OpOutput,
     SurfaceKind, Validity, VertexId,
 };
-use kubit_mesh::{FaceTag, TriMesh};
+use kubit_mesh::{EdgeTag, FaceTag, TriMesh};
 
 /// Name reported in [`KernelInfo`].
 pub const NAME: &str = "arris";
@@ -437,6 +437,35 @@ impl Kernel for ArrisKernel {
         Ok([end(entity.start())?, end(entity.end())?])
     }
 
+    fn edge_faces(&self, body: BodyId, edge: EdgeId) -> KernelResult<[FaceId; 2]> {
+        let b = self.body(body)?;
+        let not_found = || KernelError::NotFound {
+            kind: "edge",
+            id: edge.0,
+        };
+        let uses = self
+            .model
+            .edge_uses(arris_edge(edge))
+            .map_err(|_| not_found())?;
+        // `edge_uses` is model-wide, and bodies share unchanged entities with the
+        // bodies they came from: keep only the uses by faces of `body`. Within one
+        // solid there are exactly two.
+        let faces = self.model.faces(b).map_err(|e| failed("edge_faces", e))?;
+        let own: Vec<FaceId> = uses
+            .iter()
+            .filter(|u| faces.iter().any(|f| f.id == u.face))
+            .map(|u| face_key(u.face))
+            .collect();
+        match own.as_slice() {
+            [] => Err(not_found()),
+            &[f, g] => Ok([f, g]),
+            other => Err(KernelError::Failed {
+                op: "edge_faces",
+                message: format!("edge is used {} time(s) in one body", other.len()),
+            }),
+        }
+    }
+
     fn mass_properties(&self, body: BodyId) -> KernelResult<MassProperties> {
         let b = self.body(body)?;
         let p = self
@@ -468,10 +497,26 @@ impl Kernel for ArrisKernel {
             op: "tessellate",
             reason: "a triangle belongs to no face range".into(),
         })?;
+        let positions = mesh.positions();
+        let mut edges = Vec::with_capacity(mesh.edges().len());
+        for range in mesh.edges() {
+            let line: Option<Vec<[f64; 3]>> = mesh
+                .edge_polyline(range.edge)
+                .unwrap_or_default()
+                .iter()
+                .map(|&i| positions.get(i as usize).copied())
+                .collect();
+            let line = line.ok_or_else(|| KernelError::InvalidResult {
+                op: "tessellate",
+                reason: "an edge polyline indexes a missing position".into(),
+            })?;
+            edges.push((EdgeTag(edge_key(range.edge).0), line));
+        }
         Ok(TriMesh {
-            positions: mesh.positions().to_vec(),
+            positions: positions.to_vec(),
             triangles,
             face_tags,
+            edges,
         })
     }
 

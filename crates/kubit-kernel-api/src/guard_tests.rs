@@ -213,3 +213,24 @@ fn boxed_dyn_kernel_works_behind_the_guard() {
     let b = k.make_box(&bx([1.0, 2.0, 3.0])).unwrap();
     assert_eq!(k.mass_properties(b.body).unwrap().volume, 6.0);
 }
+
+#[test]
+fn edge_faces_pass_through_the_guard_or_default_to_unsupported() {
+    let backend: Box<dyn Kernel> = Box::new(BoxKernel::new());
+    let mut k = Guarded::new(backend);
+    let b = k.make_box(&bx([1.0; 3])).unwrap().body;
+    let e = k.edges(b).unwrap()[0];
+    let [f, g] = k.edge_faces(b, e).unwrap();
+    assert!(k.faces(b).unwrap().contains(&f) && k.faces(b).unwrap().contains(&g));
+    // `Faulty` keeps the trait's default body.
+    let mut k = Guarded::new(Faulty(BoxKernel::new(), false));
+    let b = k.make_box(&bx([1.0; 3])).unwrap().body;
+    let e = k.edges(b).unwrap()[0];
+    assert!(matches!(
+        k.edge_faces(b, e),
+        Err(KernelError::Unsupported {
+            op: "edge_faces",
+            ..
+        })
+    ));
+}

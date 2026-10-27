@@ -2132,6 +2132,7 @@ dependencies = [
  "kubit-doc",
  "kubit-io",
  "kubit-kernel-api",
+ "kubit-kernel-arris",
  "kubit-mesh",
  "proptest",
  "schemars",
@@ -2197,6 +2198,7 @@ version = "0.0.1"
 dependencies = [
  "proptest",
  "serde",
+ "serde_json",
 ]
 
 [[package]]

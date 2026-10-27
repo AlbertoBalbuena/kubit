@@ -21,6 +21,7 @@ indexmap.workspace = true
 
 [dev-dependencies]
 kubit-kernel-api = { workspace = true, features = ["testing"] }
+kubit-kernel-arris.workspace = true
 proptest.workspace = true
 
 [lints]

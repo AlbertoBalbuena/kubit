@@ -1,11 +1,11 @@
 //! The derived model: which kernel body each document body is now, and the
-//! persistent name of every face. Rebuilt by replaying the timeline.
+//! persistent name of every face and edge. Rebuilt by replaying the timeline.
 
 use crate::error::CommandError;
-use kubit_doc::{Feature, FeatureId, TopoName};
+use kubit_doc::{EdgeName, Feature, FeatureId, TopoName};
 use kubit_kernel_api::{
-    BodyId, BoxSpec, EntityRef, FaceId, FaceInfo, Guarded, Kernel, KernelResult, OpOutput,
-    check_length, check_point,
+    BodyId, BoxSpec, EdgeId, EntityRef, FaceId, FaceInfo, Guarded, Kernel, KernelError,
+    KernelResult, OpOutput, check_length, check_point,
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -18,6 +18,9 @@ pub struct BodyState {
     pub kernel: BodyId,
     /// Persistent name → kernel face, for every face of the current body.
     pub names: BTreeMap<TopoName, FaceId>,
+    /// Persistent name → kernel edge, for every edge whose name is unambiguous
+    /// (ADR-0004). Derived from `names` after each rebuild of the body.
+    pub edges: BTreeMap<EdgeName, EdgeId>,
     /// Last feature that changed this body.
     pub tip: FeatureId,
 }
@@ -26,6 +29,27 @@ impl BodyState {
     /// Name of a kernel face of this body.
     pub fn name_of(&self, face: FaceId) -> Option<&TopoName> {
         self.names.iter().find(|(_, f)| **f == face).map(|(n, _)| n)
+    }
+
+    /// Name of a kernel edge of this body.
+    pub fn edge_name_of(&self, edge: EdgeId) -> Option<&EdgeName> {
+        self.edges.iter().find(|(_, e)| **e == edge).map(|(n, _)| n)
+    }
+
+    /// Names the edges of `kernel` from the face `names` and assembles the state.
+    fn build<K: Kernel>(
+        k: &Guarded<K>,
+        kernel: BodyId,
+        names: BTreeMap<TopoName, FaceId>,
+        tip: FeatureId,
+    ) -> KernelResult<Self> {
+        let edges = name_edges(k, kernel, &names)?;
+        Ok(Self {
+            kernel,
+            names,
+            edges,
+            tip,
+        })
     }
 }
 
@@ -56,6 +80,14 @@ impl Model {
         self.bodies
             .iter()
             .find(|(_, b)| b.names.contains_key(face))
+            .map(|(k, b)| (*k, b))
+    }
+
+    /// The body that owns an edge name.
+    pub fn body_of_edge(&self, edge: &EdgeName) -> Option<(FeatureId, &BodyState)> {
+        self.bodies
+            .iter()
+            .find(|(_, b)| b.edges.contains_key(edge))
             .map(|(k, b)| (*k, b))
     }
 
@@ -190,6 +222,44 @@ fn propagate<K: Kernel>(
     Ok(names)
 }
 
+/// Names every edge of `body` by its two faces (ADR-0004). An edge stays
+/// unnamed when a face is unnamed, when the backend cannot answer for it, or
+/// when another edge of the body gets the same name (two faces that meet
+/// twice). A backend without `edge_faces` names no edges. Panics, poisoning and
+/// interrupts still fail the feature.
+fn name_edges<K: Kernel>(
+    k: &Guarded<K>,
+    body: BodyId,
+    faces: &BTreeMap<TopoName, FaceId>,
+) -> KernelResult<BTreeMap<EdgeName, EdgeId>> {
+    let by_face: BTreeMap<FaceId, &TopoName> = faces.iter().map(|(n, f)| (*f, n)).collect();
+    // `None` marks a name claimed by more than one edge.
+    let mut named: BTreeMap<EdgeName, Option<EdgeId>> = BTreeMap::new();
+    for edge in k.edges(body)? {
+        let [f, g] = match k.edge_faces(body, edge) {
+            Ok(pair) => pair,
+            Err(KernelError::Unsupported { .. }) => return Ok(BTreeMap::new()),
+            Err(
+                e @ (KernelError::Panicked { .. }
+                | KernelError::Poisoned
+                | KernelError::Interrupted { .. }),
+            ) => return Err(e),
+            Err(_) => continue,
+        };
+        let (Some(x), Some(y)) = (by_face.get(&f), by_face.get(&g)) else {
+            continue;
+        };
+        named
+            .entry(EdgeName::new((*x).clone(), (*y).clone()))
+            .and_modify(|slot| *slot = None)
+            .or_insert(Some(edge));
+    }
+    Ok(named
+        .into_iter()
+        .filter_map(|(name, edge)| Some((name, edge?)))
+        .collect())
+}
+
 fn parse<T: for<'de> Deserialize<'de>>(
     command: &'static str,
     params: &serde_json::Value,
@@ -246,14 +316,8 @@ pub fn apply_feature<K: Kernel>(
                     info.id,
                 );
             }
-            model.bodies.insert(
-                f.id,
-                BodyState {
-                    kernel: out.body,
-                    names,
-                    tip: f.id,
-                },
-            );
+            let state = BodyState::build(k, out.body, names, f.id)?;
+            model.bodies.insert(f.id, state);
             Ok(())
         }
         "face.push_pull" => {
@@ -271,14 +335,8 @@ pub fn apply_feature<K: Kernel>(
             let old = body.clone();
             let out = k.offset_faces(old.kernel, &[face], distance)?;
             let names = propagate(k, &old, &out, f.id)?;
-            model.bodies.insert(
-                key,
-                BodyState {
-                    kernel: out.body,
-                    names,
-                    tip: f.id,
-                },
-            );
+            let state = BodyState::build(k, out.body, names, f.id)?;
+            model.bodies.insert(key, state);
             Ok(())
         }
         other => Err(CommandError::UnknownFeature {

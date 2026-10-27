@@ -2,7 +2,8 @@
 //!
 //! Positions are in millimetres, triangles are wound counter-clockwise seen from
 //! outside, and every triangle carries the tag of the B-rep face it came from so
-//! the viewport can pick faces. Layer and rules: `docs/ARCHITECTURE.md`.
+//! the viewport can pick faces. B-rep edges travel beside the triangles as
+//! tagged polylines so the viewport can draw and pick them. Layer and rules: `docs/ARCHITECTURE.md`.
 
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -10,6 +11,13 @@ use std::collections::BTreeMap;
 /// Opaque tag of the B-rep face a triangle belongs to (a kernel face id).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct FaceTag(pub u64);
+
+/// Opaque tag of a B-rep edge (a kernel edge id).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+pub struct EdgeTag(pub u64);
+
+/// One B-rep edge discretised as a polyline through the mesh, mm.
+pub type EdgePolyline = (EdgeTag, Vec<[f64; 3]>);
 
 /// Axis-aligned bounding box in millimetres.
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
@@ -41,7 +49,7 @@ impl Aabb {
     }
 }
 
-/// A triangle mesh with one face tag per triangle.
+/// A triangle mesh with one face tag per triangle, plus the B-rep edges.
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct TriMesh {
     /// Vertex positions, mm.
@@ -50,6 +58,10 @@ pub struct TriMesh {
     pub triangles: Vec<[u32; 3]>,
     /// `face_tags[i]` is the B-rep face of `triangles[i]`; same length as `triangles`.
     pub face_tags: Vec<FaceTag>,
+    /// B-rep edges as polylines through the surface, mm, in the kernel's edge
+    /// order. Empty when the producer has no B-rep (STL, hand-built meshes).
+    #[serde(default)]
+    pub edges: Vec<EdgePolyline>,
 }
 
 /// Why a mesh is structurally unusable.
@@ -67,6 +79,11 @@ pub enum MeshDefect {
     },
     /// `face_tags` and `triangles` differ in length.
     TagCountMismatch,
+    /// An edge polyline has fewer than two points or a non-finite point.
+    BadEdge {
+        /// Index into `edges`.
+        edge: usize,
+    },
 }
 
 /// Closedness of a mesh after welding coincident vertices.
@@ -124,7 +141,22 @@ impl TriMesh {
         {
             return Err(MeshDefect::IndexOutOfRange { triangle });
         }
+        if let Some(edge) = self
+            .edges
+            .iter()
+            .position(|(_, line)| line.len() < 2 || line.iter().flatten().any(|c| !c.is_finite()))
+        {
+            return Err(MeshDefect::BadEdge { edge });
+        }
         Ok(())
+    }
+
+    /// The polyline of a B-rep edge, or `None` if the mesh has no such edge.
+    pub fn edge_polyline(&self, tag: EdgeTag) -> Option<&[[f64; 3]]> {
+        self.edges
+            .iter()
+            .find(|(t, _)| *t == tag)
+            .map(|(_, line)| line.as_slice())
     }
 
     /// The three corners of a triangle, or `None` if an index is out of range.
@@ -183,6 +215,7 @@ impl TriMesh {
                 .map(|t| t.map(|i| i.saturating_add(base))),
         );
         self.face_tags.extend_from_slice(&other.face_tags);
+        self.edges.extend_from_slice(&other.edges);
     }
 
     /// Edge-use statistics after welding vertices closer than `weld` mm.
@@ -263,6 +296,7 @@ mod tests {
             positions,
             triangles,
             face_tags,
+            edges: Vec::new(),
         }
     }
 
@@ -292,10 +326,33 @@ mod tests {
     }
 
     #[test]
+    fn edges_are_validated_and_found() {
+        let mut m = cube(1.0);
+        m.edges.push((EdgeTag(7), vec![[0.0; 3], [1.0, 0.0, 0.0]]));
+        assert!(m.validate().is_ok());
+        assert_eq!(m.edge_polyline(EdgeTag(7)).map(<[_]>::len), Some(2));
+        assert_eq!(m.edge_polyline(EdgeTag(8)), None);
+        m.edges.push((EdgeTag(8), vec![[0.0; 3]]));
+        assert_eq!(m.validate(), Err(MeshDefect::BadEdge { edge: 1 }));
+        m.edges[1].1.push([f64::NAN, 0.0, 0.0]);
+        assert_eq!(m.validate(), Err(MeshDefect::BadEdge { edge: 1 }));
+    }
+
+    #[test]
+    fn meshes_without_edges_still_deserialize() {
+        let m: TriMesh =
+            serde_json::from_str(r#"{"positions":[],"triangles":[],"face_tags":[]}"#).unwrap();
+        assert!(m.edges.is_empty());
+    }
+
+    #[test]
     fn append_renumbers() {
         let mut a = cube(1.0);
-        a.append(&cube(1.0));
+        let mut b = cube(1.0);
+        b.edges.push((EdgeTag(1), vec![[0.0; 3], [1.0; 3]]));
+        a.append(&b);
         assert_eq!(a.positions.len(), 16);
+        assert_eq!(a.edges.len(), 1);
         assert!(a.validate().is_ok());
         assert!((a.volume() - 2.0).abs() < 1e-12);
     }
@@ -308,8 +365,10 @@ mod tests {
             weld in proptest::num::f64::ANY,
         ) {
             let tags = vec![FaceTag(0); triangles.len()];
-            let m = TriMesh { positions, triangles, face_tags: tags };
+            let edges = vec![(EdgeTag(0), positions.clone())];
+            let m = TriMesh { positions, triangles, face_tags: tags, edges };
             let _ = m.validate();
+            let _ = m.edge_polyline(EdgeTag(0));
             let _ = (m.volume(), m.area(), m.aabb(), m.watertightness(weld));
         }
     }

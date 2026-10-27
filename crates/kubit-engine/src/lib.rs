@@ -9,6 +9,7 @@ mod commands;
 mod error;
 mod model;
 mod session;
+mod sketch;
 mod spec;
 
 pub use error::CommandError;
@@ -17,6 +18,7 @@ pub use model::{
     ExtrudeParams, FeatureStatus, FilletParams, Model, PushPullParams, ShellParams,
 };
 pub use session::{Event, KernelFactory, Selection, Session, UNDO_LIMIT};
+pub use sketch::{PlaneFrame, PlaneRef, SketchParams, SketchState};
 pub use spec::{CommandOutcome, CommandSpec, Enablement, Registry, RunFn, always, schema_of};
 
 #[cfg(test)]

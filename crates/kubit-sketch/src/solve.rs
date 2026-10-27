@@ -371,8 +371,9 @@ fn diagnose(
             r_prev = r_now;
         }
     }
-    // A constraint whose rows are independent but unsatisfied also conflicts.
-    if !converged {
+    // If the rank test found no culprit (diagnosis skipped, or the solver stalled
+    // short of a solution), every unsatisfied constraint is reported instead.
+    if !converged && conflicting.is_empty() {
         for (owner, rs) in &per_eq {
             if let Owner::Constraint(id) = owner
                 && max_abs(rs) > opts.tolerance * 10.0

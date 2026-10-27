@@ -73,6 +73,8 @@ pub struct Model {
     pub bodies: BTreeMap<FeatureId, BodyState>,
     /// Status of every feature after the last rebuild.
     pub status: BTreeMap<FeatureId, FeatureStatus>,
+    /// Solved sketches, keyed by their feature.
+    pub sketches: BTreeMap<FeatureId, crate::sketch::SketchState>,
 }
 
 impl Model {
@@ -221,8 +223,17 @@ pub enum ExtrudeOp {
 #[serde(deny_unknown_fields)]
 pub struct ExtrudeParams {
     /// Planar profile in mm; coordinates are in the plane frame (y = normal × x_axis).
-    pub profile: Profile,
-    /// Extrusion length along +normal, mm; > 0.
+    /// Give either this or `sketch` + `region`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub profile: Option<Profile>,
+    /// Sketch feature whose region to extrude, e.g. `F2`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sketch: Option<String>,
+    /// Region id within `sketch` (the smallest entity id of its outer loop).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub region: Option<u32>,
+    /// Extrusion length along +normal, mm. Negative extrudes the other way (the prism
+    /// lies behind the plane), which is how a sketch on a face cuts into its body.
     pub distance: f64,
     /// `new`, `join` or `cut`.
     pub op: ExtrudeOp,
@@ -574,6 +585,7 @@ pub fn apply_feature<K: Kernel>(
             model.bodies.insert(f.id, state);
             Ok(())
         }
+        "sketch.create" => crate::sketch::apply(k, model, f.id, &f.params),
         "solid.extrude" => {
             let p: ExtrudeParams = parse("solid.extrude", &f.params)?;
             let target = match (p.op, &p.target) {
@@ -599,7 +611,28 @@ pub fn apply_feature<K: Kernel>(
                     Some((id, body.clone()))
                 }
             };
-            let out = k.extrude(&p.profile, p.distance)?;
+            let profile = match (&p.profile, &p.sketch, p.region) {
+                (Some(profile), None, None) => profile.clone(),
+                (None, Some(sketch), Some(region)) => {
+                    let id: FeatureId = sketch.parse().map_err(|e| invalid("solid.extrude", e))?;
+                    crate::sketch::profile_of(model, id, region)?
+                }
+                _ => {
+                    return Err(invalid(
+                        "solid.extrude",
+                        "give either `profile` or `sketch` and `region`",
+                    ));
+                }
+            };
+            let mut profile = profile;
+            let length = p.distance.abs();
+            if p.distance < 0.0 {
+                // Same profile, plane shifted back: the prism spans [−length, 0].
+                for (o, n) in profile.origin.iter_mut().zip(profile.normal) {
+                    *o -= n * length;
+                }
+            }
+            let out = k.extrude(&profile, length)?;
             // Every face of a prism has a role; a backend that cannot say which is
             // which cannot give stable names.
             let mut names = BTreeMap::new();
@@ -717,5 +750,6 @@ pub fn is_feature(command: &str) -> bool {
             | "body.shell"
             | "body.boolean"
             | "solid.extrude"
+            | "sketch.create"
     )
 }

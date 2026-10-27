@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 kubit-kernel-api.workspace = true
 kubit-mesh.workspace = true
+kubit-sketch.workspace = true
 kubit-doc.workspace = true
 kubit-io.workspace = true
 serde.workspace = true

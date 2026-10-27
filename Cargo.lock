@@ -2134,6 +2134,7 @@ dependencies = [
  "kubit-kernel-api",
  "kubit-kernel-arris",
  "kubit-mesh",
+ "kubit-sketch",
  "proptest",
  "schemars",
  "serde",

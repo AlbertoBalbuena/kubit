@@ -114,3 +114,28 @@ fn run_extrude_profile_example_has_the_analytic_volume() {
         .unwrap_or_else(|| panic!("no total volume in:\n{stdout}"));
     assert!((volume - expected).abs() < 2e-3, "{volume} vs {expected}");
 }
+
+/// Milestone 1.4: sketch → extrude → sketch on the top face → cut → edit a dimension,
+/// driven by `run`; the cut survives the rebuild.
+#[test]
+fn run_sketch_extrude_example_rebuilds_with_the_cut() {
+    let expected = (4500.0 - 125.0 * std::f64::consts::PI) * 20.0;
+    let out = Command::new(env!("CARGO_BIN_EXE_kubit-cli"))
+        .arg("run")
+        .arg(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/sketch-extrude.json"))
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    let volume: f64 = stdout
+        .split("Total volume ")
+        .nth(1)
+        .and_then(|rest| rest.split(" mm³").next())
+        .and_then(|v| v.trim().parse().ok())
+        .unwrap_or_else(|| panic!("no total volume in:\n{stdout}"));
+    assert!((volume - expected).abs() < 2e-3, "{volume} vs {expected}");
+}

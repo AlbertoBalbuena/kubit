@@ -1,0 +1,196 @@
+{
+  "description": "Milestone 1.4 exit check: a fully constrained 80 x 50 plate sketch with an r=10 hole, extruded 20 mm, an r=5 hole cut from a sketch on its top face, then the width dimension changed to 90 mm. Expected volume (4500 - 125 pi) x 20 = 82146.018 mm3.",
+  "commands": [
+    {
+      "command": "sketch.create",
+      "params": {
+        "plane": "XY"
+      }
+    },
+    {
+      "command": "sketch.add",
+      "params": {
+        "sketch": "F1",
+        "first_id": 0,
+        "entities": [
+          {
+            "kind": "point",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "kind": "point",
+            "x": 78,
+            "y": 1
+          },
+          {
+            "kind": "point",
+            "x": 81,
+            "y": 52
+          },
+          {
+            "kind": "point",
+            "x": -1,
+            "y": 49
+          },
+          {
+            "kind": "line",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "kind": "line",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "kind": "line",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "kind": "line",
+            "a": 3,
+            "b": 0
+          },
+          {
+            "kind": "point",
+            "x": 38,
+            "y": 26
+          },
+          {
+            "kind": "circle",
+            "center": 8,
+            "radius": 9
+          }
+        ],
+        "constraints": [
+          {
+            "kind": "length",
+            "line": 4,
+            "value": 80
+          },
+          {
+            "kind": "fix",
+            "point": 0,
+            "at": [
+              0,
+              0
+            ]
+          },
+          {
+            "kind": "horizontal",
+            "line": 4
+          },
+          {
+            "kind": "horizontal",
+            "line": 6
+          },
+          {
+            "kind": "vertical",
+            "line": 5
+          },
+          {
+            "kind": "vertical",
+            "line": 7
+          },
+          {
+            "kind": "length",
+            "line": 7,
+            "value": 50
+          },
+          {
+            "kind": "horizontal_distance",
+            "a": 0,
+            "b": 8,
+            "value": 40
+          },
+          {
+            "kind": "vertical_distance",
+            "a": 0,
+            "b": 8,
+            "value": 25
+          },
+          {
+            "kind": "radius",
+            "circle": 9,
+            "value": 10
+          }
+        ]
+      }
+    },
+    {
+      "command": "solid.extrude",
+      "params": {
+        "sketch": "F1",
+        "region": 4,
+        "distance": 20,
+        "op": "new"
+      }
+    },
+    {
+      "command": "sketch.create",
+      "params": {
+        "plane": {
+          "face": "F2:cap+"
+        }
+      }
+    },
+    {
+      "command": "sketch.add",
+      "params": {
+        "sketch": "F3",
+        "first_id": 0,
+        "entities": [
+          {
+            "kind": "point",
+            "x": 65,
+            "y": 25
+          },
+          {
+            "kind": "circle",
+            "center": 0,
+            "radius": 5
+          }
+        ],
+        "constraints": [
+          {
+            "kind": "fix",
+            "point": 0,
+            "at": [
+              65,
+              25
+            ]
+          },
+          {
+            "kind": "radius",
+            "circle": 1,
+            "value": 5
+          }
+        ]
+      }
+    },
+    {
+      "command": "solid.extrude",
+      "params": {
+        "sketch": "F3",
+        "region": 1,
+        "distance": -20,
+        "op": "cut",
+        "target": "F2"
+      }
+    },
+    {
+      "command": "sketch.set_dimension",
+      "params": {
+        "sketch": "F1",
+        "constraint": 10,
+        "value": 90
+      }
+    },
+    {
+      "command": "body.measure",
+      "params": {}
+    }
+  ]
+}

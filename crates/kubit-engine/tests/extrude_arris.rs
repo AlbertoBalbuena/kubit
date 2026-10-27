@@ -317,6 +317,22 @@ proptest! {
 }
 
 #[test]
+fn negative_distance_extrudes_behind_the_plane() {
+    let mut s = session();
+    let square = line_loop(&[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]]);
+    s.execute(
+        "solid.extrude",
+        json!({"profile": {"origin": [0,0,0], "x_axis": [1,0,0], "normal": [0,0,1], "outer": square},
+               "distance": -3.0, "op": "new"}),
+    )
+    .unwrap();
+    assert_close(volume(&s, 1), 300.0);
+    let b = &s.model().bodies[&FeatureId(1)];
+    let mp = s.kernel().mass_properties(b.kernel).unwrap();
+    assert!((mp.centroid[2] + 1.5).abs() < 1e-9, "{:?}", mp.centroid);
+}
+
+#[test]
 fn degenerate_profiles_are_refused_cleanly() {
     let square = line_loop(&[[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]]);
     // Bow-tie: the loop touches itself.
@@ -331,7 +347,7 @@ fn degenerate_profiles_are_refused_cleanly() {
         base(square.clone(), x.clone(), json!([0, 0, 2]), 5.0),
         base(square.clone(), x.clone(), json!([1, 0, 0]), 5.0),
         base(square.clone(), x.clone(), z.clone(), 0.0),
-        base(square.clone(), x.clone(), z.clone(), -3.0),
+        base(square.clone(), x.clone(), z.clone(), f64::NAN),
         base(bow, x.clone(), z.clone(), 5.0),
         base(
             line_loop(&[[0.0, 0.0], [0.0, 0.0], [10.0, 0.0], [10.0, 10.0]]),

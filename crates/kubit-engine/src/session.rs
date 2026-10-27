@@ -314,6 +314,41 @@ impl Session {
         Ok(id)
     }
 
+    /// Replaces the params of feature `id` and rebuilds the document, as one
+    /// undoable transaction. Later features that fail after the change are recorded
+    /// in `Model::status`; if `id` itself fails, nothing changes.
+    pub fn edit_feature(
+        &mut self,
+        id: FeatureId,
+        params: serde_json::Value,
+    ) -> Result<(), CommandError> {
+        let before = self.snapshot();
+        let mut doc = self.doc.clone();
+        let feature = doc
+            .features
+            .iter_mut()
+            .find(|f| f.id == id)
+            .ok_or_else(|| CommandError::Reference(id.to_string()))?;
+        feature.params = params;
+        let model = Self::rebuild(&mut self.kernel, &doc);
+        if let Some(FeatureStatus::Failed(message)) = model.status.get(&id) {
+            let message = message.clone();
+            self.recover_if_poisoned();
+            self.collect_garbage_after_failure(&model);
+            return Err(CommandError::Reference(message));
+        }
+        self.selection
+            .faces
+            .retain(|n| model.body_of_face(n).is_some());
+        self.selection
+            .edges
+            .retain(|n| model.body_of_edge(n).is_some());
+        self.doc = doc;
+        self.model = model;
+        self.commit(before);
+        Ok(())
+    }
+
     fn collect_garbage_after_failure(&mut self, scratch: &Model) {
         let keep: BTreeSet<BodyId> = self.model.kernel_bodies().collect();
         for b in scratch.kernel_bodies() {

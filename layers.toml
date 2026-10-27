@@ -13,7 +13,7 @@ kernel_libs = ["monstertruck", "truck-modeling", "truck-shapeops", "solidcore", 
 
 [crates]
 kubit-math       = { layer = 0, wasm = true }
-kubit-kernel-api = { layer = 1, wasm = true }
+kubit-kernel-api = { layer = 1, wasm = true, same_layer = ["kubit-mesh"] }
 kubit-mesh       = { layer = 1, wasm = true }
 kubit-render     = { layer = 1, wasm = true }
 kubit-doc        = { layer = 2, wasm = true }

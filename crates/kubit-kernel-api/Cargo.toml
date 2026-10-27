@@ -9,6 +9,16 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+kubit-mesh.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+
+[features]
+# Exposes `testing::BoxKernel`, an exact reference kernel for tests.
+testing = []
+
+[dev-dependencies]
+proptest.workspace = true
 
 [lints]
 workspace = true

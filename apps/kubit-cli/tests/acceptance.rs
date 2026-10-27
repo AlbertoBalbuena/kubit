@@ -87,3 +87,30 @@ fn run_bracket_direct_example_has_the_analytic_volume() {
     // The summary prints three decimals.
     assert!((volume - expected).abs() < 2e-3, "{volume} vs {expected}");
 }
+
+/// Milestone 1.4b: a plate with a hole extruded from an explicit profile, plus a
+/// joined boss, driven by `run`.
+#[test]
+fn run_extrude_profile_example_has_the_analytic_volume() {
+    let pi = std::f64::consts::PI;
+    let expected = (1200.0 - 16.0 * pi) * 10.0 + pi * 9.0 * 5.0;
+
+    let out = Command::new(env!("CARGO_BIN_EXE_kubit-cli"))
+        .arg("run")
+        .arg(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/extrude-profile.json"))
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    let volume: f64 = stdout
+        .split("Total volume ")
+        .nth(1)
+        .and_then(|rest| rest.split(" mm³").next())
+        .and_then(|v| v.trim().parse().ok())
+        .unwrap_or_else(|| panic!("no total volume in:\n{stdout}"));
+    assert!((volume - expected).abs() < 2e-3, "{volume} vs {expected}");
+}

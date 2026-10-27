@@ -4,8 +4,9 @@
 use crate::error::CommandError;
 use kubit_doc::{EdgeName, Feature, FeatureId, TopoName};
 use kubit_kernel_api::{
-    BodyId, BooleanOp, BoxSpec, CylinderSpec, EdgeId, EntityRef, FaceId, FaceInfo, Guarded, Kernel,
-    KernelError, KernelResult, OpOutput, SurfaceKind, check_length, check_point,
+    BodyId, BooleanOp, BoxSpec, CylinderSpec, EdgeId, EntityRef, FaceId, FaceInfo, FaceRole,
+    Guarded, Kernel, KernelError, KernelResult, OpOutput, Profile, SurfaceKind, check_length,
+    check_point,
 };
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -201,6 +202,45 @@ pub struct BooleanParams {
     pub target: String,
     /// Body that is consumed, e.g. `F2`.
     pub tool: String,
+}
+
+/// How `solid.extrude` combines its prism with the model.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum ExtrudeOp {
+    /// A new body named after the feature.
+    New,
+    /// Union with `target`, which keeps its id.
+    Join,
+    /// Subtract from `target`, which keeps its id.
+    Cut,
+}
+
+/// `solid.extrude` parameters.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct ExtrudeParams {
+    /// Planar profile in mm; coordinates are in the plane frame (y = normal × x_axis).
+    pub profile: Profile,
+    /// Extrusion length along +normal, mm; > 0.
+    pub distance: f64,
+    /// `new`, `join` or `cut`.
+    pub op: ExtrudeOp,
+    /// Body that keeps its id (e.g. `F1`); required for `join` and `cut`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target: Option<String>,
+}
+
+/// Persistent role of an extruded face: `cap+`, `cap-` or `side<loop>.<segment>`.
+fn extrude_role(role: FaceRole) -> String {
+    match role {
+        FaceRole::CapPlus => "cap+".to_owned(),
+        FaceRole::CapMinus => "cap-".to_owned(),
+        FaceRole::Side {
+            loop_index,
+            segment,
+        } => format!("side{loop_index}.{segment}"),
+    }
 }
 
 /// Box face roles from the outward normal of a planar face.
@@ -534,6 +574,63 @@ pub fn apply_feature<K: Kernel>(
             model.bodies.insert(f.id, state);
             Ok(())
         }
+        "solid.extrude" => {
+            let p: ExtrudeParams = parse("solid.extrude", &f.params)?;
+            let target = match (p.op, &p.target) {
+                (ExtrudeOp::New, None) => None,
+                (ExtrudeOp::New, Some(_)) => {
+                    return Err(invalid(
+                        "solid.extrude",
+                        "`target` is only for join and cut",
+                    ));
+                }
+                (_, None) => {
+                    return Err(invalid(
+                        "solid.extrude",
+                        "join and cut need a `target` body",
+                    ));
+                }
+                (_, Some(text)) => {
+                    let id: FeatureId = text.parse().map_err(|e| invalid("solid.extrude", e))?;
+                    let body = model
+                        .bodies
+                        .get(&id)
+                        .ok_or_else(|| CommandError::Reference(format!("body {id}")))?;
+                    Some((id, body.clone()))
+                }
+            };
+            let out = k.extrude(&p.profile, p.distance)?;
+            // Every face of a prism has a role; a backend that cannot say which is
+            // which cannot give stable names.
+            let mut names = BTreeMap::new();
+            for face in k.faces(out.body)? {
+                let role = out.history.face_roles.get(&face).ok_or_else(|| {
+                    CommandError::Reference(format!("extruded face {} has no role", face.0))
+                })?;
+                names.insert(
+                    TopoName::Primitive {
+                        feature: f.id,
+                        role: extrude_role(*role),
+                    },
+                    face,
+                );
+            }
+            let Some((key, old)) = target else {
+                let state = BodyState::build(k, out.body, names, f.id)?;
+                model.bodies.insert(f.id, state);
+                return Ok(());
+            };
+            let op = if p.op == ExtrudeOp::Join {
+                BooleanOp::Union
+            } else {
+                BooleanOp::Difference
+            };
+            let combined = k.boolean(op, old.kernel, out.body)?;
+            // Names embed feature ids, so the two maps never collide.
+            let mut both = old.clone();
+            both.names.extend(names);
+            replace_body(k, model, key, &both, &combined, f.id)
+        }
         "face.push_pull" => {
             let p: PushPullParams = parse("face.push_pull", &f.params)?;
             let distance = check_length("distance", p.distance, false)
@@ -619,5 +716,6 @@ pub fn is_feature(command: &str) -> bool {
             | "edge.chamfer"
             | "body.shell"
             | "body.boolean"
+            | "solid.extrude"
     )
 }

@@ -2,8 +2,8 @@
 
 use crate::error::CommandError;
 use crate::model::{
-    BooleanParams, BoxParams, ChamferParams, CylinderParams, FilletParams, PushPullParams,
-    ShellParams, validate_box,
+    BooleanParams, BoxParams, ChamferParams, CylinderParams, ExtrudeOp, ExtrudeParams,
+    FilletParams, PushPullParams, ShellParams, validate_box,
 };
 use crate::session::{Selection, Session};
 use crate::spec::{CommandOutcome, CommandSpec, Enablement, Registry, always, schema_of};
@@ -164,6 +164,20 @@ fn run_cylinder(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome,
     Ok(CommandOutcome {
         summary: format!("Created cylinder {id} (r {} × h {} mm)", p.radius, p.height),
         data: json!({ "feature": id.to_string(), "body": id.to_string() }),
+    })
+}
+
+fn run_extrude(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, CommandError> {
+    let p: ExtrudeParams = parse("solid.extrude", v)?;
+    let canonical = serde_json::to_value(&p).map_err(|e| CommandError::Format(e.to_string()))?;
+    let id = s.add_feature("solid.extrude", canonical)?;
+    let body = match (p.op, &p.target) {
+        (ExtrudeOp::New, _) | (_, None) => id.to_string(),
+        (_, Some(target)) => target.clone(),
+    };
+    Ok(CommandOutcome {
+        summary: format!("Extruded {:?} {} mm ({id})", p.op, p.distance),
+        data: json!({ "feature": id.to_string(), "body": body }),
     })
 }
 
@@ -513,6 +527,19 @@ pub fn builtin() -> Registry {
             schema_of::<BoxParams>,
             always,
             run_box,
+        ),
+        spec(
+            "solid.extrude",
+            "cmd.solid.extrude",
+            "Extrude a planar `profile` (origin, unit x_axis and normal, `outer` loop and `holes`; coordinates in the plane frame, mm) by `distance` mm along +normal. `op` is `new` (a body named after the feature), `join` or `cut` (boolean with body `target`, which keeps its key). Faces are named `F<n>:cap+`, `F<n>:cap-` and `F<n>:side<loop>.<segment>`.",
+            Some("extrude"),
+            Some("E"),
+            Some("create"),
+            true,
+            false,
+            schema_of::<ExtrudeParams>,
+            always,
+            run_extrude,
         ),
         spec(
             "face.push_pull",

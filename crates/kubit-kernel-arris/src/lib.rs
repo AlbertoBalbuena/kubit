@@ -11,15 +11,16 @@ use std::collections::BTreeMap;
 
 use arris::check::flux::face_flux;
 use arris::check::{Level, check};
-use arris::math::{Axis, Control, Isometry, Point3, Vec3};
+use arris::geom::{ProfileLoop as ArrisLoop, ProfileSegment};
+use arris::math::{Axis, Control, Frame, Isometry, Point2, Point3, Vec3};
 use arris::ops::query::face_frame;
 use arris::ops::{OpError, ShellSide};
-use arris::topo::provenance::Origin;
-use arris::topo::{Body, EntityId, Model, Provenance, Shape};
+use arris::topo::provenance::{Origin, SweepPart};
+use arris::topo::{Body, EntityId, Model, Provenance, Role, Shape};
 use kubit_kernel_api::{
     BodyId, BooleanOp, BoxSpec, Capabilities, CylinderSpec, EdgeId, EntityRef, FaceId, FaceInfo,
-    Interrupt, Kernel, KernelError, KernelInfo, KernelResult, MassProperties, OpHistory, OpOutput,
-    SurfaceKind, Validity, VertexId,
+    FaceRole, Interrupt, Kernel, KernelError, KernelInfo, KernelResult, MassProperties, OpHistory,
+    OpOutput, Profile, ProfileLoop, ProfileSeg, SurfaceKind, Validity, VertexId,
 };
 use kubit_mesh::{EdgeTag, FaceTag, TriMesh};
 
@@ -82,6 +83,10 @@ fn history(p: &Provenance) -> OpHistory {
             Origin::Entity(s) => entity_ref(s),
             Origin::Role(_) => None,
         };
+        let role = match origin {
+            Origin::Role(Role::Extrude(part)) => face_role(part),
+            _ => None,
+        };
         for out in p
             .generated_from(origin)
             .iter()
@@ -89,6 +94,9 @@ fn history(p: &Provenance) -> OpHistory {
             .filter_map(entity_ref)
         {
             h.add_generated(input, out);
+            if let (Some(role), EntityRef::Face(f)) = (role, out) {
+                h.face_roles.insert(f, role);
+            }
         }
         if let Some(input) = input {
             for out in p
@@ -103,6 +111,48 @@ fn history(p: &Provenance) -> OpHistory {
     }
     h.deleted.extend(p.deleted().filter_map(entity_ref));
     h
+}
+
+/// The face role an extrude part stands for; edges, vertices and shells have none.
+fn face_role(part: SweepPart) -> Option<FaceRole> {
+    match part {
+        SweepPart::StartCap => Some(FaceRole::CapMinus),
+        SweepPart::EndCap => Some(FaceRole::CapPlus),
+        SweepPart::Side {
+            loop_index,
+            segment,
+        } => Some(FaceRole::Side {
+            loop_index,
+            segment,
+        }),
+        _ => None,
+    }
+}
+
+fn point2(p: [f64; 2]) -> Point2 {
+    Point2::new(p[0], p[1])
+}
+
+fn arris_loop(l: &ProfileLoop) -> ArrisLoop {
+    match l {
+        ProfileLoop::Circle { center, radius } => ArrisLoop::Circle {
+            center: point2(*center),
+            radius: *radius,
+        },
+        ProfileLoop::Segments { start, segments } => ArrisLoop::Path {
+            start: point2(*start),
+            segments: segments
+                .iter()
+                .map(|s| match *s {
+                    ProfileSeg::LineTo(to) => ProfileSegment::LineTo(point2(to)),
+                    ProfileSeg::ArcTo { to, via } => ProfileSegment::ArcTo {
+                        to: point2(to),
+                        via: point2(via),
+                    },
+                })
+                .collect(),
+        },
+    }
 }
 
 fn op_error(op: &'static str, e: OpError) -> KernelError {
@@ -256,6 +306,7 @@ impl Kernel for ArrisKernel {
                 fillet: true,
                 chamfer: true,
                 shell: true,
+                extrude: true,
                 native_history: true,
                 exact_mass: true,
                 step: true,
@@ -336,6 +387,25 @@ impl Kernel for ArrisKernel {
             arris::ops::shell(m, b, &openings, thickness, ShellSide::Inward, c)
         });
         Ok(self.register(made.map_err(|e| op_error("shell", e))?))
+    }
+
+    fn extrude(&mut self, profile: &Profile, length: f64) -> KernelResult<OpOutput> {
+        let invalid = |param, e: arris::math::FrameError| KernelError::InvalidInput {
+            param,
+            reason: e.to_string(),
+        };
+        let [x, y, z] = profile.x_axis;
+        let [nx, ny, nz] = profile.normal;
+        let (x, n) = (Vec3::new(x, y, z), Vec3::new(nx, ny, nz));
+        let plane = Frame::from_orthonormal(point(profile.origin), x, n.cross(&x), n)
+            .map_err(|e| invalid("normal", e))?;
+        let arris_profile = arris::geom::Profile {
+            plane,
+            outer: arris_loop(&profile.outer),
+            holes: profile.holes.iter().map(arris_loop).collect(),
+        };
+        let made = self.with_control(|m, c| arris::ops::extrude(m, &arris_profile, n, length, c));
+        Ok(self.register(made.map_err(|e| op_error("extrude", e))?))
     }
 
     fn delete_body(&mut self, body: BodyId) -> KernelResult<()> {

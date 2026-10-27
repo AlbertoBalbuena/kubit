@@ -18,6 +18,9 @@ struct Args {
     /// Render the UI offscreen (no window), save it to this PNG and quit.
     #[arg(long)]
     screenshot: Option<PathBuf>,
+    /// Open this sketch feature (e.g. `F1`) in sketch mode after `--run`.
+    #[arg(long)]
+    edit_sketch: Option<String>,
     /// Pixels per point of `--screenshot`.
     #[arg(long, default_value_t = 2.0)]
     scale: f32,
@@ -83,6 +86,7 @@ fn main() -> ExitCode {
             ThemeArg::Light => ThemeMode::Light,
         },
         startup,
+        edit_sketch: args.edit_sketch,
     };
     if let Some(path) = args.screenshot {
         let written = kubit_ui::screenshot_png(

@@ -8,6 +8,7 @@ mod app;
 mod handle;
 pub mod i18n;
 mod screenshot;
+mod sketch_ui;
 pub mod theme;
 mod triad;
 mod value_input;

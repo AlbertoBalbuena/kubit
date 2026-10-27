@@ -24,10 +24,10 @@ Cada fase tiene un **criterio de salida** verificable. No se abre una fase sin c
 - [x] Viewport: grid adaptativo, ejes X/Y/Z, tríada de orientación, navegación con trackpad y tema consistente
 - [x] Aristas B-rep seleccionables (hover, clic, Shift+clic) con nombres persistentes v0 (ADR-0004)
 - [x] Operaciones directas: push/pull (arrastre con flecha y multi-cara), redondeo, chaflán, vaciado, cilindro y booleanas; barra contextual, menú de clic derecho y valores en línea con unidades
-- [ ] Croquis: líneas, arcos, círculos, rectángulos, splines básicas
-- [ ] Solver propio (LM con descomposición de grafo y diagnóstico de DOF), con ezpz (MIT) como referencia
-- [ ] Inferencias, cotas sugeridas y bloqueadas, colores de DOF
-- [ ] Extrude, revolve, push/pull, booleanas, fillet, chamfer y shell (según lo que permita el kernel). Hecho: push/pull, booleanas, fillet, chamfer, shell y `solid.extrude` desde un perfil explícito (hito 1.4b); falta revolve y extruir desde regiones de croquis
+- [x] Croquis: líneas, arcos, círculos y rectángulos sobre XY/XZ/YZ o caras planas (splines pendientes)
+- [x] Solver propio (LM con descomposición de grafo y diagnóstico de DOF), con ezpz (MIT) como referencia (ADR-0005)
+- [x] Inferencias (H/V, snap a puntos, origen y grid), cotas y colores de DOF (cotas sugeridas pendientes)
+- [ ] Extrude, revolve, push/pull, booleanas, fillet, chamfer y shell (según lo que permita el kernel). Hecho: push/pull, booleanas, fillet, chamfer, shell y `solid.extrude` desde un perfil explícito y desde regiones de croquis (hito 1.4); falta revolve
 - [ ] Parámetros con expresiones, creados en línea
 - [ ] Timeline: editar, suprimir, reordenar, "congelar historia"
 - [ ] Nombres persistentes v1 con pruebas de regresión

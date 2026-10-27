@@ -75,6 +75,20 @@ pub struct Region {
     pub area: f64,
 }
 
+impl Loop {
+    /// The loop as a polygon (arcs and circles sampled), for drawing and hit tests.
+    pub fn polygon(&self) -> Vec<[f64; 2]> {
+        polygon(&self.shape)
+    }
+}
+
+impl Region {
+    /// Whether `p` lies inside the outer loop and outside every hole.
+    pub fn contains(&self, p: [f64; 2]) -> bool {
+        contains(&self.outer.polygon(), p) && !self.holes.iter().any(|h| contains(&h.polygon(), p))
+    }
+}
+
 /// Union-find over point ids, merged by coincident constraints.
 fn merged_points(sketch: &Sketch) -> BTreeMap<EntityId, EntityId> {
     let mut parent: BTreeMap<EntityId, EntityId> = sketch

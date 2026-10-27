@@ -262,6 +262,7 @@ fn rectangle_with_a_hole_is_one_region() {
         matches!(r.holes[0].shape, LoopShape::Circle { radius, .. } if (radius - 4.0).abs() < 1e-12)
     );
     assert_eq!(r.outer.entities.len(), 4);
+    assert!(r.contains([5.0, 5.0]) && !r.contains([20.0, 15.0]) && !r.contains([50.0, 5.0]));
     let expected = 1200.0 - std::f64::consts::PI * 16.0;
     assert!((r.area - expected).abs() < 1e-9, "{}", r.area);
 }

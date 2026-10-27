@@ -6,6 +6,7 @@
 //! parameter.
 
 use crate::i18n::{I18n, Lang};
+use crate::sketch_ui::{self, SketchMode, Tool, ViewInfo};
 use crate::theme::{Theme, ThemeMode};
 use crate::value_input::{FieldAction, ValueField};
 use crate::viewport::{Hit, Viewport3d, body_of};
@@ -35,6 +36,8 @@ pub struct AppOptions {
     pub theme: ThemeMode,
     /// Commands run before the first frame.
     pub startup: Vec<ScriptStep>,
+    /// Open this sketch feature (e.g. `F1`) in sketch mode after the startup commands.
+    pub edit_sketch: Option<String>,
 }
 
 /// Dock tabs.
@@ -52,6 +55,7 @@ enum Popover {
     Box,
     Cylinder,
     Boolean,
+    SketchPlane,
 }
 
 /// Operations that take one length, typed inline next to the cursor.
@@ -61,6 +65,7 @@ enum ValueOp {
     Fillet,
     Chamfer,
     Shell,
+    Extrude,
 }
 
 impl ValueOp {
@@ -70,6 +75,7 @@ impl ValueOp {
             "edge.fillet" => Self::Fillet,
             "edge.chamfer" => Self::Chamfer,
             "body.shell" => Self::Shell,
+            "solid.extrude" => Self::Extrude,
             _ => return None,
         })
     }
@@ -80,13 +86,14 @@ impl ValueOp {
             Self::Fillet => "edge.fillet",
             Self::Chamfer => "edge.chamfer",
             Self::Shell => "body.shell",
+            Self::Extrude => "solid.extrude",
         }
     }
 
     /// i18n key of the value's label.
     fn label_key(self) -> &'static str {
         match self {
-            Self::PushPull | Self::Chamfer => "ui.param.distance",
+            Self::PushPull | Self::Chamfer | Self::Extrude => "ui.param.distance",
             Self::Fillet => "ui.param.radius",
             Self::Shell => "ui.param.thickness",
         }
@@ -146,6 +153,7 @@ struct Forms {
     radius: f64,
     chamfer: f64,
     thickness: f64,
+    extrude: f64,
     bool_op: BoolOp,
     bool_target: Option<FeatureId>,
     bool_tool: Option<FeatureId>,
@@ -163,6 +171,7 @@ impl Default for Forms {
             radius: 5.0,
             chamfer: 2.0,
             thickness: 2.0,
+            extrude: 10.0,
             bool_op: BoolOp::Union,
             bool_target: None,
             bool_tool: None,
@@ -177,6 +186,7 @@ impl Forms {
             ValueOp::Fillet => self.radius,
             ValueOp::Chamfer => self.chamfer,
             ValueOp::Shell => self.thickness,
+            ValueOp::Extrude => self.extrude,
         }
     }
 
@@ -186,6 +196,7 @@ impl Forms {
             ValueOp::Fillet => self.radius = mm,
             ValueOp::Chamfer => self.chamfer = mm,
             ValueOp::Shell => self.thickness = mm,
+            ValueOp::Extrude => self.extrude = mm,
         }
     }
 }
@@ -224,6 +235,12 @@ struct State {
     /// The viewport's rectangle last frame (anchors inline fields).
     viewport_rect: Option<egui::Rect>,
     forms: Forms,
+    /// Sketch being edited, if in sketch mode.
+    sketch_mode: Option<SketchMode>,
+    /// Selected sketch region `(sketch, region)` (for extrusion).
+    region: Option<(FeatureId, u32)>,
+    /// The viewport's camera and placement last frame.
+    view: Option<ViewInfo>,
 }
 
 /// The Kubit desktop app.
@@ -277,9 +294,18 @@ impl KubitApp {
             pointer: None,
             viewport_rect: None,
             forms: Forms::default(),
+            sketch_mode: None,
+            region: None,
+            view: None,
         };
         for step in options.startup {
             state.execute(&step.command, step.params);
+        }
+        if let Some(id) = options
+            .edit_sketch
+            .and_then(|t| t.parse::<FeatureId>().ok())
+        {
+            state.enter_sketch(id);
         }
         Self { dock, state }
     }
@@ -287,15 +313,122 @@ impl KubitApp {
 
 impl State {
     /// Runs a command and refreshes the views from its events.
-    fn execute(&mut self, id: &str, params: Value) {
-        self.status = match self.session.execute(id, params) {
-            Ok(_) => Status::Done(id.to_owned()),
-            Err(e) => Status::Failed {
-                command: id.to_owned(),
-                detail: e.to_string(),
-            },
+    /// Runs a command and refreshes the views; returns the outcome's data on success.
+    fn execute(&mut self, id: &str, params: Value) -> Option<Value> {
+        let (status, data) = match self.session.execute(id, params) {
+            Ok(outcome) => (Status::Done(id.to_owned()), Some(outcome.data)),
+            Err(e) => (
+                Status::Failed {
+                    command: id.to_owned(),
+                    detail: e.to_string(),
+                },
+                None,
+            ),
         };
+        self.status = status;
         self.drain_events();
+        // Undo can remove the sketch being edited.
+        if let Some(m) = &self.sketch_mode
+            && !self.session.model().sketches.contains_key(&m.feature)
+        {
+            self.exit_sketch();
+        }
+        if let Some((sketch, region)) = self.region
+            && !self
+                .session
+                .model()
+                .sketches
+                .get(&sketch)
+                .is_some_and(|st| st.regions().iter().any(|r| r.id.0 == region))
+        {
+            self.region = None;
+        }
+        data
+    }
+
+    /// Enters sketch mode on sketch feature `id`.
+    fn enter_sketch(&mut self, id: FeatureId) {
+        let Some(normal) = self
+            .session
+            .model()
+            .sketches
+            .get(&id)
+            .map(|st| st.frame.normal)
+        else {
+            return;
+        };
+        self.inline = None;
+        self.popover = None;
+        self.region = None;
+        if !self.session.selection().faces.is_empty() || !self.session.selection().edges.is_empty()
+        {
+            self.execute("selection.set", json!({ "faces": [], "edges": [] }));
+        }
+        self.sketch_mode = Some(SketchMode::new(id));
+        let bounds = self
+            .session
+            .model()
+            .sketches
+            .get(&id)
+            .and_then(sketch_ui::bounds);
+        if let Some(vp) = &mut self.viewport {
+            vp.pick_enabled = false;
+            vp.look_along(normal);
+            if let Some(b) = bounds {
+                vp.fit_to(&b);
+            }
+        }
+    }
+
+    /// Leaves sketch mode.
+    fn exit_sketch(&mut self) {
+        self.sketch_mode = None;
+        if let Some(vp) = &mut self.viewport {
+            vp.pick_enabled = true;
+        }
+    }
+
+    /// Creates a sketch on `plane` and enters it.
+    fn new_sketch(&mut self, plane: Value) {
+        let id = self
+            .execute("sketch.create", json!({ "plane": plane }))
+            .and_then(|d| d.get("feature").and_then(Value::as_str).map(str::to_owned))
+            .and_then(|t| t.parse::<FeatureId>().ok());
+        if let Some(id) = id {
+            self.enter_sketch(id);
+        }
+    }
+
+    /// Sketches whose regions have not been extruded yet (drawn in 3D).
+    fn visible_sketches(&self) -> Vec<FeatureId> {
+        let used: std::collections::BTreeSet<String> = self
+            .session
+            .doc()
+            .features
+            .iter()
+            .filter(|f| f.command == "solid.extrude")
+            .filter_map(|f| {
+                f.params
+                    .get("sketch")
+                    .and_then(Value::as_str)
+                    .map(str::to_owned)
+            })
+            .collect();
+        self.session
+            .model()
+            .sketches
+            .keys()
+            .copied()
+            .filter(|id| !used.contains(&id.to_string()))
+            .collect()
+    }
+
+    /// The body a sketch's face plane belongs to (extrusions join or cut it).
+    fn sketch_body(&self, sketch: FeatureId) -> Option<FeatureId> {
+        let f = self.session.doc().feature(sketch)?;
+        let face = f.params.get("plane")?.get("face")?.as_str()?;
+        let name: kubit_doc::TopoName = face.parse().ok()?;
+        self.session.model().body_of_face(&name).map(|(id, _)| id)
     }
 
     fn drain_events(&mut self) {
@@ -355,7 +488,9 @@ impl State {
 
     /// Opens the inline value field of `op` next to the pointer, if the selection fits.
     fn start_value(&mut self, op: ValueOp) {
-        let missing = if op.needs_edges() {
+        let missing = if op == ValueOp::Extrude {
+            self.region.is_none().then_some("ui.param.need_region")
+        } else if op.needs_edges() {
             self.session
                 .selection()
                 .edges
@@ -398,21 +533,46 @@ impl State {
             ValueOp::Fillet => json!({ "edges": edges, "radius": mm }),
             ValueOp::Chamfer => json!({ "edges": edges, "distance": mm }),
             ValueOp::Shell => json!({ "faces": faces, "thickness": mm }),
+            ValueOp::Extrude => {
+                let Some((sketch, region)) = self.region else {
+                    return;
+                };
+                // On a body's face: out of it joins, into it cuts. Elsewhere: a new body.
+                match self.sketch_body(sketch) {
+                    Some(body) => json!({
+                        "sketch": sketch.to_string(), "region": region, "distance": mm,
+                        "op": if mm < 0.0 { "cut" } else { "join" }, "target": body.to_string(),
+                    }),
+                    None => json!({
+                        "sketch": sketch.to_string(), "region": region, "distance": mm, "op": "new",
+                    }),
+                }
+            }
         };
+        if op == ValueOp::Extrude {
+            self.region = None;
+        }
         self.execute(op.command(), params);
     }
 
     /// Commands that fit the current selection (context toolbar and menu).
     fn context_commands(&self) -> Vec<CommandSpec> {
         let sel = self.session.selection();
-        let ids: &[&str] = if !sel.edges.is_empty() {
+        let ids: &[&str] = if self.region.is_some() {
+            &["solid.extrude"]
+        } else if !sel.edges.is_empty() {
             &["edge.fillet", "edge.chamfer"]
         } else if !sel.faces.is_empty() {
-            &["face.push_pull", "body.shell"]
+            &["face.push_pull", "body.shell", "sketch.create"]
         } else if self.session.model().bodies.len() >= 2 {
-            &["solid.box", "solid.cylinder", "body.boolean"]
+            &[
+                "sketch.create",
+                "solid.box",
+                "solid.cylinder",
+                "body.boolean",
+            ]
         } else {
-            &["solid.box", "solid.cylinder"]
+            &["sketch.create", "solid.box", "solid.cylinder"]
         };
         ids.iter()
             .filter_map(|id| self.session.registry().get(id).copied())
@@ -455,6 +615,10 @@ impl State {
 
     /// Context toolbar over the viewport's top-left corner.
     fn context_toolbar(&mut self, ctx: &egui::Context, rect: egui::Rect) {
+        if self.sketch_mode.is_some() {
+            self.sketch_toolbar(ctx, rect);
+            return;
+        }
         let specs = self.context_commands();
         if specs.is_empty() {
             return;
@@ -472,6 +636,108 @@ impl State {
                     });
                 });
             });
+    }
+
+    /// Sketch tools, construction toggle, DOF and conflicts, and Finish.
+    fn sketch_toolbar(&mut self, ctx: &egui::Context, rect: egui::Rect) {
+        let Some(mode) = self.sketch_mode.as_ref() else {
+            return;
+        };
+        let feature = mode.feature;
+        let (tool, construction) = (mode.tool, mode.construction);
+        let state = self.session.model().sketches.get(&feature).cloned();
+        let i18n = self.i18n;
+        let p = self.theme.palette;
+        let mut pick = None;
+        let mut toggle = false;
+        let mut finish = false;
+        let mut remove = None;
+        egui::Area::new(egui::Id::new("kubit-context-toolbar"))
+            .order(egui::Order::Middle)
+            .fade_in(false)
+            .fixed_pos(rect.left_top() + egui::vec2(10.0, 10.0))
+            .show(ctx, |ui| {
+                egui::Frame::popup(ui.style()).show(ui, |ui| {
+                    ui.horizontal(|ui| {
+                        for t in Tool::ALL {
+                            let label = format!("{} ({:?})", i18n.tr(t.label_key()), t.key());
+                            if ui.selectable_label(tool == t, label).clicked() {
+                                pick = Some(t);
+                            }
+                        }
+                        ui.separator();
+                        if ui
+                            .selectable_label(
+                                construction,
+                                format!("{} (X)", i18n.tr("ui.sketch.construction")),
+                            )
+                            .clicked()
+                        {
+                            toggle = true;
+                        }
+                        ui.separator();
+                        if ui
+                            .button(RichText::new(i18n.tr("ui.sketch.finish")).strong())
+                            .clicked()
+                        {
+                            finish = true;
+                        }
+                    });
+                    if let Some(st) = &state {
+                        ui.horizontal(|ui| {
+                            let dof = st.report.dof;
+                            let (text, color) = if !st.report.conflicting.is_empty() {
+                                (i18n.tr("ui.sketch.conflict").to_owned(), p.error)
+                            } else if dof == 0 {
+                                (i18n.tr("ui.sketch.fully").to_owned(), p.ok)
+                            } else {
+                                (format!("{}: {dof}", i18n.tr("ui.sketch.dof")), p.hover)
+                            };
+                            ui.label(RichText::new(text).color(color));
+                            for c in &st.report.conflicting {
+                                let kind = st
+                                    .sketch
+                                    .constraints
+                                    .get(c)
+                                    .map_or("?", |r| r.constraint.kind());
+                                if ui
+                                    .button(format!("{} {c} ({kind})", i18n.tr("ui.sketch.remove")))
+                                    .clicked()
+                                {
+                                    remove = Some(*c);
+                                }
+                            }
+                            if !st.report.redundant.is_empty() {
+                                ui.label(
+                                    RichText::new(format!(
+                                        "{}: {}",
+                                        i18n.tr("ui.sketch.redundant"),
+                                        st.report.redundant.len()
+                                    ))
+                                    .color(p.text_weak),
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+        if let Some(mode) = self.sketch_mode.as_mut() {
+            if let Some(t) = pick {
+                mode.set_tool(t);
+            }
+            if toggle {
+                mode.construction = !mode.construction;
+            }
+        }
+        if let Some(c) = remove {
+            self.execute(
+                "sketch.delete",
+                json!({ "sketch": feature.to_string(), "constraints": [c.0] }),
+            );
+        }
+        if finish {
+            self.exit_sketch();
+        }
     }
 
     /// The right-click menu, if open.
@@ -517,6 +783,10 @@ impl State {
         match spec.id {
             "solid.box" => self.open_popover(Popover::Box),
             "solid.cylinder" => self.open_popover(Popover::Cylinder),
+            "sketch.create" => match self.single_face() {
+                Some(face) => self.new_sketch(json!({ "face": face })),
+                None => self.open_popover(Popover::SketchPlane),
+            },
             "body.boolean" => {
                 let bodies: Vec<FeatureId> = self.session.model().bodies.keys().copied().collect();
                 self.forms.bool_target = bodies.first().copied();
@@ -550,7 +820,9 @@ impl State {
                     self.execute(spec.id, json!({ "path": path }));
                 }
             }
-            id => self.execute(id, json!({})),
+            id => {
+                self.execute(id, json!({}));
+            }
         }
     }
 
@@ -742,6 +1014,7 @@ impl State {
 
     fn features_panel(&mut self, ui: &mut Ui) {
         let p = self.theme.palette;
+        let mut reopen = None;
         egui::ScrollArea::vertical().show(ui, |ui| {
             let doc = self.session.doc();
             if doc.features.is_empty() {
@@ -769,7 +1042,10 @@ impl State {
                             .monospace()
                             .color(p.text_weak),
                     );
-                    ui.label(label);
+                    let item = ui.add(egui::Label::new(label).sense(egui::Sense::click()));
+                    if f.command == "sketch.create" && item.double_clicked() {
+                        reopen = Some(f.id);
+                    }
                 });
             }
             ui.add_space(self.theme.spacing.lg);
@@ -787,6 +1063,117 @@ impl State {
                 ui.label(RichText::new(name).monospace());
             }
         });
+        if let Some(id) = reopen {
+            self.enter_sketch(id);
+        }
+    }
+
+    fn sketch_colors(&self) -> sketch_ui::Palette {
+        let p = self.theme.palette;
+        sketch_ui::Palette {
+            fully: p.text,
+            under: p.hover,
+            over: p.error,
+            selected: p.accent,
+            hover: p.hover,
+            text: p.text,
+            label_bg: p.panel.gamma_multiply(0.9),
+        }
+    }
+
+    /// Sketch mode for this frame: input, commands, drawing and keys.
+    fn sketch_frame(&mut self, ui: &mut Ui, response: &crate::viewport::ViewportResponse) {
+        let (Some(view), Some(mut mode)) = (response.view, self.sketch_mode.take()) else {
+            return;
+        };
+        let Some(state) = self.session.model().sketches.get(&mode.feature).cloned() else {
+            self.exit_sketch();
+            return;
+        };
+        let mut commands = Vec::new();
+        if let Some(r) = &response.response {
+            commands.extend(mode.input(ui, r, &view, &state).commands);
+        }
+        let typing = ui.ctx().egui_wants_keyboard_input();
+        if !typing {
+            for tool in Tool::ALL {
+                if ui.input_mut(|i| i.consume_key(Modifiers::NONE, tool.key())) {
+                    mode.set_tool(tool);
+                }
+            }
+            if ui.input_mut(|i| i.consume_key(Modifiers::NONE, Key::X)) {
+                mode.construction = !mode.construction;
+            }
+            if ui.input_mut(|i| {
+                i.consume_key(Modifiers::NONE, Key::Delete)
+                    || i.consume_key(Modifiers::NONE, Key::Backspace)
+            }) && let Some(c) = mode.delete_selection()
+            {
+                commands.push(c);
+            }
+        }
+        let colors = self.sketch_colors();
+        let messages = [self.tr("ui.value.invalid"), self.tr("ui.value.not_length")];
+        let ctx = ui.ctx().clone();
+        if let Some(c) =
+            mode.dimension_field(&ctx, &state.sketch, self.theme.palette.error, messages)
+        {
+            commands.push(c);
+        }
+        let escape = !typing && ui.input_mut(|i| i.consume_key(Modifiers::NONE, Key::Escape));
+        let painter = ui.painter().with_clip_rect(view.rect);
+        mode.paint(
+            &painter,
+            &view,
+            &state,
+            &colors,
+            response.response.as_ref().and_then(|r| r.hover_pos()),
+        );
+        ctx.request_repaint();
+        let leave = escape && !mode.busy();
+        if escape {
+            mode.cancel();
+        }
+        self.sketch_mode = Some(mode);
+        for (id, params) in commands {
+            self.execute(id, params);
+        }
+        if leave {
+            self.exit_sketch();
+        }
+    }
+
+    /// Draws unextruded sketches in 3D and returns the region under a click.
+    fn sketches_3d(
+        &mut self,
+        ui: &mut Ui,
+        response: &crate::viewport::ViewportResponse,
+    ) -> Option<(FeatureId, u32)> {
+        let view = response.view?;
+        let colors = self.sketch_colors();
+        let painter = ui.painter().with_clip_rect(view.rect);
+        let pointer = response.response.as_ref().and_then(|r| r.hover_pos());
+        let mut hovered = None;
+        for id in self.visible_sketches() {
+            let Some(state) = self.session.model().sketches.get(&id) else {
+                continue;
+            };
+            sketch_ui::paint_sketch(&painter, &view, state, &state.sketch, &colors, None);
+            for region in state.regions() {
+                let selected = self.region == Some((id, region.id.0));
+                if selected {
+                    sketch_ui::paint_region(&painter, &view, state, &region, colors.selected);
+                }
+            }
+            if hovered.is_none()
+                && let Some(p) = pointer
+                && let Some(region) = sketch_ui::region_at(&view, state, p)
+            {
+                sketch_ui::paint_region(&painter, &view, state, &region, colors.hover);
+                hovered = Some((id, region.id.0));
+            }
+        }
+        hovered
     }
 
     fn viewport_tab(&mut self, ui: &mut Ui) {
@@ -803,6 +1190,14 @@ impl State {
             ui.ctx().request_repaint();
         }
         self.viewport_rect = Some(rect);
+        self.view = response.view;
+        if self.sketch_mode.is_some() {
+            self.sketch_frame(ui, &response);
+            let ctx = ui.ctx().clone();
+            self.context_toolbar(&ctx, rect);
+            return;
+        }
+        let region_hit = self.sketches_3d(ui, &response);
         if let Some(at) = response.context {
             self.menu_at = Some(at);
         }
@@ -815,6 +1210,13 @@ impl State {
         let ctx = ui.ctx().clone();
         self.context_toolbar(&ctx, rect);
         if let Some(hit) = response.clicked {
+            // A sketch region drawn over a face takes the click.
+            if let Some(region) = region_hit {
+                self.region = Some(region);
+                self.execute("selection.set", json!({ "faces": [], "edges": [] }));
+                return;
+            }
+            self.region = None;
             let (mut faces, mut edges): (Vec<String>, Vec<String>) = if response.shift {
                 let sel = self.session.selection();
                 (
@@ -857,11 +1259,13 @@ impl State {
             Popover::Box => self.tr("cmd.solid.box"),
             Popover::Cylinder => self.tr("cmd.solid.cylinder"),
             Popover::Boolean => self.tr("cmd.body.boolean"),
+            Popover::SketchPlane => self.tr("ui.sketch.pick_plane"),
         };
         let bodies: Vec<FeatureId> = self.session.model().bodies.keys().copied().collect();
         let mut open = true;
         let mut apply = false;
         let mut cancel = false;
+        let mut plane_choice: Option<&str> = None;
         egui::Window::new(title)
             .id(egui::Id::new("kubit-popover"))
             .collapsible(false)
@@ -905,6 +1309,16 @@ impl State {
                             }
                         });
                     }
+                    Popover::SketchPlane => {
+                        ui.label(i18n.tr("ui.sketch.plane_hint"));
+                        ui.horizontal(|ui| {
+                            for plane in ["XY", "XZ", "YZ"] {
+                                if ui.button(plane).clicked() {
+                                    plane_choice = Some(plane);
+                                }
+                            }
+                        });
+                    }
                     Popover::Boolean => {
                         ui.horizontal(|ui| {
                             for op in BoolOp::ALL {
@@ -942,6 +1356,7 @@ impl State {
                                 && forms.bool_target != forms.bool_tool
                         }
                         Popover::Box | Popover::Cylinder => true,
+                        Popover::SketchPlane => false,
                     };
                     apply = ui
                         .add_enabled(can_apply, egui::Button::new(i18n.tr("ui.apply")))
@@ -954,14 +1369,19 @@ impl State {
         if apply {
             let f = self.forms;
             match which {
-                Popover::Box => self.execute(
-                    "solid.box",
-                    json!({ "origin": f.box_origin, "size": f.box_size }),
-                ),
-                Popover::Cylinder => self.execute(
-                    "solid.cylinder",
-                    json!({ "origin": f.cyl_origin, "radius": f.cyl_radius, "height": f.cyl_height }),
-                ),
+                Popover::Box => {
+                    self.execute(
+                        "solid.box",
+                        json!({ "origin": f.box_origin, "size": f.box_size }),
+                    );
+                }
+                Popover::Cylinder => {
+                    self.execute(
+                        "solid.cylinder",
+                        json!({ "origin": f.cyl_origin, "radius": f.cyl_radius, "height": f.cyl_height }),
+                    );
+                }
+                Popover::SketchPlane => {}
                 Popover::Boolean => {
                     if let (Some(target), Some(tool)) = (f.bool_target, f.bool_tool) {
                         self.execute(
@@ -976,8 +1396,11 @@ impl State {
                 }
             }
         }
-        if apply || cancel || !open {
+        if apply || cancel || !open || plane_choice.is_some() {
             self.popover = None;
+        }
+        if let Some(plane) = plane_choice {
+            self.new_sketch(json!(plane));
         }
     }
 
@@ -993,7 +1416,7 @@ impl State {
         // Most specific first, so Ctrl+Shift+Z is not taken by Ctrl+Z.
         specs.sort_by_key(|(k, _)| std::cmp::Reverse(modifier_count(k.modifiers)));
         for (shortcut, spec) in specs {
-            if typing && shortcut.modifiers.is_none() {
+            if (typing || self.sketch_mode.is_some()) && shortcut.modifiers.is_none() {
                 continue;
             }
             if ctx.input_mut(|i| i.consume_shortcut(&shortcut))

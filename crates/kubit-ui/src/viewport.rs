@@ -7,6 +7,7 @@
 //! one, so hovering never blocks the UI thread on a GPU readback.
 
 use crate::handle::{self, Arrow, FaceFrame};
+use crate::sketch_ui::{ViewInfo, facing};
 use crate::triad;
 use crate::value_input::format_mm;
 use eframe::egui_wgpu::{self, wgpu};
@@ -228,8 +229,12 @@ struct PullDrag {
 }
 
 /// What happened in the viewport this frame.
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default)]
 pub struct ViewportResponse {
+    /// The camera and screen placement this frame (for overlays).
+    pub view: Option<ViewInfo>,
+    /// The viewport's egui response (sketch mode reads clicks and drags from it).
+    pub response: Option<egui::Response>,
     /// The push/pull handle was released after dragging this far, mm.
     pub pull: Option<f64>,
     /// A right click (no drag) at this position: open the context menu.
@@ -256,6 +261,8 @@ pub struct Viewport3d {
     /// The face carrying the push/pull arrow (the only selected face).
     pull_face: Option<FaceHit>,
     pull: Option<PullDrag>,
+    /// Face/edge picking, hover and the push/pull handle (off in sketch mode).
+    pub pick_enabled: bool,
     last_cursor: Option<[f64; 2]>,
     fitted: bool,
 }
@@ -282,6 +289,7 @@ impl Viewport3d {
             face_frames: BTreeMap::new(),
             pull_face: None,
             pull: None,
+            pick_enabled: true,
             last_cursor: None,
             fitted: false,
         })
@@ -407,12 +415,25 @@ impl Viewport3d {
             .map(|e| e.points.as_slice())
     }
 
+    /// Frames `bounds` (e.g. a sketch) instead of the bodies.
+    pub fn fit_to(&mut self, bounds: &kubit_mesh::Aabb) {
+        let aspect = self.target.as_ref().map_or(16.0 / 9.0, |t| t.size.aspect());
+        self.camera.fit(bounds, aspect);
+    }
+
     /// Frames every body.
     pub fn fit(&mut self) {
         let aspect = self.target.as_ref().map_or(16.0 / 9.0, |t| t.size.aspect());
         if let Some(bounds) = self.renderer.bounds() {
             self.camera.fit(&bounds, aspect);
         }
+    }
+
+    /// Looks straight at a plane from the side its `normal` points to.
+    pub fn look_along(&mut self, normal: [f64; 3]) {
+        let (yaw, pitch) = facing(normal);
+        self.camera.yaw = yaw.rem_euclid(std::f64::consts::TAU);
+        self.camera.pitch = pitch;
     }
 
     /// Switches to a standard view and frames the bodies.
@@ -433,6 +454,10 @@ impl Viewport3d {
         let cursor = response.hover_pos().map(|p| to_px(p - rect.min, ppp));
 
         self.navigate(ui, &response, rect, size, ppp);
+        let cursor = cursor.filter(|_| self.pick_enabled);
+        if !self.pick_enabled {
+            self.pull = None;
+        }
         self.update_hover(cursor, size, response.dragged());
         self.hovered_edge = match cursor {
             Some(c) if !response.dragged() => self.edge_at(self.hovered, c, size, ppp),
@@ -457,6 +482,7 @@ impl Viewport3d {
             .map(|p| to_px(p - rect.min, ppp));
         let handle_arrow = self
             .pull_face
+            .filter(|_| self.pick_enabled)
             .and_then(|f| self.face_frames.get(&f))
             .and_then(|frame| {
                 handle::arrow(&self.camera, size, frame, 0.0, handle::ARROW_PX * ppp)
@@ -495,7 +521,7 @@ impl Viewport3d {
         if response.clicked_by(PointerButton::Primary) {
             if let Some(tip) = triad_hover {
                 self.set_view(tip.view());
-            } else {
+            } else if self.pick_enabled {
                 out.shift = ui.input(|i| i.modifiers.shift);
                 out.clicked = Some(cursor.and_then(|c| {
                     let face = self.renderer.pick(&self.camera, size, c).ok().flatten();
@@ -539,7 +565,7 @@ impl Viewport3d {
         for hit in &self.selected_edges {
             stroke_edge(*hit, opaque(style.selected));
         }
-        if let Some(face) = self.pull_face
+        if let Some(face) = self.pull_face.filter(|_| self.pick_enabled)
             && let Some(frame) = self.face_frames.get(&face).copied()
         {
             let offset = self.pull.map_or(0.0, |d| d.mm);
@@ -612,6 +638,14 @@ impl Viewport3d {
             opaque(style.face),
             triad_hover,
         );
+        out.view = Some(ViewInfo {
+            camera: self.camera,
+            size,
+            rect,
+            ppp,
+        });
+        // A triad click is the triad's, not the sketch's.
+        out.response = triad_hover.is_none().then_some(response);
         out
     }
 

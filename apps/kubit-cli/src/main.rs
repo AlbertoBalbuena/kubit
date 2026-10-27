@@ -4,6 +4,7 @@
 //! nothing here opens a dialog.
 
 mod backend;
+mod snapshot;
 
 use clap::{Parser, Subcommand};
 use kubit_engine::{CommandError, Session};
@@ -56,6 +57,32 @@ enum Cmd {
     },
     /// List every registered command with its description.
     Commands,
+    /// Serve the command registry as MCP tools over stdin/stdout.
+    Mcp {
+        /// Hide and refuse commands that change the document.
+        #[arg(long)]
+        read_only: bool,
+        /// Expose commands that read or write files on this machine.
+        #[arg(long)]
+        allow_files: bool,
+    },
+    /// Render a document or script offscreen to a PNG (no window).
+    Snapshot {
+        /// A .kubit/.json document, or a JSON script like `run` takes.
+        input: PathBuf,
+        /// PNG to write.
+        #[arg(long)]
+        out: PathBuf,
+        /// Standard view: iso, top, bottom, front, back, left, right.
+        #[arg(long, default_value = "iso")]
+        view: String,
+        /// Image width in pixels.
+        #[arg(long, default_value_t = 800)]
+        width: u32,
+        /// Image height in pixels.
+        #[arg(long, default_value_t = 600)]
+        height: u32,
+    },
 }
 
 #[derive(Deserialize)]
@@ -71,7 +98,7 @@ struct Step {
 }
 
 #[derive(Debug)]
-enum CliError {
+pub(crate) enum CliError {
     Io(String),
     Script(String),
     Command { step: String, error: CommandError },
@@ -138,18 +165,66 @@ fn write_outputs(s: &mut Session, json_out: bool, outs: &[PathBuf]) -> Result<()
     Ok(())
 }
 
+fn run_script(s: &mut Session, json_out: bool, script: &Path) -> Result<(), CliError> {
+    let text = std::fs::read_to_string(script)
+        .map_err(|e| CliError::Io(format!("{}: {e}", script.display())))?;
+    let script: Script =
+        serde_json::from_str(&text).map_err(|e| CliError::Script(e.to_string()))?;
+    for step in script.commands {
+        exec(s, json_out, &step.command, step.params)?;
+    }
+    Ok(())
+}
+
+/// `kubit-cli mcp`: the session lives on the server's actor thread.
+fn serve_mcp(read_only: bool, allow_files: bool) -> Result<(), CliError> {
+    let options = kubit_mcp::ServerOptions {
+        read_only,
+        allow_files,
+    };
+    // A current-thread runtime is enough: the session runs on its own actor thread.
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .map_err(|e| CliError::Io(format!("tokio runtime: {e}")))?;
+    runtime
+        .block_on(kubit_mcp::serve_stdio(backend::factory, options))
+        .map_err(|e| CliError::Io(e.to_string()))
+}
+
 fn run(cli: Cli) -> Result<(), CliError> {
     let mut s = Session::new(backend::factory());
     match cli.command {
         Cmd::Run { script, out } => {
-            let text = std::fs::read_to_string(&script)
-                .map_err(|e| CliError::Io(format!("{}: {e}", script.display())))?;
-            let script: Script =
-                serde_json::from_str(&text).map_err(|e| CliError::Script(e.to_string()))?;
-            for step in script.commands {
-                exec(&mut s, cli.json, &step.command, step.params)?;
-            }
+            run_script(&mut s, cli.json, &script)?;
             write_outputs(&mut s, cli.json, &out)
+        }
+        Cmd::Mcp {
+            read_only,
+            allow_files,
+        } => serve_mcp(read_only, allow_files),
+        Cmd::Snapshot {
+            input,
+            out,
+            view,
+            width,
+            height,
+        } => {
+            if snapshot::is_script(&input)? {
+                run_script(&mut s, cli.json, &input)?;
+            } else {
+                exec(&mut s, cli.json, "doc.open", json!({ "path": input }))?;
+            }
+            let png = snapshot::render(&mut s, &view, width, height)?;
+            std::fs::write(&out, png)
+                .map_err(|e| CliError::Io(format!("{}: {e}", out.display())))?;
+            if !cli.json {
+                println!(
+                    "snapshot: wrote {} ({width}×{height}, {view})",
+                    out.display()
+                );
+            }
+            Ok(())
         }
         Cmd::Export { document, out } => {
             exec(&mut s, cli.json, "doc.open", json!({ "path": document }))?;

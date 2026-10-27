@@ -765,8 +765,11 @@ dependencies = [
  "kubit-engine",
  "kubit-io",
  "kubit-kernel-api",
+ "kubit-mcp",
+ "kubit-render",
  "serde",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]

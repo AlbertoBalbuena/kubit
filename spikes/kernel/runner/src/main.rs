@@ -256,7 +256,13 @@ fn run_one(backend: &dyn Backend, case: &str) -> Record {
     };
     let tol = if c.test == 13 { corpus::tessellation_tol(case) } else { MEASURE_TOL };
     let mut times = Vec::new();
+    // Repeats are for timing noise only; stop early when one pass (operation plus
+    // tessellation and measurement) is already slow, so costly cases fit the timeout.
+    let started = std::time::Instant::now();
     for i in 0..REPEATS {
+        if i > 0 && started.elapsed().as_secs_f64() > 10.0 {
+            break;
+        }
         match guarded(|| backend.run(case, tol)) {
             Outcome::Ok(p) => {
                 times.push(p.op_seconds);

@@ -14,6 +14,7 @@ kubit-engine.workspace = true
 kubit-doc.workspace = true
 kubit-mesh.workspace = true
 kubit-render.workspace = true
+kubit-math.workspace = true
 egui.workspace = true
 eframe.workspace = true
 egui_dock.workspace = true

@@ -5,10 +5,12 @@
 //! `docs/ARCHITECTURE.md`.
 
 mod app;
+mod handle;
 pub mod i18n;
 mod screenshot;
 pub mod theme;
 mod triad;
+mod value_input;
 pub mod viewport;
 
 pub use app::{AppOptions, KubitApp, ScriptStep, Tab, parse_shortcut};

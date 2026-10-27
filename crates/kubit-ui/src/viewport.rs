@@ -6,7 +6,9 @@
 //! Picking is asynchronous: a pick is submitted on one frame and resolved on a later
 //! one, so hovering never blocks the UI thread on a GPU readback.
 
+use crate::handle::{self, Arrow, FaceFrame};
 use crate::triad;
+use crate::value_input::format_mm;
 use eframe::egui_wgpu::{self, wgpu};
 use egui::{PointerButton, Rect, Sense, Ui};
 use kubit_doc::FeatureId;
@@ -214,9 +216,24 @@ impl Target {
     }
 }
 
+/// A push/pull handle drag in progress.
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct PullDrag {
+    /// Pointer at the start of the drag, physical pixels.
+    press: [f64; 2],
+    /// The arrow when the drag started (the scale of the drag).
+    arrow: Arrow,
+    /// Current snapped distance, mm.
+    mm: f64,
+}
+
 /// What happened in the viewport this frame.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct ViewportResponse {
+    /// The push/pull handle was released after dragging this far, mm.
+    pub pull: Option<f64>,
+    /// A right click (no drag) at this position: open the context menu.
+    pub context: Option<egui::Pos2>,
     /// A primary click: the edge or face under the cursor, or `None` for empty space.
     pub clicked: Option<Option<Hit>>,
     /// Whether Shift was held on that click (add to the selection).
@@ -235,6 +252,10 @@ pub struct Viewport3d {
     hovered_edge: Option<EdgeHit>,
     edges: BTreeMap<MeshId, Vec<EdgeEntry>>,
     selected_edges: Vec<EdgeHit>,
+    face_frames: BTreeMap<FaceHit, FaceFrame>,
+    /// The face carrying the push/pull arrow (the only selected face).
+    pull_face: Option<FaceHit>,
+    pull: Option<PullDrag>,
     last_cursor: Option<[f64; 2]>,
     fitted: bool,
 }
@@ -258,6 +279,9 @@ impl Viewport3d {
             hovered_edge: None,
             edges: BTreeMap::new(),
             selected_edges: Vec::new(),
+            face_frames: BTreeMap::new(),
+            pull_face: None,
+            pull: None,
             last_cursor: None,
             fitted: false,
         })
@@ -285,6 +309,7 @@ impl Viewport3d {
             self.renderer.remove(m);
         }
         self.edges.clear();
+        self.face_frames.clear();
         for body in bodies {
             let mesh = session
                 .body_mesh(body, CHORD_MM)
@@ -292,6 +317,9 @@ impl Viewport3d {
             self.renderer
                 .upload(mesh_id(body), mesh)
                 .map_err(|e| e.to_string())?;
+            for (tag, frame) in handle::face_frames(mesh) {
+                self.face_frames.insert((mesh_id(body), tag), frame);
+            }
             let polylines = mesh.edges.clone();
             let entries = polylines
                 .into_iter()
@@ -327,6 +355,10 @@ impl Viewport3d {
             })
             .collect();
         self.renderer.set_selected(&faces);
+        self.pull_face = (faces.len() == 1 && session.selection().edges.is_empty())
+            .then(|| faces.first().copied())
+            .flatten();
+        self.pull = None;
         self.selected_edges = session
             .selection()
             .edges
@@ -420,6 +452,46 @@ impl Viewport3d {
             .and_then(|p| triad::hit(&frame, triad_center, p));
 
         let mut out = ViewportResponse::default();
+        let pointer = ui
+            .input(|i| i.pointer.latest_pos())
+            .map(|p| to_px(p - rect.min, ppp));
+        let handle_arrow = self
+            .pull_face
+            .and_then(|f| self.face_frames.get(&f))
+            .and_then(|frame| {
+                handle::arrow(&self.camera, size, frame, 0.0, handle::ARROW_PX * ppp)
+            });
+        let near_handle = match (handle_arrow, cursor) {
+            (Some(a), Some(c)) => {
+                handle::distance_to_segment(a.start, a.end, c) <= handle::GRAB_PX * ppp
+            }
+            _ => false,
+        };
+        if response.drag_started_by(PointerButton::Primary)
+            && near_handle
+            && let (Some(arrow), Some(press)) = (handle_arrow, cursor)
+        {
+            self.pull = Some(PullDrag {
+                press,
+                arrow,
+                mm: 0.0,
+            });
+        }
+        if let Some(drag) = &mut self.pull {
+            if let Some(now) = pointer {
+                let raw = handle::drag_distance(&drag.arrow, drag.press, now);
+                drag.mm = handle::snap(raw, handle::snap_step(&self.camera));
+            }
+            if !ui.input(|i| i.pointer.primary_down()) {
+                if drag.mm != 0.0 {
+                    out.pull = Some(drag.mm);
+                }
+                self.pull = None;
+            }
+        }
+        if response.clicked_by(PointerButton::Secondary) {
+            out.context = response.interact_pointer_pos();
+        }
         if response.clicked_by(PointerButton::Primary) {
             if let Some(tip) = triad_hover {
                 self.set_view(tip.view());
@@ -466,6 +538,64 @@ impl Viewport3d {
         };
         for hit in &self.selected_edges {
             stroke_edge(*hit, opaque(style.selected));
+        }
+        if let Some(face) = self.pull_face
+            && let Some(frame) = self.face_frames.get(&face).copied()
+        {
+            let offset = self.pull.map_or(0.0, |d| d.mm);
+            let lit = self.pull.is_some() || near_handle;
+            // Lighter than the selected face it stands on, outlined so it reads on any shade.
+            let color = opaque(if lit { style.face } else { style.hover });
+            let outline = opaque(style.edge);
+            if let Some(a) =
+                handle::arrow(&self.camera, size, &frame, offset, handle::ARROW_PX * ppp)
+            {
+                let at =
+                    |p: [f64; 2]| rect.min + egui::vec2((p[0] / ppp) as f32, (p[1] / ppp) as f32);
+                let (start, end) = (at(a.start), at(a.end));
+                let width = if lit { 3.5 } else { 2.5 };
+                painter.line_segment([start, end], egui::Stroke::new(width + 2.0, outline));
+                painter.line_segment([start, end], egui::Stroke::new(width, color));
+                let dir = (end - start).normalized();
+                let side = egui::vec2(-dir.y, dir.x) * 7.0;
+                painter.add(egui::Shape::convex_polygon(
+                    vec![end + dir * 12.0, end + side, end - side],
+                    color,
+                    egui::Stroke::new(1.0, outline),
+                ));
+                painter.circle(start, 4.0, color, egui::Stroke::new(1.0, outline));
+                if let Some(drag) = self.pull {
+                    painter.text(
+                        end + dir * 18.0 + egui::vec2(8.0, 0.0),
+                        egui::Align2::LEFT_CENTER,
+                        format_mm(drag.mm),
+                        egui::FontId::monospace(13.0),
+                        color,
+                    );
+                }
+            }
+            // Preview: the face outline moved along its normal.
+            if let Some(drag) = self.pull
+                && let Some(list) = self.edges.get(&face.0)
+            {
+                let n = frame.normal;
+                let moved = |p: [f64; 3]| {
+                    [
+                        p[0] + n[0] * drag.mm,
+                        p[1] + n[1] * drag.mm,
+                        p[2] + n[2] * drag.mm,
+                    ]
+                };
+                for e in list.iter().filter(|e| e.faces.contains(&Some(face.1))) {
+                    for pair in e.points.windows(2) {
+                        if let [a, b] = pair
+                            && let (Some(a), Some(b)) = (to_screen(moved(*a)), to_screen(moved(*b)))
+                        {
+                            painter.line_segment([a, b], egui::Stroke::new(2.0, color));
+                        }
+                    }
+                }
+            }
         }
         if let Some(hit) = self.hovered_edge {
             stroke_edge(hit, opaque(style.hover));

@@ -7,10 +7,12 @@
 
 use crate::i18n::{I18n, Lang};
 use crate::theme::{Theme, ThemeMode};
+use crate::value_input::{FieldAction, ValueField};
 use crate::viewport::{Hit, Viewport3d, body_of};
 use eframe::egui_wgpu;
 use egui::{Key, KeyboardShortcut, Modifiers, RichText, Ui};
 use egui_dock::{DockArea, DockState, NodeIndex, TabViewer};
+use kubit_doc::FeatureId;
 use kubit_engine::{CommandSpec, Enablement, Event, FeatureStatus, KernelFactory, Session};
 use kubit_render::StandardView;
 use serde_json::{Value, json};
@@ -44,19 +46,109 @@ pub enum Tab {
     Features,
 }
 
-/// Which parameter popover is open.
+/// Which multi-field parameter window is open.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Popover {
     Box,
-    PushPull,
+    Cylinder,
+    Boolean,
 }
 
-/// Parameters edited in the popovers (kept between uses).
+/// Operations that take one length, typed inline next to the cursor.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum ValueOp {
+    PushPull,
+    Fillet,
+    Chamfer,
+    Shell,
+}
+
+impl ValueOp {
+    fn from_command(id: &str) -> Option<Self> {
+        Some(match id {
+            "face.push_pull" => Self::PushPull,
+            "edge.fillet" => Self::Fillet,
+            "edge.chamfer" => Self::Chamfer,
+            "body.shell" => Self::Shell,
+            _ => return None,
+        })
+    }
+
+    fn command(self) -> &'static str {
+        match self {
+            Self::PushPull => "face.push_pull",
+            Self::Fillet => "edge.fillet",
+            Self::Chamfer => "edge.chamfer",
+            Self::Shell => "body.shell",
+        }
+    }
+
+    /// i18n key of the value's label.
+    fn label_key(self) -> &'static str {
+        match self {
+            Self::PushPull | Self::Chamfer => "ui.param.distance",
+            Self::Fillet => "ui.param.radius",
+            Self::Shell => "ui.param.thickness",
+        }
+    }
+
+    /// Fillet and chamfer act on edges; push/pull and shell on faces.
+    fn needs_edges(self) -> bool {
+        matches!(self, Self::Fillet | Self::Chamfer)
+    }
+}
+
+/// The inline value field of a [`ValueOp`] being entered.
+#[derive(Clone, Debug, PartialEq)]
+struct InlineValue {
+    op: ValueOp,
+    field: ValueField,
+    anchor: egui::Pos2,
+}
+
+/// Boolean operation picked in the Combine window.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum BoolOp {
+    Union,
+    Subtract,
+    Intersect,
+}
+
+impl BoolOp {
+    const ALL: [Self; 3] = [Self::Union, Self::Subtract, Self::Intersect];
+
+    fn param(self) -> &'static str {
+        match self {
+            Self::Union => "union",
+            Self::Subtract => "subtract",
+            Self::Intersect => "intersect",
+        }
+    }
+
+    fn label_key(self) -> &'static str {
+        match self {
+            Self::Union => "ui.bool.union",
+            Self::Subtract => "ui.bool.subtract",
+            Self::Intersect => "ui.bool.intersect",
+        }
+    }
+}
+
+/// Parameters edited in the windows and inline fields (kept between uses).
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct Forms {
     box_origin: [f64; 3],
     box_size: [f64; 3],
+    cyl_origin: [f64; 3],
+    cyl_radius: f64,
+    cyl_height: f64,
     distance: f64,
+    radius: f64,
+    chamfer: f64,
+    thickness: f64,
+    bool_op: BoolOp,
+    bool_target: Option<FeatureId>,
+    bool_tool: Option<FeatureId>,
 }
 
 impl Default for Forms {
@@ -64,7 +156,36 @@ impl Default for Forms {
         Self {
             box_origin: [0.0; 3],
             box_size: [100.0, 60.0, 40.0],
+            cyl_origin: [0.0; 3],
+            cyl_radius: 20.0,
+            cyl_height: 40.0,
             distance: 10.0,
+            radius: 5.0,
+            chamfer: 2.0,
+            thickness: 2.0,
+            bool_op: BoolOp::Union,
+            bool_target: None,
+            bool_tool: None,
+        }
+    }
+}
+
+impl Forms {
+    fn last(&self, op: ValueOp) -> f64 {
+        match op {
+            ValueOp::PushPull => self.distance,
+            ValueOp::Fillet => self.radius,
+            ValueOp::Chamfer => self.chamfer,
+            ValueOp::Shell => self.thickness,
+        }
+    }
+
+    fn remember(&mut self, op: ValueOp, mm: f64) {
+        match op {
+            ValueOp::PushPull => self.distance = mm,
+            ValueOp::Fillet => self.radius = mm,
+            ValueOp::Chamfer => self.chamfer = mm,
+            ValueOp::Shell => self.thickness = mm,
         }
     }
 }
@@ -95,6 +216,13 @@ struct State {
     viewport: Option<Viewport3d>,
     status: Status,
     popover: Option<Popover>,
+    inline: Option<InlineValue>,
+    /// Where the right-click menu is open.
+    menu_at: Option<egui::Pos2>,
+    /// Pointer position at the start of the frame (anchors inline fields).
+    pointer: Option<egui::Pos2>,
+    /// The viewport's rectangle last frame (anchors inline fields).
+    viewport_rect: Option<egui::Rect>,
     forms: Forms,
 }
 
@@ -144,6 +272,10 @@ impl KubitApp {
             },
             viewport,
             popover: None,
+            inline: None,
+            menu_at: None,
+            pointer: None,
+            viewport_rect: None,
             forms: Forms::default(),
         };
         for step in options.startup {
@@ -196,11 +328,206 @@ impl State {
             .flatten()
     }
 
+    fn open_popover(&mut self, which: Popover) {
+        self.inline = None;
+        self.popover = Some(which);
+    }
+
+    /// Selected face names.
+    fn selected_faces(&self) -> Vec<String> {
+        self.session
+            .selection()
+            .faces
+            .iter()
+            .map(ToString::to_string)
+            .collect()
+    }
+
+    /// Selected edge names.
+    fn selected_edges(&self) -> Vec<String> {
+        self.session
+            .selection()
+            .edges
+            .iter()
+            .map(ToString::to_string)
+            .collect()
+    }
+
+    /// Opens the inline value field of `op` next to the pointer, if the selection fits.
+    fn start_value(&mut self, op: ValueOp) {
+        let missing = if op.needs_edges() {
+            self.session
+                .selection()
+                .edges
+                .is_empty()
+                .then_some("ui.param.need_edge")
+        } else {
+            self.session
+                .selection()
+                .faces
+                .is_empty()
+                .then_some("ui.param.need_face")
+        };
+        if let Some(key) = missing {
+            self.status = Status::Error(key.to_owned());
+            return;
+        }
+        let rect = self.viewport_rect;
+        let pointer = self.pointer.filter(|p| rect.is_none_or(|r| r.contains(*p)));
+        let anchor = pointer
+            .or(rect.map(|r| r.center()))
+            .unwrap_or(egui::pos2(240.0, 160.0));
+        self.popover = None;
+        self.inline = Some(InlineValue {
+            op,
+            field: ValueField::new(self.forms.last(op)),
+            anchor,
+        });
+    }
+
+    /// Runs `op` on the selection with `mm`.
+    fn apply_value(&mut self, op: ValueOp, mm: f64) {
+        self.forms.remember(op, mm);
+        let faces = self.selected_faces();
+        let edges = self.selected_edges();
+        let params = match op {
+            ValueOp::PushPull => match faces.as_slice() {
+                [one] => json!({ "face": one, "distance": mm }),
+                _ => json!({ "faces": faces, "distance": mm }),
+            },
+            ValueOp::Fillet => json!({ "edges": edges, "radius": mm }),
+            ValueOp::Chamfer => json!({ "edges": edges, "distance": mm }),
+            ValueOp::Shell => json!({ "faces": faces, "thickness": mm }),
+        };
+        self.execute(op.command(), params);
+    }
+
+    /// Commands that fit the current selection (context toolbar and menu).
+    fn context_commands(&self) -> Vec<CommandSpec> {
+        let sel = self.session.selection();
+        let ids: &[&str] = if !sel.edges.is_empty() {
+            &["edge.fillet", "edge.chamfer"]
+        } else if !sel.faces.is_empty() {
+            &["face.push_pull", "body.shell"]
+        } else if self.session.model().bodies.len() >= 2 {
+            &["solid.box", "solid.cylinder", "body.boolean"]
+        } else {
+            &["solid.box", "solid.cylinder"]
+        };
+        ids.iter()
+            .filter_map(|id| self.session.registry().get(id).copied())
+            .collect()
+    }
+
+    /// The inline value field, if one is open.
+    fn inline_value(&mut self, ctx: &egui::Context) {
+        let Some(mut inline) = self.inline.take() else {
+            return;
+        };
+        let title = format!(
+            "{} · {}",
+            self.tr(&format!("cmd.{}", inline.op.command())),
+            self.tr(inline.op.label_key())
+        );
+        let messages = [self.tr("ui.value.invalid"), self.tr("ui.value.not_length")];
+        let hint = self.tr("ui.value.hint").to_owned();
+        let p = self.theme.palette;
+        let action = egui::Area::new(egui::Id::new("kubit-inline-value"))
+            .order(egui::Order::Foreground)
+            .fixed_pos(inline.anchor + egui::vec2(16.0, 16.0))
+            .show(ctx, |ui| {
+                egui::Frame::popup(ui.style())
+                    .show(ui, |ui| {
+                        ui.label(RichText::new(&title).strong());
+                        let action = inline.field.show(ui, p.error, messages);
+                        ui.label(RichText::new(&hint).small().color(p.text_weak));
+                        action
+                    })
+                    .inner
+            })
+            .inner;
+        match action {
+            FieldAction::Apply(mm) => self.apply_value(inline.op, mm),
+            FieldAction::Cancel => {}
+            FieldAction::None => self.inline = Some(inline),
+        }
+    }
+
+    /// Context toolbar over the viewport's top-left corner.
+    fn context_toolbar(&mut self, ctx: &egui::Context, rect: egui::Rect) {
+        let specs = self.context_commands();
+        if specs.is_empty() {
+            return;
+        }
+        egui::Area::new(egui::Id::new("kubit-context-toolbar"))
+            .order(egui::Order::Middle)
+            .fade_in(false)
+            .fixed_pos(rect.left_top() + egui::vec2(10.0, 10.0))
+            .show(ctx, |ui| {
+                egui::Frame::popup(ui.style()).show(ui, |ui| {
+                    ui.horizontal(|ui| {
+                        for spec in &specs {
+                            self.command_button(ui, spec);
+                        }
+                    });
+                });
+            });
+    }
+
+    /// The right-click menu, if open.
+    fn context_menu(&mut self, ctx: &egui::Context) {
+        let Some(at) = self.menu_at else {
+            return;
+        };
+        let specs = self.context_commands();
+        let extra: Vec<CommandSpec> = ["edit.undo", "edit.redo"]
+            .iter()
+            .filter_map(|id| self.session.registry().get(id).copied())
+            .collect();
+        let mut chosen = false;
+        let area = egui::Area::new(egui::Id::new("kubit-context-menu"))
+            .order(egui::Order::Foreground)
+            .fixed_pos(at)
+            .show(ctx, |ui| {
+                egui::Frame::menu(ui.style()).show(ui, |ui| {
+                    ui.set_min_width(140.0);
+                    for spec in &specs {
+                        chosen |= self.command_button(ui, spec);
+                    }
+                    ui.separator();
+                    for spec in &extra {
+                        chosen |= self.command_button(ui, spec);
+                    }
+                    if ui.button(self.i18n.tr("ui.view.fit")).clicked() {
+                        if let Some(vp) = &mut self.viewport {
+                            vp.fit();
+                        }
+                        chosen = true;
+                    }
+                });
+            });
+        if chosen || area.response.clicked_elsewhere() || ctx.input(|i| i.key_pressed(Key::Escape))
+        {
+            self.menu_at = None;
+        }
+    }
+
     /// Starts the command a toolbar button, menu entry or shortcut stands for.
     fn invoke(&mut self, spec: &CommandSpec) {
         match spec.id {
-            "solid.box" => self.popover = Some(Popover::Box),
-            "face.push_pull" => self.popover = Some(Popover::PushPull),
+            "solid.box" => self.open_popover(Popover::Box),
+            "solid.cylinder" => self.open_popover(Popover::Cylinder),
+            "body.boolean" => {
+                let bodies: Vec<FeatureId> = self.session.model().bodies.keys().copied().collect();
+                self.forms.bool_target = bodies.first().copied();
+                self.forms.bool_tool = bodies.get(1).copied();
+                self.open_popover(Popover::Boolean);
+            }
+            id if ValueOp::from_command(id).is_some() => {
+                if let Some(op) = ValueOp::from_command(id) {
+                    self.start_value(op);
+                }
+            }
             "doc.open" => {
                 if let Some(path) = file_dialog().pick_file() {
                     self.execute(spec.id, json!({ "path": path }));
@@ -233,7 +560,8 @@ impl State {
 
     /// A button for `spec`: translated label, tooltip with description, shortcut
     /// and (when disabled) the reason.
-    fn command_button(&mut self, ui: &mut Ui, spec: &CommandSpec) {
+    /// A button for `spec`; returns whether it was clicked.
+    fn command_button(&mut self, ui: &mut Ui, spec: &CommandSpec) -> bool {
         let enablement = self.enabled(spec);
         let mut tip = spec.description.to_owned();
         if let Some(s) = spec.shortcut {
@@ -254,6 +582,7 @@ impl State {
         if clicked {
             self.invoke(spec);
         }
+        clicked
     }
 
     fn menu_bar(&mut self, ui: &mut Ui) {
@@ -468,10 +797,23 @@ impl State {
             });
             return;
         };
+        let rect = ui.max_rect();
         let response = vp.show(ui, &style);
         if vp.busy() {
             ui.ctx().request_repaint();
         }
+        self.viewport_rect = Some(rect);
+        if let Some(at) = response.context {
+            self.menu_at = Some(at);
+        }
+        if let Some(mm) = response.pull
+            && let Some(face) = self.single_face()
+        {
+            self.forms.distance = mm;
+            self.execute("face.push_pull", json!({ "face": face, "distance": mm }));
+        }
+        let ctx = ui.ctx().clone();
+        self.context_toolbar(&ctx, rect);
         if let Some(hit) = response.clicked {
             let (mut faces, mut edges): (Vec<String>, Vec<String>) = if response.shift {
                 let sel = self.session.selection();
@@ -513,12 +855,13 @@ impl State {
         };
         let title = match which {
             Popover::Box => self.tr("cmd.solid.box"),
-            Popover::PushPull => self.tr("cmd.face.push_pull"),
+            Popover::Cylinder => self.tr("cmd.solid.cylinder"),
+            Popover::Boolean => self.tr("cmd.body.boolean"),
         };
+        let bodies: Vec<FeatureId> = self.session.model().bodies.keys().copied().collect();
         let mut open = true;
         let mut apply = false;
         let mut cancel = false;
-        let face = self.single_face();
         egui::Window::new(title)
             .id(egui::Id::new("kubit-popover"))
             .collapsible(false)
@@ -546,23 +889,60 @@ impl State {
                             }
                         });
                     }
-                    Popover::PushPull => {
-                        ui.horizontal(|ui| {
-                            ui.label(i18n.tr("ui.param.face"));
-                            match &face {
-                                Some(f) => ui.label(RichText::new(f).monospace()),
-                                None => ui.label(i18n.tr("ui.param.need_face")),
-                            };
+                    Popover::Cylinder => {
+                        egui::Grid::new("kubit-cylinder").show(ui, |ui| {
+                            ui.label(i18n.tr("ui.param.radius"));
+                            ui.add(mm_field(&mut forms.cyl_radius, 0.001));
+                            ui.end_row();
+                            ui.label(i18n.tr("ui.param.height"));
+                            ui.add(mm_field(&mut forms.cyl_height, 0.001));
+                            ui.end_row();
                         });
+                        ui.label(i18n.tr("ui.param.origin"));
                         ui.horizontal(|ui| {
-                            ui.label(i18n.tr("ui.param.distance"));
-                            ui.add(mm_field(&mut forms.distance, -MAX_MM));
+                            for v in &mut forms.cyl_origin {
+                                ui.add(mm_field(v, -MAX_MM));
+                            }
+                        });
+                    }
+                    Popover::Boolean => {
+                        ui.horizontal(|ui| {
+                            for op in BoolOp::ALL {
+                                ui.selectable_value(
+                                    &mut forms.bool_op,
+                                    op,
+                                    i18n.tr(op.label_key()),
+                                );
+                            }
+                        });
+                        egui::Grid::new("kubit-boolean").show(ui, |ui| {
+                            for (key, slot) in [
+                                ("ui.param.target", &mut forms.bool_target),
+                                ("ui.param.tool", &mut forms.bool_tool),
+                            ] {
+                                ui.label(i18n.tr(key));
+                                egui::ComboBox::from_id_salt(key)
+                                    .selected_text(slot.map(|b| b.to_string()).unwrap_or_default())
+                                    .show_ui(ui, |ui| {
+                                        for b in &bodies {
+                                            ui.selectable_value(slot, Some(*b), b.to_string());
+                                        }
+                                    });
+                                ui.end_row();
+                            }
                         });
                     }
                 }
                 ui.add_space(self.theme.spacing.sm);
                 ui.horizontal(|ui| {
-                    let can_apply = which == Popover::Box || face.is_some();
+                    let can_apply = match which {
+                        Popover::Boolean => {
+                            forms.bool_target.is_some()
+                                && forms.bool_tool.is_some()
+                                && forms.bool_target != forms.bool_tool
+                        }
+                        Popover::Box | Popover::Cylinder => true,
+                    };
                     apply = ui
                         .add_enabled(can_apply, egui::Button::new(i18n.tr("ui.apply")))
                         .clicked()
@@ -578,11 +958,19 @@ impl State {
                     "solid.box",
                     json!({ "origin": f.box_origin, "size": f.box_size }),
                 ),
-                Popover::PushPull => {
-                    if let Some(face) = face {
+                Popover::Cylinder => self.execute(
+                    "solid.cylinder",
+                    json!({ "origin": f.cyl_origin, "radius": f.cyl_radius, "height": f.cyl_height }),
+                ),
+                Popover::Boolean => {
+                    if let (Some(target), Some(tool)) = (f.bool_target, f.bool_tool) {
                         self.execute(
-                            "face.push_pull",
-                            json!({ "face": face, "distance": f.distance }),
+                            "body.boolean",
+                            json!({
+                                "op": f.bool_op.param(),
+                                "target": target.to_string(),
+                                "tool": tool.to_string(),
+                            }),
                         );
                     }
                 }
@@ -707,6 +1095,7 @@ impl KubitApp {
     pub fn draw(&mut self, ui: &mut Ui) {
         let ctx = ui.ctx().clone();
         let state = &mut self.state;
+        state.pointer = ctx.input(|i| i.pointer.latest_pos());
         state.shortcuts(&ctx);
         let p = state.theme.palette;
         let m = state.theme.spacing.sm;
@@ -728,6 +1117,8 @@ impl KubitApp {
                 .show_inside(ui, &mut Viewer { state: &mut *state });
         });
         state.popovers(&ctx);
+        state.inline_value(&ctx);
+        state.context_menu(&ctx);
     }
 
     /// Whether a viewport exists (false without a GPU).
@@ -848,6 +1239,43 @@ mod tests {
             app.state.done_message("selection.set"),
             "Caras: 1 · Aristas: 2"
         );
+    }
+
+    #[test]
+    fn value_ops_need_a_fitting_selection() {
+        let (_, mut app) = app_with_box();
+        app.state.start_value(ValueOp::Fillet);
+        assert!(app.state.inline.is_none());
+        assert!(matches!(&app.state.status, Status::Error(k) if k == "ui.param.need_edge"));
+        app.state
+            .execute("selection.set", json!({ "edges": ["F1:+X|F1:+Z"] }));
+        app.state.start_value(ValueOp::Fillet);
+        let inline = app.state.inline.clone();
+        assert_eq!(inline.map(|i| i.op), Some(ValueOp::Fillet));
+        assert_eq!(
+            app.state
+                .context_commands()
+                .iter()
+                .map(|s| s.id)
+                .collect::<Vec<_>>(),
+            app.state
+                .session
+                .registry()
+                .iter()
+                .map(|s| s.id)
+                .filter(|id| ["edge.fillet", "edge.chamfer"].contains(id))
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn inline_push_pull_applies_to_the_selected_face() {
+        let (_, mut app) = app_with_box();
+        app.state
+            .execute("selection.set", json!({ "faces": ["F1:+Z"] }));
+        app.state.apply_value(ValueOp::PushPull, 7.5);
+        assert_eq!(features(&app), 2);
+        assert_eq!(app.state.forms.distance, 7.5);
     }
 
     #[test]

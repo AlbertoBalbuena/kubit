@@ -2223,6 +2223,7 @@ dependencies = [
  "kubit-doc",
  "kubit-engine",
  "kubit-kernel-api",
+ "kubit-math",
  "kubit-mesh",
  "kubit-render",
  "pollster 1.0.1",

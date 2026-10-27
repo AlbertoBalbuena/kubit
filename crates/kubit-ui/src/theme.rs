@@ -50,7 +50,22 @@ pub struct Palette {
     pub hover: Color32,
     /// Selected-face highlight.
     pub selected: Color32,
+    /// Ground grid lines (opaque; the renderer applies its own alphas).
+    pub grid: Color32,
+    /// World X axis.
+    pub axis_x: Color32,
+    /// World Y axis.
+    pub axis_y: Color32,
+    /// World Z axis.
+    pub axis_z: Color32,
 }
+
+/// Opacity of minor grid lines.
+const GRID_MINOR_ALPHA: u8 = 0x30;
+/// Opacity of major grid lines.
+const GRID_MAJOR_ALPHA: u8 = 0x70;
+/// Opacity of the axes.
+const AXIS_ALPHA: u8 = 0xd0;
 
 /// Spacing tokens, in points.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -129,6 +144,10 @@ impl Theme {
                 edge: rgb(0x101216),
                 hover: rgb(0x7cc4ff),
                 selected: rgb(0x2f8fff),
+                grid: rgb(0x8a93a3),
+                axis_x: rgb(0xe54b4b),
+                axis_y: rgb(0x4cc26a),
+                axis_z: rgb(0x4a8cf0),
             },
             spacing: SPACING,
             radii: RADII,
@@ -155,6 +174,10 @@ impl Theme {
                 edge: rgb(0x2a2e36),
                 hover: rgb(0x4aa8ff),
                 selected: rgb(0x1f6fe0),
+                grid: rgb(0x5a6372),
+                axis_x: rgb(0xd03434),
+                axis_y: rgb(0x2a9d4a),
+                axis_z: rgb(0x2f6fd6),
             },
             spacing: SPACING,
             radii: RADII,
@@ -195,7 +218,14 @@ impl Theme {
         w.noninteractive.corner_radius = CornerRadius::same(self.radii.sm);
         w.hovered.bg_stroke = Stroke::new(1.0, p.accent);
 
-        ctx.set_visuals(visuals);
+        // Pin egui's theme to ours: with the default `System` preference egui would
+        // switch to its own light/dark style when the OS appearance differs.
+        let egui_theme = match self.mode {
+            ThemeMode::Dark => egui::Theme::Dark,
+            ThemeMode::Light => egui::Theme::Light,
+        };
+        ctx.set_theme(egui_theme);
+        ctx.set_visuals_of(egui_theme, visuals);
         ctx.all_styles_mut(|style| {
             let s = &mut style.spacing;
             s.item_spacing = egui::vec2(self.spacing.sm, self.spacing.sm);
@@ -208,6 +238,7 @@ impl Theme {
     /// Viewport colours for the renderer.
     pub fn render_style(&self) -> RenderStyle {
         let c = |c: Color32| Srgba::from_rgba8(c.r(), c.g(), c.b(), c.a());
+        let ca = |c: Color32, a: u8| Srgba::from_rgba8(c.r(), c.g(), c.b(), a);
         let p = &self.palette;
         RenderStyle {
             background: c(p.viewport),
@@ -215,6 +246,11 @@ impl Theme {
             hover: c(p.hover),
             selected: c(p.selected),
             edge: c(p.edge),
+            grid_minor: ca(p.grid, GRID_MINOR_ALPHA),
+            grid_major: ca(p.grid, GRID_MAJOR_ALPHA),
+            axis_x: ca(p.axis_x, AXIS_ALPHA),
+            axis_y: ca(p.axis_y, AXIS_ALPHA),
+            axis_z: ca(p.axis_z, AXIS_ALPHA),
             ..RenderStyle::default()
         }
     }
@@ -233,6 +269,17 @@ mod tests {
     #[test]
     fn dark_render_style_matches_renderer_defaults() {
         assert_eq!(Theme::dark().render_style(), RenderStyle::default());
+    }
+
+    #[test]
+    fn apply_pins_egui_to_the_chosen_mode() {
+        let ctx = egui::Context::default();
+        for mode in [ThemeMode::Light, ThemeMode::Dark] {
+            let theme = Theme::new(mode);
+            theme.apply(&ctx);
+            assert_eq!(ctx.global_style().visuals.panel_fill, theme.palette.panel);
+        }
+        assert_eq!(ctx.theme(), egui::Theme::Dark);
     }
 
     #[test]

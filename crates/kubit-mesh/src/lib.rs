@@ -16,6 +16,9 @@ pub struct FaceTag(pub u64);
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct EdgeTag(pub u64);
 
+/// One B-rep edge discretised as a polyline through the mesh, mm.
+pub type EdgePolyline = (EdgeTag, Vec<[f64; 3]>);
+
 /// Axis-aligned bounding box in millimetres.
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Aabb {
@@ -58,7 +61,7 @@ pub struct TriMesh {
     /// B-rep edges as polylines through the surface, mm, in the kernel's edge
     /// order. Empty when the producer has no B-rep (STL, hand-built meshes).
     #[serde(default)]
-    pub edges: Vec<(EdgeTag, Vec<[f64; 3]>)>,
+    pub edges: Vec<EdgePolyline>,
 }
 
 /// Why a mesh is structurally unusable.

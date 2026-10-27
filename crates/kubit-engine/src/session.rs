@@ -10,9 +10,9 @@ use crate::commands;
 use crate::error::CommandError;
 use crate::model::{FeatureStatus, Model, apply_feature, is_feature};
 use crate::spec::{CommandOutcome, CommandSpec, Enablement, Registry};
-use kubit_doc::{Author, Document, FeatureId, TopoName};
+use kubit_doc::{Author, Document, EdgeName, FeatureId, TopoName};
 use kubit_kernel_api::{BodyId, Guarded, Kernel, KernelInfo, TriMesh};
-use kubit_mesh::FaceTag;
+use kubit_mesh::{EdgePolyline, EdgeTag, FaceTag};
 use std::collections::{BTreeMap, BTreeSet};
 
 /// Builds a fresh kernel (used on open and after a kernel panic).
@@ -23,6 +23,15 @@ pub type KernelFactory = Box<dyn Fn() -> Box<dyn Kernel>>;
 pub struct Selection {
     /// Selected faces.
     pub faces: BTreeSet<TopoName>,
+    /// Selected edges.
+    pub edges: BTreeSet<EdgeName>,
+}
+
+impl Selection {
+    /// Nothing selected.
+    pub fn is_empty(&self) -> bool {
+        self.faces.is_empty() && self.edges.is_empty()
+    }
 }
 
 /// Notifications for front-ends (drained with `Session::take_events`).
@@ -179,6 +188,8 @@ impl Session {
 
     /// Mesh of a document body (cached per kernel body and chord tolerance).
     /// Triangle tags are kernel face ids; map them with [`Session::face_name`].
+    /// `TriMesh::edges` holds the B-rep edges; map their tags with
+    /// [`Session::edge_name`].
     pub fn body_mesh(&mut self, body: FeatureId, chord: f64) -> Result<&TriMesh, CommandError> {
         let kb = self
             .model
@@ -196,10 +207,27 @@ impl Session {
             .ok_or_else(|| CommandError::Reference(format!("mesh of {body}")))
     }
 
+    /// B-rep edge polylines of a document body (from the cached mesh at
+    /// `chord`). Tags are kernel edge ids; map them with [`Session::edge_name`].
+    pub fn body_edges(
+        &mut self,
+        body: FeatureId,
+        chord: f64,
+    ) -> Result<&[EdgePolyline], CommandError> {
+        Ok(self.body_mesh(body, chord)?.edges.as_slice())
+    }
+
     /// Persistent name of the face behind a mesh tag.
     pub fn face_name(&self, body: FeatureId, tag: FaceTag) -> Option<TopoName> {
         let b = self.model.bodies.get(&body)?;
         b.name_of(kubit_kernel_api::FaceId(tag.0)).cloned()
+    }
+
+    /// Persistent name of the edge behind a mesh edge tag; `None` when the edge
+    /// has no unambiguous name (ADR-0004).
+    pub fn edge_name(&self, body: FeatureId, tag: EdgeTag) -> Option<EdgeName> {
+        let b = self.model.bodies.get(&body)?;
+        b.edge_name_of(kubit_kernel_api::EdgeId(tag.0)).cloned()
     }
 
     // --- transactions (used by command implementations) ------------------------

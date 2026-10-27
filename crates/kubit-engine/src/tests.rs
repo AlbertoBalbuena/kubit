@@ -205,6 +205,122 @@ fn garbage_collection_keeps_undo_targets_alive() {
     assert_eq!(volume(&mut s), 1500.0);
 }
 
+/// Edge names of body F1 → edge length, from the kernel.
+fn edge_lengths(s: &Session) -> std::collections::BTreeMap<String, f64> {
+    let b = &s.model().bodies[&kubit_doc::FeatureId(1)];
+    b.edges
+        .iter()
+        .map(|(name, e)| {
+            let [p, q] = s.kernel().edge_endpoints(*e).unwrap();
+            let len = (0..3).map(|i| (q[i] - p[i]).powi(2)).sum::<f64>().sqrt();
+            (name.to_string(), len)
+        })
+        .collect()
+}
+
+#[test]
+fn box_edges_are_named_by_their_faces() {
+    let mut s = session();
+    s.execute("solid.box", json!({"size": [100.0, 60.0, 40.0]}))
+        .unwrap();
+    let lengths = edge_lengths(&s);
+    assert_eq!(lengths.len(), 12);
+    // Sorted face names, so `+X` comes before `+Z` and `-X` after `+X`.
+    assert_eq!(lengths["F1:+X|F1:+Z"], 60.0);
+    assert_eq!(lengths["F1:+Y|F1:-X"], 40.0);
+    assert_eq!(lengths["F1:+Z|F1:-Y"], 100.0);
+    assert!(!lengths.contains_key("F1:+Z|F1:-Z"));
+}
+
+#[test]
+fn edge_names_survive_push_pull_and_undo() {
+    let mut s = session();
+    s.execute("solid.box", json!({"size": [100.0, 60.0, 40.0]}))
+        .unwrap();
+    let before = edge_lengths(&s);
+    s.execute("face.push_pull", json!({"face": "F1:+Z", "distance": 10.0}))
+        .unwrap();
+    let after = edge_lengths(&s);
+    // Same twelve names; only the four vertical edges grew.
+    assert_eq!(
+        before.keys().collect::<Vec<_>>(),
+        after.keys().collect::<Vec<_>>()
+    );
+    for (name, len) in &after {
+        let vertical = !name.contains("+Z") && !name.contains("-Z");
+        let expected = if vertical { 50.0 } else { before[name] };
+        assert_eq!(*len, expected, "{name}");
+    }
+    // A selected edge resolves before and after another push/pull.
+    s.execute("selection.set", json!({"edges": ["F1:+Z|F1:+X"]}))
+        .unwrap();
+    s.execute("face.push_pull", json!({"face": "F1:+X", "distance": 5.0}))
+        .unwrap();
+    let name: kubit_doc::EdgeName = "F1:+X|F1:+Z".parse().unwrap();
+    assert!(s.model().body_of_edge(&name).is_some());
+    assert_eq!(edge_lengths(&s)["F1:+X|F1:+Z"], 60.0);
+    s.undo();
+    s.undo();
+    assert_eq!(edge_lengths(&s), before);
+}
+
+#[test]
+fn edge_tags_map_to_names() {
+    let mut s = session();
+    s.execute("solid.box", json!({"size": [10.0, 10.0, 10.0]}))
+        .unwrap();
+    let f1 = kubit_doc::FeatureId(1);
+    let edges = s.body_edges(f1, 0.1).unwrap().to_vec();
+    assert_eq!(edges.len(), 12);
+    let names: std::collections::BTreeSet<String> = edges
+        .iter()
+        .map(|(tag, _)| s.edge_name(f1, *tag).unwrap().to_string())
+        .collect();
+    assert_eq!(names.len(), 12);
+    assert_eq!(s.edge_name(f1, kubit_mesh::EdgeTag(u64::MAX)), None);
+    assert_eq!(s.edge_name(kubit_doc::FeatureId(9), edges[0].0), None);
+}
+
+#[test]
+fn selection_takes_faces_and_edges() {
+    let mut s = session();
+    s.execute("solid.box", json!({"size": [10.0, 10.0, 10.0]}))
+        .unwrap();
+    // Old form: faces only.
+    s.execute("selection.set", json!({"faces": ["F1:+Z"]}))
+        .unwrap();
+    assert_eq!(s.selection().faces.len(), 1);
+    assert!(s.selection().edges.is_empty());
+    s.execute(
+        "selection.set",
+        json!({"faces": ["F1:-Z"], "edges": ["F1:+Z|F1:+X", "F1:+X|F1:+Z", "F1:-Y|F1:-X"]}),
+    )
+    .unwrap();
+    // Either order names the same edge.
+    assert_eq!(s.selection().edges.len(), 2);
+    let info = s.execute("doc.inspect", json!({})).unwrap().data;
+    assert_eq!(
+        info["selected_edges"],
+        json!(["F1:+X|F1:+Z", "F1:-X|F1:-Y"])
+    );
+    assert_eq!(info["bodies"][0]["edges"], 12);
+    s.execute("selection.set", json!({})).unwrap();
+    assert!(s.selection().is_empty());
+    // Bad references change nothing.
+    s.execute("selection.set", json!({"edges": ["F1:+X|F1:+Z"]}))
+        .unwrap();
+    for bad in [
+        json!({"edges": ["F1:+Z|F1:-Z"]}),
+        json!({"edges": ["F1:+Z"]}),
+        json!({"edges": "F1:+X|F1:+Z"}),
+        json!({"edges": [1]}),
+        json!({"vertices": []}),
+    ] {
+        assert!(s.execute("selection.set", bad.clone()).is_err(), "{bad}");
+        assert_eq!(s.selection().edges.len(), 1);
+    }
+}
+
 fn hostile() -> impl Strategy<Value = f64> {
     prop_oneof![
         Just(0.0),
@@ -235,5 +351,35 @@ proptest! {
         let _ = s.execute("edit.redo", json!({}));
         let _ = s.execute("doc.inspect", json!({}));
         prop_assert!(s.doc().validate().is_ok());
+    }
+
+    #[test]
+    fn hostile_selection_never_panics(
+        faces in proptest::collection::vec(".{0,40}", 0..4),
+        edges in proptest::collection::vec(
+            prop_oneof![
+                Just("F1:+X|F1:+Z".to_owned()),
+                Just("F1:+Z|F1:+Z".to_owned()),
+                Just("|".to_owned()),
+                Just("F1:+X||F1:+Z".to_owned()),
+                ".{0,600}",
+                "F[0-9]{1,12}:[+-][XYZ](/[0-9]{1,12})?\\|F[0-9]{1,12}:g[0-9]{1,12}",
+            ],
+            0..4,
+        ),
+        raw in prop_oneof![Just(Value::Null), Just(json!(1)), Just(json!([[]])), Just(json!({"x": 1}))],
+        with_body in any::<bool>(),
+    ) {
+        let mut s = session();
+        if with_body {
+            s.execute("solid.box", json!({"size": [10.0, 10.0, 10.0]})).unwrap();
+        }
+        let _ = s.execute("selection.set", json!({"faces": faces, "edges": edges}));
+        let _ = s.execute("selection.set", json!({"edges": raw.clone()}));
+        let _ = s.execute("selection.set", json!({"faces": raw}));
+        // Whatever was accepted resolves in the model.
+        for e in &s.selection().edges {
+            prop_assert!(s.model().body_of_edge(e).is_some());
+        }
     }
 }

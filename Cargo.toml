@@ -38,6 +38,12 @@ zip = { version = "=9.0.5", default-features = false }
 rmcp = { version = "=3.5.1", default-features = false, features = ["server", "transport-io"] }
 # Async runtime for the MCP front end only (kubit-mcp, kubit-cli).
 tokio = { version = "1.54.1", default-features = false }
+# Desktop UI (L5 only). egui_dock 0.21.1 (newest) requires egui ^0.36, so the egui
+# family stays on 0.36.2; egui-wgpu 0.36 uses wgpu ^30 like kubit-render. MIT OR Apache-2.0
+# (egui_dock: MIT). These need Rust 1.95, set as rust-version on kubit-ui and kubit.
+egui = "0.36.2"
+eframe = "0.36.2"
+egui_dock = "0.21.1"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

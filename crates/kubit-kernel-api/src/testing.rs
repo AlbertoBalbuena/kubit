@@ -13,7 +13,7 @@ use crate::types::{
     BodyId, BoxSpec, Capabilities, EdgeId, EntityRef, FaceId, FaceInfo, KernelInfo, MassProperties,
     SurfaceKind, Validity,
 };
-use kubit_mesh::{FaceTag, TriMesh};
+use kubit_mesh::{EdgeTag, FaceTag, TriMesh};
 use std::collections::BTreeMap;
 
 /// Ids are packed as `body * 64 + local` so they are stable and decodable.
@@ -285,6 +285,29 @@ impl Kernel for BoxKernel {
         Ok(p)
     }
 
+    fn edge_faces(&self, body: BodyId, edge: EdgeId) -> KernelResult<[FaceId; 2]> {
+        let (owner, local) = Self::decode(edge.0);
+        self.body(body)?;
+        if owner != body {
+            return Err(KernelError::NotFound {
+                kind: "edge",
+                id: edge.0,
+            });
+        }
+        let &(along, s1, s2) =
+            local
+                .checked_sub(6)
+                .and_then(|i| EDGES.get(i))
+                .ok_or(KernelError::NotFound {
+                    kind: "edge",
+                    id: edge.0,
+                })?;
+        // The edge lies where the face on the next axis (side `s1`) meets the
+        // face on the axis after it (side `s2`); `FACES` is ordered axis * 2 + side.
+        let face = |axis: usize, side: bool| Self::face_id(body, axis * 2 + usize::from(side));
+        Ok([face((along + 1) % 3, s1), face((along + 2) % 3, s2)])
+    }
+
     fn mass_properties(&self, body: BodyId) -> KernelResult<MassProperties> {
         let s = self.body(body)?;
         let d: Vec<f64> = (0..3).map(|k| get(s, true, k) - get(s, false, k)).collect();
@@ -328,10 +351,17 @@ impl Kernel for BoxKernel {
             let tag = FaceTag(Self::face_id(body, local).0);
             face_tags.extend([tag, tag]);
         }
+        let mut edges = Vec::with_capacity(12);
+        for local in 0..12 {
+            let id = Self::edge_id(body, local);
+            let [a, b] = self.edge_endpoints(id)?;
+            edges.push((EdgeTag(id.0), vec![a, b]));
+        }
         Ok(TriMesh {
             positions,
             triangles,
             face_tags,
+            edges,
         })
     }
 
@@ -395,5 +425,59 @@ mod tests {
             })
             .sum();
         assert_eq!(lengths, 4.0 * (100.0 + 60.0 + 40.0));
+    }
+
+    #[test]
+    fn edge_faces_touch_the_edge() {
+        let mut k = BoxKernel::new();
+        let b = k
+            .make_box(&BoxSpec {
+                min: [0.0; 3],
+                max: [100.0, 60.0, 40.0],
+            })
+            .unwrap()
+            .body;
+        let mut pairs = std::collections::BTreeSet::new();
+        for e in k.edges(b).unwrap() {
+            let [p, q] = k.edge_endpoints(e).unwrap();
+            let [f, g] = k.edge_faces(b, e).unwrap();
+            assert_ne!(f, g);
+            pairs.insert((f.min(g), f.max(g)));
+            // Both end points lie on the plane of both faces.
+            for face in [f, g] {
+                let info = k.face_info(face).unwrap();
+                let n = info.normal.unwrap();
+                for pt in [p, q] {
+                    let d: f64 = (0..3).map(|i| n[i] * (pt[i] - info.centroid[i])).sum();
+                    assert!(d.abs() < 1e-12);
+                }
+            }
+        }
+        assert_eq!(pairs.len(), 12);
+        assert!(k.edge_faces(b, EdgeId(b.0 * STRIDE)).is_err());
+        let other = k
+            .make_box(&BoxSpec {
+                min: [0.0; 3],
+                max: [1.0; 3],
+            })
+            .unwrap()
+            .body;
+        let e = k.edges(b).unwrap()[0];
+        assert!(k.edge_faces(other, e).is_err());
+    }
+
+    #[test]
+    fn mesh_carries_the_twelve_edges() {
+        let mut k = BoxKernel::new();
+        let b = k
+            .make_box(&BoxSpec {
+                min: [0.0; 3],
+                max: [1.0; 3],
+            })
+            .unwrap()
+            .body;
+        let mesh = k.tessellate(b, 0.1).unwrap();
+        assert!(mesh.validate().is_ok());
+        assert_eq!(mesh.edges.len(), 12);
     }
 }

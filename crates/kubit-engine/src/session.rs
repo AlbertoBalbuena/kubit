@@ -8,7 +8,7 @@
 
 use crate::commands;
 use crate::error::CommandError;
-use crate::model::{FeatureStatus, Model, apply_feature, is_feature};
+use crate::model::{FeatureStatus, Model, apply_feature, canonical_params, is_feature};
 use crate::spec::{CommandOutcome, CommandSpec, Enablement, Registry};
 use kubit_doc::{Author, Document, EdgeName, FeatureId, TopoName};
 use kubit_kernel_api::{BodyId, Guarded, Kernel, KernelInfo, TriMesh};
@@ -322,18 +322,120 @@ impl Session {
         id: FeatureId,
         params: serde_json::Value,
     ) -> Result<(), CommandError> {
+        self.rebuild_transaction(id, |doc| {
+            let feature = doc
+                .features
+                .iter_mut()
+                .find(|f| f.id == id)
+                .ok_or_else(|| CommandError::Reference(id.to_string()))?;
+            feature.params = params;
+            Ok(())
+        })
+    }
+
+    /// `feature.edit`: like [`Session::edit_feature`], after checking `params`
+    /// against the feature's own command schema. Stores the canonical form.
+    pub fn edit_feature_checked(
+        &mut self,
+        id: FeatureId,
+        params: serde_json::Value,
+    ) -> Result<(), CommandError> {
+        let command = self
+            .doc
+            .feature(id)
+            .map(|f| f.command.clone())
+            .ok_or_else(|| CommandError::Reference(id.to_string()))?;
+        let canonical = canonical_params(&command, &params)?;
+        self.edit_feature(id, canonical)
+    }
+
+    /// Suppresses or restores feature `id` and rebuilds. Restoring a feature that
+    /// then fails changes nothing and returns the error.
+    pub fn suppress_feature(
+        &mut self,
+        id: FeatureId,
+        suppressed: bool,
+    ) -> Result<(), CommandError> {
+        if self.doc.feature(id).is_none() {
+            return Err(CommandError::Reference(id.to_string()));
+        }
+        if self
+            .doc
+            .feature(id)
+            .is_some_and(|f| f.suppressed == suppressed)
+        {
+            return Ok(());
+        }
+        self.rebuild_transaction(id, |doc| {
+            let feature = doc
+                .features
+                .iter_mut()
+                .find(|f| f.id == id)
+                .ok_or_else(|| CommandError::Reference(id.to_string()))?;
+            feature.suppressed = suppressed;
+            Ok(())
+        })
+    }
+
+    /// Removes feature `id` and rebuilds; features that depended on it end up
+    /// `Failed`. When `id` is the rollback marker, the marker moves to the
+    /// previous feature (or is cleared if there is none).
+    pub fn delete_feature(&mut self, id: FeatureId) -> Result<(), CommandError> {
+        self.rebuild_transaction(id, |doc| {
+            let at = doc
+                .features
+                .iter()
+                .position(|f| f.id == id)
+                .ok_or_else(|| CommandError::Reference(id.to_string()))?;
+            doc.features.remove(at);
+            if doc.rollback == Some(id) {
+                doc.rollback = at
+                    .checked_sub(1)
+                    .and_then(|i| doc.features.get(i))
+                    .map(|f| f.id);
+            }
+            Ok(())
+        })
+    }
+
+    /// Moves the rollback marker after `after` (`None`: the end of the timeline)
+    /// and rebuilds.
+    pub fn set_rollback(&mut self, after: Option<FeatureId>) -> Result<(), CommandError> {
+        if let Some(id) = after
+            && self.doc.feature(id).is_none()
+        {
+            return Err(CommandError::Reference(id.to_string()));
+        }
+        if self.doc.rollback == after {
+            return Ok(());
+        }
+        self.rebuild_transaction(FeatureId(0), |doc| {
+            doc.rollback = after;
+            Ok(())
+        })
+    }
+
+    /// Applies `change` to a copy of the document, rebuilds it and commits one
+    /// undo step. Fails, changing nothing, when `change` fails, when the kernel
+    /// panicked, or when feature `subject` (if it still exists and is applied)
+    /// is `Failed` after the rebuild.
+    fn rebuild_transaction(
+        &mut self,
+        subject: FeatureId,
+        change: impl FnOnce(&mut Document) -> Result<(), CommandError>,
+    ) -> Result<(), CommandError> {
         let before = self.snapshot();
         let mut doc = self.doc.clone();
-        let feature = doc
-            .features
-            .iter_mut()
-            .find(|f| f.id == id)
-            .ok_or_else(|| CommandError::Reference(id.to_string()))?;
-        feature.params = params;
+        change(&mut doc)?;
         let model = Self::rebuild(&mut self.kernel, &doc);
-        if let Some(FeatureStatus::Failed(message)) = model.status.get(&id) {
-            let message = message.clone();
+        if self.kernel.is_poisoned() {
             self.recover_if_poisoned();
+            return Err(CommandError::Reference(
+                "the kernel failed while rebuilding; nothing was changed".into(),
+            ));
+        }
+        if let Some(FeatureStatus::Failed(message)) = model.status.get(&subject) {
+            let message = message.clone();
             self.collect_garbage_after_failure(&model);
             return Err(CommandError::Reference(message));
         }
@@ -398,8 +500,9 @@ impl Session {
 
     // --- whole-document operations ----------------------------------------------
 
-    /// Replays a document on a fresh kernel. Failing features are recorded in
-    /// `Model::status` and skipped; the rest still rebuild.
+    /// Replays a document on a fresh kernel, up to the rollback marker if any.
+    /// Failing features are recorded in `Model::status` and skipped; the rest
+    /// still rebuild; features after the marker are reported `Suppressed`.
     pub fn load(&mut self, doc: Document) {
         self.kernel.reset((self.factory)());
         self.allocated.clear();
@@ -416,7 +519,15 @@ impl Session {
 
     fn rebuild(kernel: &mut Guarded<Box<dyn Kernel>>, doc: &Document) -> Model {
         let mut model = Model::default();
+        let mut rolled_back = false;
         for f in &doc.features {
+            if rolled_back {
+                model.status.insert(f.id, FeatureStatus::Suppressed);
+                continue;
+            }
+            if doc.rollback == Some(f.id) {
+                rolled_back = true;
+            }
             if f.suppressed {
                 model.status.insert(f.id, FeatureStatus::Suppressed);
                 continue;

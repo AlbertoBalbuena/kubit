@@ -1,0 +1,8 @@
+{
+ "backend": "truck",
+ "compiles": true,
+ "raw_bytes": 1498321,
+ "gzip_bytes": 347462,
+ "run": "3/18 ok, 11 N/E, 2 error, 1 trap, 1 timeout in node",
+ "note": "2a: error truck_shapeops::or returned None; 2b: error truck_shapeops::or returned None; 3a: trap RuntimeError: unreachable; 4: timeout killed after 60s"
+}

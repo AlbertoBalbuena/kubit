@@ -48,8 +48,10 @@ On `Err` the model is left unchanged (each op runs in `Model::transaction`).
 ## Build notes
 - Debug builds run the checker after every op and **panic** on a failing output (`arris-ops/lib.rs:110`). The spike runs release (checker skipped unless feature `paranoid`).
 
-## Status (paused 2026-10-26)
-- Done: adapter for every case, `import_step`, `hostile`; builds clean in release. wasm probe (`wasm/arris/`) compiles and runs under Node: 13/18 ok, 2 N/E (5d, 7b), 3 clean kernel refusals (2b edge-touching shells, 3a tangent line contact, 3b plane–sphere point contact), 0 traps; 4.70 MB raw / 1.47 MB gzip.
-- Native `spike all --backends arris` not run yet (runner build with all four backends was still compiling at pause).
-- Next: run the native corpus, check volumes against `results/table.md` oracles (esp. 5b, 8b, 10a–c), STEP round-trip and hostile; fix any adapter-side failures.
-- Note: case 4 (fuse_many, 100 pins) takes ~44 s in wasm under Node.
+## Status (2026-10-27)
+- Native corpus (`results/table.md`): 20 ok, 1 warning (2a), 3 clean kernel errors (2b, 3a, 3b), 2 N/E (5d, 7b). Every volume within 1e-12 of its oracle. STEP round-trip: 17 ok, 1 warning (2a), 2 skipped (5d, 7b). Hostile: 768/768 clean errors, 0 panics (`tests/hostile_sane.rs` shows ordinary params pass). No panics or crashes anywhere.
+- 2a ⚠️: the fuse is valid and exact but keeps 10 faces (no coplanar-face merge); the oracle expects 6.
+- 2b/3a/3b are documented refusals: shells touching along an edge, tangent line contact, plane–sphere point contact (`BooleanReason`).
+- 10a timed out at the default 120 s in `spike all`: the sweep is 0.1 s, but the runner's 5 repeats × (tessellate at 0.002 → ~10^6 triangles of a NURBS skin, mass properties, Level::Full) take ~78 s alone, more under load. Rerun with `--timeout 400`: ok, εV 6e-13. `examples/profile10a.rs` times each step.
+- wasm: 13/18 ok, 2 N/E, 3 clean errors, 0 traps; 4.70 MB raw / 1.47 MB gzip; case 4 takes ~44 s in Node.
+- Next: NIST STEP import (12imp) once the fixtures are fetched.

@@ -1,0 +1,2153 @@
+[
+  {
+    "backend": "arris",
+    "case": "1a",
+    "test": 1,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.009432917,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 648,
+        "volume": 227436.94122937156,
+        "area": 26684.955582333525,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 227433.62938564084,
+      "volume_rel_err": 1.2796625782805712e-16,
+      "area": 26684.955592153892,
+      "area_rel_err": 6.816535246851564e-16,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 9,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 6,
+        "modified": 4,
+        "deleted": 10,
+        "detail": "ops cut; last op faces: generated 1, modified 2, deleted 3 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.111759208
+  },
+  {
+    "backend": "arris",
+    "case": "1b",
+    "test": 1,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.0068315,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 644,
+        "volume": 233718.47061468576,
+        "area": 26056.55426043186,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 233716.8146928204,
+      "volume_rel_err": 1.2452604445677374e-16,
+      "area": 26056.637061435933,
+      "area_rel_err": 5.584724995039299e-16,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 8,
+      "loops": 9,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 7,
+        "modified": 3,
+        "deleted": 10,
+        "detail": "ops cut; last op faces: generated 2, modified 1, deleted 3 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.081359125
+  },
+  {
+    "backend": "arris",
+    "case": "2a",
+    "test": 2,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000298833,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 20,
+        "volume": 480000.0,
+        "area": 44800.0,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 480000.0,
+      "volume_rel_err": 0.0,
+      "area": 44800.000000000015,
+      "area_rel_err": 3.2481953634747437e-16,
+      "euler_ok": true,
+      "faces_ok": false,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 20,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 0,
+        "modified": 18,
+        "deleted": 2,
+        "detail": "ops fuse; last op faces: generated 0, modified 4, deleted 2 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.024968458
+  },
+  {
+    "backend": "arris",
+    "case": "2b",
+    "test": 2,
+    "status": "error",
+    "message": "fuse: degenerate result: the result's shells would touch along an edge or at a vertex, which a solid does not hold (+e6)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.022438125
+  },
+  {
+    "backend": "arris",
+    "case": "3a",
+    "test": 3,
+    "status": "error",
+    "message": "fuse: degenerate result: the faces touch along a curve interior to both result faces (+f1, +f7)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.022187666
+  },
+  {
+    "backend": "arris",
+    "case": "3b",
+    "test": 3,
+    "status": "error",
+    "message": "fuse: no closed form for +f1 (plane surface) against +v8 (point)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030146125
+  },
+  {
+    "backend": "arris",
+    "case": "4",
+    "test": 4,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.665801375,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 40012,
+        "volume": 500464.831246859,
+        "area": 138257.21452489222,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 500530.96491487254,
+      "volume_rel_err": 1.6280855929205841e-15,
+      "area": 138265.4824574369,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 208,
+      "edges": 312,
+      "faces": 206,
+      "loops": 306,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 200,
+        "modified": 203,
+        "deleted": 300,
+        "detail": "ops fuse_many; last op faces: generated 0, modified 101, deleted 100 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "n-ary union: ops::fuse_many over plate + 100 pins"
+    ],
+    "wall_seconds": 14.746193375
+  },
+  {
+    "backend": "arris",
+    "case": "5a",
+    "test": 5,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000174625,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 124,
+        "volume": 239462.4656533018,
+        "area": 24574.544488790358,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 239463.49540849362,
+      "volume_rel_err": 0.0,
+      "area": 24574.668071567336,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 9,
+        "modified": 10,
+        "deleted": 3,
+        "detail": "ops fillet; last op faces: generated 1, modified 4, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.02861425
+  },
+  {
+    "backend": "arris",
+    "case": "5b",
+    "test": 5,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.00535575,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 26524,
+        "volume": 108414.6299688784,
+        "area": 14144.40304334872,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 108418.76297438223,
+      "volume_rel_err": 2.6843905665673866e-16,
+      "area": 14144.865820921552,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 20,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 24,
+        "modified": 11,
+        "deleted": 8,
+        "detail": "ops extrude → fillet; last op faces: generated 4, modified 5, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "one top edge selected; fillet follows the tangent chain"
+    ],
+    "wall_seconds": 1.493641708
+  },
+  {
+    "backend": "arris",
+    "case": "5c",
+    "test": 5,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000399959,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 3460,
+        "volume": 238946.693135218,
+        "area": 24350.975921515033,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 238947.91635266299,
+      "volume_rel_err": 0.0,
+      "area": 24351.161372709972,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 13,
+      "edges": 21,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 26,
+        "modified": 14,
+        "deleted": 7,
+        "detail": "ops fillet; last op faces: generated 4, modified 6, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.05600375
+  },
+  {
+    "backend": "arris",
+    "case": "5d",
+    "test": 5,
+    "status": "not_exposed",
+    "message": "variable-radius fillet (ops::fillet takes one constant radius)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030236709
+  },
+  {
+    "backend": "arris",
+    "case": "6",
+    "test": 6,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.014766834,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 14008,
+        "volume": 227378.99452911122,
+        "area": 26632.77890730957,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 227377.2845769319,
+      "volume_rel_err": 0.0,
+      "area": 26632.799573649772,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 11,
+      "edges": 17,
+      "faces": 8,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 6,
+        "modified": 5,
+        "deleted": 2,
+        "detail": "ops cut → fillet; last op faces: generated 1, modified 2, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.286031583
+  },
+  {
+    "backend": "arris",
+    "case": "7a",
+    "test": 7,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000132625,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 16,
+        "volume": 238749.99999999997,
+        "area": 24482.10678118655,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 238750.0,
+      "volume_rel_err": 0.0,
+      "area": 24482.10678118656,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 9,
+        "modified": 10,
+        "deleted": 3,
+        "detail": "ops chamfer; last op faces: generated 1, modified 4, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.029671208
+  },
+  {
+    "backend": "arris",
+    "case": "7b",
+    "test": 7,
+    "status": "not_exposed",
+    "message": "distance–angle chamfer (ops::chamfer is equal-distance only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.02301075
+  },
+  {
+    "backend": "arris",
+    "case": "8a",
+    "test": 8,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000430167,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 28,
+        "volume": 35711.999999999985,
+        "area": 36352.0,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 35711.99999999996,
+      "volume_rel_err": 1.0186992627384948e-15,
+      "area": 36352.000000000015,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 16,
+      "edges": 24,
+      "faces": 11,
+      "loops": 12,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 25,
+        "modified": 28,
+        "deleted": 0,
+        "detail": "ops shell; last op faces: generated 5, modified 6, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030260417
+  },
+  {
+    "backend": "arris",
+    "case": "8b",
+    "test": 8,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.016867125,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 45830,
+        "volume": 11159.182389113052,
+        "area": 11406.559667615771,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 11159.95640082951,
+      "volume_rel_err": 9.779551128411134e-16,
+      "area": 11407.095022911913,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 10,
+      "faces": 7,
+      "loops": 8,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 11,
+        "modified": 14,
+        "deleted": 0,
+        "detail": "ops fillet → shell; last op faces: generated 3, modified 4, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.653485334
+  },
+  {
+    "backend": "arris",
+    "case": "9a",
+    "test": 9,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.005047917,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 460,
+        "volume": 298924.93130660313,
+        "area": 27527.587603712473,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 298926.9908169873,
+      "volume_rel_err": 1.9472199801825196e-16,
+      "area": 27527.87595947439,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 16,
+      "edges": 24,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 0,
+        "modified": 35,
+        "deleted": 0,
+        "detail": "ops fillet → offset_faces; last op faces: generated 0, modified 9, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.070336334
+  },
+  {
+    "backend": "arris",
+    "case": "9b",
+    "test": 9,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.005147375,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 460,
+        "volume": 179354.9587839623,
+        "area": 21299.351463133436,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 179356.19449019237,
+      "volume_rel_err": 1.6226833168187662e-16,
+      "area": 21299.557428756438,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 16,
+      "edges": 24,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 0,
+        "modified": 35,
+        "deleted": 0,
+        "detail": "ops fillet → offset_faces; last op faces: generated 0, modified 9, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.080051084
+  },
+  {
+    "backend": "arris",
+    "case": "10a",
+    "test": 10,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.184025625,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 688252,
+        "volume": 4731.966591510949,
+        "area": 4768.65547577119,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 4737.410112525776,
+      "volume_rel_err": 6.087730702685749e-13,
+      "area": 4770.052726877564,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 3,
+      "faces": 3,
+      "loops": 3,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 10,
+        "modified": 0,
+        "deleted": 0,
+        "detail": "ops sweep; last op faces: generated 3, modified 0, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "PathSegment::Helix + FrameLaw::FixedBinormal(Z); side face is a fitted NURBS"
+    ],
+    "wall_seconds": 126.364193125
+  },
+  {
+    "backend": "arris",
+    "case": "10b",
+    "test": 10,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000177459,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 1062,
+        "volume": 21988.637330997495,
+        "area": 4550.835226254683,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 21991.148575128547,
+      "volume_rel_err": 1.6542923143205798e-16,
+      "area": 4551.1728065337265,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 3,
+      "faces": 3,
+      "loops": 3,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 10,
+        "modified": 0,
+        "deleted": 0,
+        "detail": "ops loft; last op faces: generated 3, modified 0, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.088206125
+  },
+  {
+    "backend": "arris",
+    "case": "10c",
+    "test": 10,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.002672166,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 58220,
+        "volume": 6626.704178925284,
+        "area": 3203.793516189242,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 6626.75607018844,
+      "volume_rel_err": null,
+      "area": 3203.6740666150286,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 28,
+        "modified": 0,
+        "deleted": 0,
+        "detail": "ops loft; last op faces: generated 6, modified 0, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 9.126360916
+  },
+  {
+    "backend": "arris",
+    "case": "11a",
+    "test": 11,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000100875,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 98910,
+        "volume": 33504.78779347378,
+        "area": 5026.13319026349,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 33510.321638291134,
+      "volume_rel_err": 2.1712586625457608e-16,
+      "area": 5026.548245743672,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 1,
+      "faces": 1,
+      "loops": 1,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 8,
+        "modified": 0,
+        "deleted": 0,
+        "detail": "ops revolve; last op faces: generated 1, modified 0, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "sphere = revolve of a half disc (no sphere primitive)"
+    ],
+    "wall_seconds": 3.627441333
+  },
+  {
+    "backend": "arris",
+    "case": "11b",
+    "test": 11,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000086375,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 444,
+        "volume": 12564.708000541385,
+        "area": 3521.761378805553,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 12566.370614359177,
+      "volume_rel_err": 4.342517325091522e-16,
+      "area": 3522.0717412637136,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 2,
+      "faces": 2,
+      "loops": 2,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 9,
+        "modified": 0,
+        "deleted": 0,
+        "detail": "ops revolve; last op faces: generated 2, modified 0, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.060027708
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:10a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 688252,
+        "volume": 4731.966591511031,
+        "area": 4768.655475771177,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 4737.410112525774,
+      "volume_rel_err": 6.083891074364912e-13,
+      "area": 4770.05272687756,
+      "area_rel_err": null,
+      "euler_ok": null,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 3,
+      "faces": 3,
+      "loops": 3,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 3.839628320833833e-16,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 52.288780458
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:10b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 1062,
+        "volume": 21988.637330997502,
+        "area": 4550.835226254688,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 21991.14857512855,
+      "volume_rel_err": 0.0,
+      "area": 4551.1728065337265,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 3,
+      "faces": 3,
+      "loops": 3,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 1.65429231432058e-16,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.027546875
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:10c",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 58220,
+        "volume": 6626.704929076874,
+        "area": 3203.7935708915306,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 6626.7560701897655,
+      "volume_rel_err": null,
+      "area": 3203.674497118929,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "loops": 6,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 1.999671885380677e-13,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 3.344227625
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:11a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 98910,
+        "volume": 33504.78779347377,
+        "area": 5026.133190263489,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 33510.321638291134,
+      "volume_rel_err": 2.1712586625457608e-16,
+      "area": 5026.548245743672,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 1,
+      "faces": 1,
+      "loops": 1,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.776916542
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:11b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 444,
+        "volume": 12564.708000541395,
+        "area": 3521.7613788055514,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 12566.370614359177,
+      "volume_rel_err": 4.342517325091522e-16,
+      "area": 3522.0717412637136,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 2,
+      "faces": 2,
+      "loops": 2,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.030309166
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:1a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 648,
+        "volume": 227436.94122937156,
+        "area": 26684.955582333525,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 227433.62938564084,
+      "volume_rel_err": 1.2796625782805712e-16,
+      "area": 26684.955592153892,
+      "area_rel_err": 6.816535246851564e-16,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 9,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.079315875
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:1b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 644,
+        "volume": 233718.47061468565,
+        "area": 26056.55426043186,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 233716.8146928204,
+      "volume_rel_err": 1.2452604445677374e-16,
+      "area": 26056.637061435933,
+      "area_rel_err": 5.584724995039299e-16,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 8,
+      "loops": 9,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.056769042
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:2a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 20,
+        "volume": 480000.0,
+        "area": 44800.0,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 480000.0,
+      "volume_rel_err": 0.0,
+      "area": 44800.000000000015,
+      "area_rel_err": 3.2481953634747437e-16,
+      "euler_ok": true,
+      "faces_ok": false,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 20,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.02848075
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:4",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 40012,
+        "volume": 500464.8312468575,
+        "area": 138257.21452489222,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 500530.96491487254,
+      "volume_rel_err": 1.6280855929205841e-15,
+      "area": 138265.4824574369,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 208,
+      "edges": 312,
+      "faces": 206,
+      "loops": 306,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 14.518731083
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:5a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 124,
+        "volume": 239462.4656533019,
+        "area": 24574.544488790347,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 239463.49540849362,
+      "volume_rel_err": 0.0,
+      "area": 24574.668071567336,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.027412792
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:5b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 26524,
+        "volume": 108414.62996887843,
+        "area": 14144.403043348722,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 108418.76297438223,
+      "volume_rel_err": 2.6843905665673866e-16,
+      "area": 14144.865820921552,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 12,
+      "edges": 20,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 1.321612167
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:5c",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 3460,
+        "volume": 238946.69313521805,
+        "area": 24350.975921515033,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 238947.91635266299,
+      "volume_rel_err": 0.0,
+      "area": 24351.161372709972,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 13,
+      "edges": 21,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.0486925
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:5d",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: variable-radius fillet (ops::fillet takes one constant radius)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.030413042
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:6",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 14008,
+        "volume": 227378.99452911134,
+        "area": 26632.77890730957,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 227377.2845769319,
+      "volume_rel_err": 0.0,
+      "area": 26632.799573649772,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 11,
+      "edges": 17,
+      "faces": 8,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.235661917
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:7a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 16,
+        "volume": 238749.99999999997,
+        "area": 24482.10678118655,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 238750.0,
+      "volume_rel_err": 0.0,
+      "area": 24482.10678118656,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 7,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.022998208
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:7b",
+    "test": 12,
+    "status": "skipped",
+    "message": "source case did not produce a solid: not exposed: distance–angle chamfer (ops::chamfer is equal-distance only)",
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.027577625
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:8a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 28,
+        "volume": 35711.999999999985,
+        "area": 36352.0,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 35711.99999999996,
+      "volume_rel_err": 1.0186992627384948e-15,
+      "area": 36352.000000000015,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 16,
+      "edges": 24,
+      "faces": 11,
+      "loops": 12,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.02740875
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:8b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 45830,
+        "volume": 11159.182389113052,
+        "area": 11406.559667615773,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 11159.95640082951,
+      "volume_rel_err": 9.779551128411134e-16,
+      "area": 11407.095022911913,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 6,
+      "edges": 10,
+      "faces": 7,
+      "loops": 8,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.596366625
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:9a",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 460,
+        "volume": 298924.93130660325,
+        "area": 27527.587603712473,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 298926.9908169873,
+      "volume_rel_err": 1.9472199801825196e-16,
+      "area": 27527.87595947439,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 16,
+      "edges": 24,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.052462542
+  },
+  {
+    "backend": "arris",
+    "case": "12rt:9b",
+    "test": 12,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": {
+      "mesh": {
+        "triangles": 460,
+        "volume": 179354.9587839623,
+        "area": 21299.351463133436,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 179356.19449019237,
+      "volume_rel_err": 1.6226833168187662e-16,
+      "area": 21299.557428756438,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 16,
+      "edges": 24,
+      "faces": 10,
+      "loops": 10,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full), all solids"
+    },
+    "history": null,
+    "step_written": false,
+    "step_error": null,
+    "roundtrip_rel_err": 0.0,
+    "hostile": null,
+    "notes": [
+      "1 solids in file: 1 read (0 sheets), 0 refused"
+    ],
+    "wall_seconds": 0.061115833
+  },
+  {
+    "backend": "arris",
+    "case": "13a",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000078625,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 19740,
+        "volume": 33482.83821722401,
+        "area": 5024.486567293493,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": 0.008761880960797441
+      },
+      "volume_method": "native",
+      "volume": 33510.321638291134,
+      "volume_rel_err": null,
+      "area": 5026.548245743672,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 1,
+      "faces": 1,
+      "loops": 1,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 8,
+        "modified": 0,
+        "deleted": 0,
+        "detail": "ops revolve; last op faces: generated 1, modified 0, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "sphere = revolve of a half disc (no sphere primitive)"
+    ],
+    "wall_seconds": 0.623357541
+  },
+  {
+    "backend": "arris",
+    "case": "13b",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.000065667,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 1980,
+        "volume": 33245.99233769952,
+        "area": 5006.684557927564,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": 0.08462643352302024
+      },
+      "volume_method": "native",
+      "volume": 33510.321638291134,
+      "volume_rel_err": null,
+      "area": 5026.548245743672,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 2,
+      "edges": 1,
+      "faces": 1,
+      "loops": 1,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 8,
+        "modified": 0,
+        "deleted": 0,
+        "detail": "ops revolve; last op faces: generated 1, modified 0, deleted 0 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [
+      "sphere = revolve of a half disc (no sphere primitive)"
+    ],
+    "wall_seconds": 0.054158417
+  },
+  {
+    "backend": "arris",
+    "case": "13c",
+    "test": 13,
+    "status": "ok",
+    "message": null,
+    "op_seconds": 0.018320084,
+    "runs": 5,
+    "eval": {
+      "mesh": {
+        "triangles": 300,
+        "volume": 227450.02514717722,
+        "area": 26684.95535136031,
+        "boundary_edges": 0,
+        "nonmanifold_edges": 0,
+        "misoriented_edges": 0,
+        "max_sphere_deviation": null
+      },
+      "volume_method": "native",
+      "volume": 227433.62938564084,
+      "volume_rel_err": null,
+      "area": 26684.955592153892,
+      "area_rel_err": null,
+      "euler_ok": true,
+      "faces_ok": null,
+      "valid": true
+    },
+    "topo": {
+      "vertices": 10,
+      "edges": 15,
+      "faces": 7,
+      "loops": 9,
+      "shells": 1,
+      "backend_closed": true,
+      "backend_valid": true,
+      "backend_check": "arris::check::check(Level::Full)"
+    },
+    "history": {
+      "Native": {
+        "generated": 6,
+        "modified": 4,
+        "deleted": 10,
+        "detail": "ops cut; last op faces: generated 1, modified 2, deleted 3 (counts are all entities)"
+      }
+    },
+    "step_written": true,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": null,
+    "notes": [],
+    "wall_seconds": 0.377813208
+  },
+  {
+    "backend": "arris",
+    "case": "15:1",
+    "test": 15,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": {
+      "total": 256,
+      "ok": 0,
+      "clean_error": 256,
+      "not_exposed": 0,
+      "panics": 0,
+      "first_panic": null
+    },
+    "notes": [],
+    "wall_seconds": 0.0485065
+  },
+  {
+    "backend": "arris",
+    "case": "15:5",
+    "test": 15,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": {
+      "total": 256,
+      "ok": 0,
+      "clean_error": 256,
+      "not_exposed": 0,
+      "panics": 0,
+      "first_panic": null
+    },
+    "notes": [],
+    "wall_seconds": 0.029900375
+  },
+  {
+    "backend": "arris",
+    "case": "15:9",
+    "test": 15,
+    "status": "ok",
+    "message": null,
+    "op_seconds": null,
+    "runs": 0,
+    "eval": null,
+    "topo": null,
+    "history": null,
+    "step_written": null,
+    "step_error": null,
+    "roundtrip_rel_err": null,
+    "hostile": {
+      "total": 256,
+      "ok": 0,
+      "clean_error": 256,
+      "not_exposed": 0,
+      "panics": 0,
+      "first_panic": null
+    },
+    "notes": [],
+    "wall_seconds": 0.030276041
+  }
+]

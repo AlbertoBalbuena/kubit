@@ -25,6 +25,18 @@ const RENDER_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Rgba8UnormSrgb;
 /// How egui samples it: egui-wgpu expects gamma-encoded `Rgba8Unorm` native textures,
 /// which is the same bytes as [`RENDER_FORMAT`] viewed without the sRGB decode.
 const EGUI_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Rgba8Unorm;
+
+/// The renderer's colour format on this device. Viewing an sRGB texture as unorm needs
+/// `VIEW_FORMATS`, which some GL / software adapters lack; there the renderer draws
+/// straight into [`EGUI_FORMAT`] (shading then blends in gamma space, a minor difference).
+fn render_format(adapter: &wgpu::Adapter) -> wgpu::TextureFormat {
+    let flags = adapter.get_downlevel_capabilities().flags;
+    if flags.contains(wgpu::DownlevelFlags::VIEW_FORMATS) {
+        RENDER_FORMAT
+    } else {
+        EGUI_FORMAT
+    }
+}
 /// Orbit speed, radians per point dragged.
 const ORBIT_RAD_PER_PT: f64 = 0.008;
 /// Zoom speed per point scrolled.
@@ -55,7 +67,17 @@ struct Target {
 }
 
 impl Target {
-    fn new(device: &wgpu::Device, size: Viewport, egui_renderer: &mut egui_wgpu::Renderer) -> Self {
+    fn new(
+        device: &wgpu::Device,
+        format: wgpu::TextureFormat,
+        size: Viewport,
+        egui_renderer: &mut egui_wgpu::Renderer,
+    ) -> Self {
+        let egui_view_formats: &[wgpu::TextureFormat] = if format == EGUI_FORMAT {
+            &[]
+        } else {
+            &[EGUI_FORMAT]
+        };
         let texture = |label, samples, format, usage, view_formats: &[wgpu::TextureFormat]| {
             device.create_texture(&wgpu::TextureDescriptor {
                 label: Some(label),
@@ -75,16 +97,16 @@ impl Target {
         let color = texture(
             "kubit-ui viewport msaa",
             SAMPLES,
-            RENDER_FORMAT,
+            format,
             wgpu::TextureUsages::RENDER_ATTACHMENT,
             &[],
         );
         let resolve = texture(
             "kubit-ui viewport",
             1,
-            RENDER_FORMAT,
+            format,
             wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::TEXTURE_BINDING,
-            &[EGUI_FORMAT],
+            egui_view_formats,
         );
         let depth = texture(
             "kubit-ui viewport depth",
@@ -138,7 +160,7 @@ impl Viewport3d {
         let renderer = Renderer::new(
             &render_state.device,
             &render_state.queue,
-            RENDER_FORMAT,
+            render_format(&render_state.adapter),
             SAMPLES,
         )?;
         Ok(Self {
@@ -258,6 +280,7 @@ impl Viewport3d {
         }
         self.target = Some(Target::new(
             &self.render_state.device,
+            self.renderer.color_format(),
             size,
             &mut egui_renderer,
         ));

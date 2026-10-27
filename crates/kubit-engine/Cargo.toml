@@ -9,6 +9,19 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+kubit-kernel-api.workspace = true
+kubit-mesh.workspace = true
+kubit-doc.workspace = true
+kubit-io.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+schemars.workspace = true
+thiserror.workspace = true
+indexmap.workspace = true
+
+[dev-dependencies]
+kubit-kernel-api = { workspace = true, features = ["testing"] }
+proptest.workspace = true
 
 [lints]
 workspace = true

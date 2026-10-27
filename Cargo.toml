@@ -29,6 +29,10 @@ serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.154"
 indexmap = { version = "2.14.2", features = ["serde"] }
 proptest = "1.12.0"
+schemars = "1.2.3"
+clap = { version = "4.6.7", features = ["derive"] }
+# Stored entries only: .kubit v1 is small and must be byte-for-byte deterministic.
+zip = { version = "=9.0.5", default-features = false }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

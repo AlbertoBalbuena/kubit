@@ -205,3 +205,11 @@ proptest! {
         prop_assert!(!k.is_poisoned());
     }
 }
+
+#[test]
+fn boxed_dyn_kernel_works_behind_the_guard() {
+    let backend: Box<dyn Kernel> = Box::new(BoxKernel::new());
+    let mut k = Guarded::new(backend);
+    let b = k.make_box(&bx([1.0, 2.0, 3.0])).unwrap();
+    assert_eq!(k.mass_properties(b.body).unwrap().volume, 6.0);
+}

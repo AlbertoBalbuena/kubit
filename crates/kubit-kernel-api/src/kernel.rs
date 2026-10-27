@@ -152,3 +152,78 @@ pub trait Kernel {
         }
     }
 }
+
+/// Forwarding impl so the engine can hold `Guarded<Box<dyn Kernel>>` and pick the
+/// backend at run time.
+impl<K: Kernel + ?Sized> Kernel for Box<K> {
+    fn info(&self) -> KernelInfo {
+        (**self).info()
+    }
+    fn set_interrupt(&mut self, interrupt: Option<Interrupt>) {
+        (**self).set_interrupt(interrupt);
+    }
+    fn make_box(&mut self, spec: &BoxSpec) -> KernelResult<OpOutput> {
+        (**self).make_box(spec)
+    }
+    fn make_cylinder(&mut self, spec: &CylinderSpec) -> KernelResult<OpOutput> {
+        (**self).make_cylinder(spec)
+    }
+    fn boolean(&mut self, op: BooleanOp, a: BodyId, b: BodyId) -> KernelResult<OpOutput> {
+        (**self).boolean(op, a, b)
+    }
+    fn offset_faces(
+        &mut self,
+        body: BodyId,
+        faces: &[FaceId],
+        distance: f64,
+    ) -> KernelResult<OpOutput> {
+        (**self).offset_faces(body, faces, distance)
+    }
+    fn fillet(&mut self, body: BodyId, edges: &[EdgeId], radius: f64) -> KernelResult<OpOutput> {
+        (**self).fillet(body, edges, radius)
+    }
+    fn chamfer(&mut self, body: BodyId, edges: &[EdgeId], distance: f64) -> KernelResult<OpOutput> {
+        (**self).chamfer(body, edges, distance)
+    }
+    fn shell(
+        &mut self,
+        body: BodyId,
+        openings: &[FaceId],
+        thickness: f64,
+    ) -> KernelResult<OpOutput> {
+        (**self).shell(body, openings, thickness)
+    }
+    fn delete_body(&mut self, body: BodyId) -> KernelResult<()> {
+        (**self).delete_body(body)
+    }
+    fn copy_body(&mut self, body: BodyId) -> KernelResult<OpOutput> {
+        (**self).copy_body(body)
+    }
+    fn faces(&self, body: BodyId) -> KernelResult<Vec<FaceId>> {
+        (**self).faces(body)
+    }
+    fn edges(&self, body: BodyId) -> KernelResult<Vec<EdgeId>> {
+        (**self).edges(body)
+    }
+    fn face_info(&self, face: FaceId) -> KernelResult<FaceInfo> {
+        (**self).face_info(face)
+    }
+    fn edge_endpoints(&self, edge: EdgeId) -> KernelResult<[[f64; 3]; 2]> {
+        (**self).edge_endpoints(edge)
+    }
+    fn mass_properties(&self, body: BodyId) -> KernelResult<MassProperties> {
+        (**self).mass_properties(body)
+    }
+    fn tessellate(&self, body: BodyId, chord: f64) -> KernelResult<TriMesh> {
+        (**self).tessellate(body, chord)
+    }
+    fn check(&self, body: BodyId) -> KernelResult<Validity> {
+        (**self).check(body)
+    }
+    fn export_step(&self, bodies: &[BodyId]) -> KernelResult<String> {
+        (**self).export_step(bodies)
+    }
+    fn import_step(&mut self, text: &str) -> KernelResult<Vec<OpOutput>> {
+        (**self).import_step(text)
+    }
+}

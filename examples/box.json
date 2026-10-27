@@ -1,0 +1,8 @@
+{
+  "description": "Phase 0 exit check: a 100 x 60 x 40 mm box whose top face is pulled up 10 mm.",
+  "commands": [
+    { "command": "solid.box", "params": { "origin": [0, 0, 0], "size": [100, 60, 40] } },
+    { "command": "face.push_pull", "params": { "face": "F1:+Z", "distance": 10 } },
+    { "command": "body.measure", "params": {} }
+  ]
+}

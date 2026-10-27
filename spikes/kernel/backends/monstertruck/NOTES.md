@@ -60,3 +60,9 @@ connected, closed, manifold). V/E deduplicated by `id()`; loops = Σ `face.bound
 
 ## History
 None: no generated/modified/deleted information is returned by any operation.
+
+## Status (paused 2026-10-26)
+- Done: API survey above; adapter for every case (1a–13c), `import_step`, `hostile`; builds in release with the runner.
+- Not yet run: `spike all --backends monstertruck` was started and interrupted by the pause, so there are no results yet.
+- Next: run the corpus, fix geometry wherever volume errors are large (orientation of revolve/loft, 5b chain selection, 6 rim edges), record 5c behaviour.
+- Next: wasm probe in `wasm/monstertruck/` (cdylib, wasm-bindgen 0.2.129, getrandom `wasm_js`), `run.mjs`, `measure.sh`, `result.json`.

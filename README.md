@@ -14,6 +14,19 @@ Kubit es una herramienta open source de modelado 3D directo y paramétrico escri
 - [Decisiones (ADR)](docs/adr/).
 - Investigación: [materiales y DFM](docs/research/materiales-dfm.md) · [tecnología Rust para CAD](docs/research/tecnologia-rust-cad.md).
 
+## Building
+Requires a stable Rust toolchain (`rustup`), the wasm target (`rustup target add wasm32-unknown-unknown`)
+and [cargo-deny](https://github.com/EmbarkStudios/cargo-deny) (`cargo install --locked cargo-deny`).
+
+```bash
+cargo xtask ci       # fmt, clippy, tests, layers, wasm, deny (what CI runs)
+cargo xtask layers   # dependency-layer rules from layers.toml
+cargo xtask wasm     # build the wasm-capable crates for wasm32-unknown-unknown
+cargo xtask deny     # licenses, bans, advisories, sources
+```
+
+Contributions need a DCO sign-off (`git commit -s`); see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Licencia
 - Código: Apache-2.0.
 - Datos del catálogo de materiales: CC-BY-4.0.

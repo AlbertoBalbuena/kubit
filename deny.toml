@@ -1,0 +1,54 @@
+# cargo-deny 0.20 configuration (CLAUDE.md rule 9, docs/adr/0001).
+# Allowed: Apache-2.0, MIT, BSD-2/3, ISC, Zlib, Unicode-3.0. MPL-2.0 only by explicit exception.
+# Denied: GPL, LGPL, AGPL (anything not allowed is rejected).
+
+[graph]
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "aarch64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+    "wasm32-unknown-unknown",
+]
+all-features = true
+
+[licenses]
+confidence-threshold = 0.93
+allow = [
+    "Apache-2.0",
+    "MIT",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "Unicode-3.0",
+]
+# MPL-2.0 needs a review: add a crate-specific entry here, never a global allow.
+exceptions = []
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+# Workspace crates are path dependencies and may use wildcard versions.
+allow-wildcard-paths = true
+deny = [
+    # evalexpr >= 13 is AGPL.
+    { crate = "evalexpr", reason = "AGPL-3.0 since 13" },
+    # SolveSpace bindings are GPL.
+    { crate = "slvs", reason = "GPL-3.0" },
+    { crate = "slvs-sys", reason = "GPL-3.0" },
+    # OCCT is LGPL and must never be linked into the core.
+    { crate = "opencascade", reason = "LGPL-2.1 (OCCT)" },
+    { crate = "opencascade-sys", reason = "LGPL-2.1 (OCCT)" },
+]
+
+[advisories]
+version = 2
+yanked = "deny"
+ignore = []
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+# Allowed in case the kernel decision (ADR-0002) picks solidcore.
+allow-git = ["https://github.com/tangency-labs/solidcore"]

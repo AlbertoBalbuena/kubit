@@ -1,6 +1,6 @@
 # ADR-0002 — Backend inicial del kernel
 
-- Estado: **Propuesto**. Ya se usa de forma provisional en `main` (`kubit-kernel-arris`) bajo la autorización de trabajo autónomo; falta que el mantenedor lo apruebe.
+- Estado: **Aceptado** (aprobado por el mantenedor el 2026-10-27). Implementado en `kubit-kernel-arris`.
 - Fecha: 2026-10-27
 - Relacionado: ADR-0001 (#6), ADR-0003 (fachada y guard), `spikes/kernel/`
 

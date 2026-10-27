@@ -1,0 +1,18 @@
+# Kernel spike workspace (Phase 0, stage A). Isolated from the product workspace.
+[workspace]
+resolver = "2"
+members = ["harness"]
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+publish = false
+
+[workspace.dependencies]
+harness = { path = "harness" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+proptest = { version = "1", default-features = false, features = ["std"] }
+
+[profile.release]
+debug = false

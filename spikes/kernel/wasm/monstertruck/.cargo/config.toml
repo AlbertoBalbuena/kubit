@@ -1,0 +1,6 @@
+[build]
+target = "wasm32-unknown-unknown"
+
+[target.wasm32-unknown-unknown]
+# 8 MiB stack; getrandom 0.3 also needs the wasm_js backend selected by cfg.
+rustflags = ["-C", "link-arg=-zstack-size=8388608", "--cfg", 'getrandom_backend="wasm_js"']

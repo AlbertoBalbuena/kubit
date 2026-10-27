@@ -33,6 +33,11 @@ schemars = "1.2.3"
 clap = { version = "4.6.7", features = ["derive"] }
 # Stored entries only: .kubit v1 is small and must be byte-for-byte deterministic.
 zip = { version = "=9.0.5", default-features = false }
+# MCP SDK (Apache-2.0). 3.5.1 is the newest 3.x at least a week old (2026-10-26);
+# 3.6.0 landed 2026-10-20. Server side only: clients are dev-dependencies.
+rmcp = { version = "=3.5.1", default-features = false, features = ["server", "transport-io"] }
+# Async runtime for the MCP front end only (kubit-mcp, kubit-cli).
+tokio = { version = "1.54.1", default-features = false }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

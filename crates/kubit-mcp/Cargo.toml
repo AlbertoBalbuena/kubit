@@ -9,6 +9,18 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+kubit-engine.workspace = true
+kubit-doc.workspace = true
+rmcp.workspace = true
+tokio = { workspace = true, features = ["rt", "sync"] }
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+kubit-kernel-api = { workspace = true, features = ["testing"] }
+rmcp = { workspace = true, features = ["client"] }
+tokio = { workspace = true, features = ["rt", "macros", "io-util", "time"] }
+proptest.workspace = true
 
 [lints]
 workspace = true

@@ -2156,6 +2156,7 @@ version = "0.0.1"
 dependencies = [
  "kubit-mesh",
  "proptest",
+ "schemars",
  "serde",
  "thiserror 2.0.21",
 ]

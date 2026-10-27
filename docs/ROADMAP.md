@@ -27,7 +27,7 @@ Cada fase tiene un **criterio de salida** verificable. No se abre una fase sin c
 - [ ] Croquis: líneas, arcos, círculos, rectángulos, splines básicas
 - [ ] Solver propio (LM con descomposición de grafo y diagnóstico de DOF), con ezpz (MIT) como referencia
 - [ ] Inferencias, cotas sugeridas y bloqueadas, colores de DOF
-- [ ] Extrude, revolve, push/pull, booleanas, fillet, chamfer y shell (según lo que permita el kernel)
+- [ ] Extrude, revolve, push/pull, booleanas, fillet, chamfer y shell (según lo que permita el kernel). Hecho: push/pull, booleanas, fillet, chamfer, shell y `solid.extrude` desde un perfil explícito (hito 1.4b); falta revolve y extruir desde regiones de croquis
 - [ ] Parámetros con expresiones, creados en línea
 - [ ] Timeline: editar, suprimir, reordenar, "congelar historia"
 - [ ] Nombres persistentes v1 con pruebas de regresión

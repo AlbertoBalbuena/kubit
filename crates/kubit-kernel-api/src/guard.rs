@@ -15,7 +15,7 @@ use crate::history::{MatchTolerance, reconstruct_faces};
 use crate::kernel::{Interrupt, Kernel, OpOutput};
 use crate::types::{
     BodyId, BooleanOp, BoxSpec, CylinderSpec, EdgeId, FaceId, FaceInfo, KernelInfo, MAX_LENGTH,
-    MIN_LENGTH, MassProperties, SurfaceKind, Validity,
+    MIN_LENGTH, MassProperties, Profile, ProfileLoop, ProfileSeg, SurfaceKind, Validity,
 };
 use kubit_mesh::TriMesh;
 use std::panic::{AssertUnwindSafe, catch_unwind};
@@ -71,6 +71,111 @@ pub fn check_direction(param: &'static str, d: [f64; 3]) -> KernelResult<[f64; 3
         });
     }
     Ok([d[0] / n, d[1] / n, d[2] / n])
+}
+
+/// Most holes and most segments per loop accepted in a profile.
+const MAX_PROFILE_HOLES: usize = 256;
+const MAX_PROFILE_SEGMENTS: usize = 4096;
+/// Slack for "unit length", "perpendicular" and "loop closes", in axis units / mm.
+const PROFILE_SLACK: f64 = 1.0e-6;
+
+fn bad_profile(param: &'static str, reason: impl Into<String>) -> KernelError {
+    KernelError::InvalidInput {
+        param,
+        reason: reason.into(),
+    }
+}
+
+fn check_uv(param: &'static str, p: [f64; 2]) -> KernelResult<[f64; 2]> {
+    check_length(param, p[0], false)?;
+    check_length(param, p[1], false)?;
+    Ok(p)
+}
+
+fn uv_distance(a: [f64; 2], b: [f64; 2]) -> f64 {
+    (a[0] - b[0]).hypot(a[1] - b[1])
+}
+
+fn check_unit_axis(param: &'static str, d: [f64; 3]) -> KernelResult<()> {
+    check_point(param, d)?;
+    let n = (d[0] * d[0] + d[1] * d[1] + d[2] * d[2]).sqrt();
+    if (n - 1.0).abs() > PROFILE_SLACK {
+        return Err(bad_profile(param, format!("length {n} is not 1")));
+    }
+    Ok(())
+}
+
+fn check_profile_loop(param: &'static str, l: &ProfileLoop) -> KernelResult<()> {
+    match l {
+        ProfileLoop::Circle { center, radius } => {
+            check_uv(param, *center)?;
+            check_length(param, *radius, true)?;
+        }
+        ProfileLoop::Segments { start, segments } => {
+            check_uv(param, *start)?;
+            if segments.len() < 2 || segments.len() > MAX_PROFILE_SEGMENTS {
+                return Err(bad_profile(
+                    param,
+                    format!(
+                        "{} segments; need 2 to {MAX_PROFILE_SEGMENTS}",
+                        segments.len()
+                    ),
+                ));
+            }
+            let mut at = *start;
+            for (i, seg) in segments.iter().enumerate() {
+                let to = match *seg {
+                    ProfileSeg::LineTo(to) => check_uv(param, to)?,
+                    ProfileSeg::ArcTo { to, via } => {
+                        check_uv(param, via)?;
+                        let to = check_uv(param, to)?;
+                        if uv_distance(via, at) < MIN_LENGTH || uv_distance(via, to) < MIN_LENGTH {
+                            return Err(bad_profile(
+                                param,
+                                format!("segment {i}: arc `via` coincides with an end"),
+                            ));
+                        }
+                        to
+                    }
+                };
+                if uv_distance(at, to) < MIN_LENGTH {
+                    return Err(bad_profile(param, format!("segment {i} has zero length")));
+                }
+                at = to;
+            }
+            if uv_distance(at, *start) > PROFILE_SLACK {
+                return Err(bad_profile(param, "loop does not return to its start"));
+            }
+        }
+    }
+    Ok(())
+}
+
+/// Validates a profile: finite and bounded numbers, unit perpendicular axes,
+/// loops that are non-degenerate and closed. Self-intersection is left to the
+/// backend (its result check still applies).
+fn check_profile(p: &Profile) -> KernelResult<()> {
+    check_point("origin", p.origin)?;
+    check_unit_axis("x_axis", p.x_axis)?;
+    check_unit_axis("normal", p.normal)?;
+    let dot: f64 = p.x_axis.iter().zip(p.normal).map(|(a, b)| a * b).sum();
+    if dot.abs() > PROFILE_SLACK {
+        return Err(bad_profile(
+            "normal",
+            "x_axis and normal are not perpendicular",
+        ));
+    }
+    if p.holes.len() > MAX_PROFILE_HOLES {
+        return Err(bad_profile(
+            "holes",
+            format!("more than {MAX_PROFILE_HOLES} holes"),
+        ));
+    }
+    check_profile_loop("outer", &p.outer)?;
+    for hole in &p.holes {
+        check_profile_loop("holes", hole)?;
+    }
+    Ok(())
 }
 
 impl<K: Kernel> Guarded<K> {
@@ -336,6 +441,13 @@ impl<K: Kernel> Kernel for Guarded<K> {
         let before = self.before(&[body])?;
         let out = self.call_mut("shell", |k| k.shell(body, openings, thickness))?;
         self.finish("shell", out, before, &[])
+    }
+
+    fn extrude(&mut self, profile: &Profile, length: f64) -> KernelResult<OpOutput> {
+        check_profile(profile)?;
+        let length = check_length("length", length, true)?;
+        let out = self.call_mut("extrude", |k| k.extrude(profile, length))?;
+        self.finish("extrude", out, Vec::new(), &[])
     }
 
     fn delete_body(&mut self, body: BodyId) -> KernelResult<()> {

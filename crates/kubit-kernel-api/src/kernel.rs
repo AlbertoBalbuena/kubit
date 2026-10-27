@@ -4,7 +4,7 @@ use crate::error::{KernelError, KernelResult};
 use crate::history::OpHistory;
 use crate::types::{
     BodyId, BooleanOp, BoxSpec, CylinderSpec, EdgeId, FaceId, FaceInfo, KernelInfo, MassProperties,
-    Validity,
+    Profile, Validity,
 };
 use kubit_mesh::TriMesh;
 use std::sync::Arc;
@@ -94,8 +94,14 @@ pub trait Kernel {
         Err(self.unsupported("shell"))
     }
 
-    // Extension points for later phases (sketch profiles, Phase 1): extrude,
-    // revolve, sweep, loft, split, move/delete face. They are added here with
+    /// Extrudes a planar profile by `length` mm along `+profile.normal`. The
+    /// history's `face_roles` name the caps and the wall of every segment.
+    fn extrude(&mut self, profile: &Profile, length: f64) -> KernelResult<OpOutput> {
+        let _ = (profile, length);
+        Err(self.unsupported("extrude"))
+    }
+
+    // Extension points for later phases: revolve, sweep, loft, split, move/delete face. They are added here with
     // `Unsupported` defaults so existing backends keep compiling.
 
     /// Frees a body and its entities.
@@ -203,6 +209,9 @@ impl<K: Kernel + ?Sized> Kernel for Box<K> {
         thickness: f64,
     ) -> KernelResult<OpOutput> {
         (**self).shell(body, openings, thickness)
+    }
+    fn extrude(&mut self, profile: &Profile, length: f64) -> KernelResult<OpOutput> {
+        (**self).extrude(profile, length)
     }
     fn delete_body(&mut self, body: BodyId) -> KernelResult<()> {
         (**self).delete_body(body)

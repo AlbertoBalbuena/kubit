@@ -1,0 +1,44 @@
+{
+  "description": "Milestone 1.4b exit check: a 40 x 30 mm plate with a hole of radius 4 extruded 10 mm, then a boss of radius 3 and height 5 joined on top.",
+  "commands": [
+    {
+      "command": "solid.extrude",
+      "params": {
+        "profile": {
+          "origin": [0, 0, 0],
+          "x_axis": [1, 0, 0],
+          "normal": [0, 0, 1],
+          "outer": {
+            "segments": {
+              "start": [0, 0],
+              "segments": [
+                { "line_to": [40, 0] },
+                { "line_to": [40, 30] },
+                { "line_to": [0, 30] },
+                { "line_to": [0, 0] }
+              ]
+            }
+          },
+          "holes": [{ "circle": { "center": [20, 15], "radius": 4 } }]
+        },
+        "distance": 10,
+        "op": "new"
+      }
+    },
+    {
+      "command": "solid.extrude",
+      "params": {
+        "profile": {
+          "origin": [10, 15, 10],
+          "x_axis": [1, 0, 0],
+          "normal": [0, 0, 1],
+          "outer": { "circle": { "center": [0, 0], "radius": 3 } }
+        },
+        "distance": 5,
+        "op": "join",
+        "target": "F1"
+      }
+    },
+    { "command": "body.measure", "params": {} }
+  ]
+}

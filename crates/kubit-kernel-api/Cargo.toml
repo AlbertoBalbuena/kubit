@@ -12,6 +12,7 @@ publish.workspace = true
 kubit-mesh.workspace = true
 thiserror.workspace = true
 serde.workspace = true
+schemars.workspace = true
 
 [features]
 # Exposes `testing::BoxKernel`, an exact reference kernel for tests.

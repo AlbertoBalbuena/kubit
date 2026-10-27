@@ -17,7 +17,7 @@ mod types;
 
 pub use error::{KernelError, KernelResult};
 pub use guard::{CHORD_RANGE, Guarded, check_direction, check_length, check_point};
-pub use history::{HistorySource, MatchTolerance, OpHistory, reconstruct_faces};
+pub use history::{FaceRole, HistorySource, MatchTolerance, OpHistory, reconstruct_faces};
 pub use kernel::{Interrupt, Kernel, OpOutput};
 pub use kubit_mesh::TriMesh;
 pub use types::*;

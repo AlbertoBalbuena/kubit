@@ -234,3 +234,51 @@ fn edge_faces_pass_through_the_guard_or_default_to_unsupported() {
         })
     ));
 }
+
+fn square_profile() -> crate::Profile {
+    use crate::{Profile, ProfileLoop, ProfileSeg};
+    Profile {
+        origin: [0.0; 3],
+        x_axis: [1.0, 0.0, 0.0],
+        normal: [0.0, 0.0, 1.0],
+        outer: ProfileLoop::Segments {
+            start: [0.0, 0.0],
+            segments: vec![
+                ProfileSeg::LineTo([1.0, 0.0]),
+                ProfileSeg::LineTo([1.0, 1.0]),
+                ProfileSeg::LineTo([0.0, 0.0]),
+            ],
+        },
+        holes: Vec::new(),
+    }
+}
+
+#[test]
+fn extrude_inputs_are_validated_before_the_backend_sees_them() {
+    let mut k = Guarded::new(BoxKernel::new());
+    // A valid profile reaches the backend, which lacks the operation.
+    assert!(matches!(
+        k.extrude(&square_profile(), 1.0),
+        Err(KernelError::Unsupported { op: "extrude", .. })
+    ));
+    let mut invalid = |p: &crate::Profile, len: f64| {
+        matches!(k.extrude(p, len), Err(KernelError::InvalidInput { .. }))
+    };
+    assert!(invalid(&square_profile(), 0.0));
+    assert!(invalid(&square_profile(), f64::NAN));
+    let mut p = square_profile();
+    p.x_axis = [2.0, 0.0, 0.0];
+    assert!(invalid(&p, 1.0));
+    let mut p = square_profile();
+    p.normal = [1.0, 0.0, 0.0];
+    assert!(invalid(&p, 1.0));
+    let mut p = square_profile();
+    p.origin[1] = f64::INFINITY;
+    assert!(invalid(&p, 1.0));
+    let mut p = square_profile();
+    p.outer = crate::ProfileLoop::Circle {
+        center: [0.0, 0.0],
+        radius: 0.0,
+    };
+    assert!(invalid(&p, 1.0));
+}

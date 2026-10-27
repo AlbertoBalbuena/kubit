@@ -27,8 +27,28 @@ pub struct OpHistory {
     pub modified: BTreeMap<EntityRef, Vec<EntityRef>>,
     /// Input entities with no image in the output.
     pub deleted: BTreeSet<EntityRef>,
+    /// Which part of a profile sweep each generated face is, when the backend knows.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub face_roles: BTreeMap<FaceId, FaceRole>,
     /// Who produced the record.
     pub source: HistorySource,
+}
+
+/// The part of an extruded profile a generated face stands for.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+pub enum FaceRole {
+    /// The cap on the profile plane (its outward normal opposes the extrusion).
+    CapMinus,
+    /// The cap the extrusion ends on (outward normal along the extrusion).
+    CapPlus,
+    /// The wall swept by one segment; indices as the profile was written
+    /// (loop 0 is the outer, holes follow).
+    Side {
+        /// Loop index.
+        loop_index: usize,
+        /// Segment index in that loop (a circle has segment 0).
+        segment: usize,
+    },
 }
 
 impl OpHistory {

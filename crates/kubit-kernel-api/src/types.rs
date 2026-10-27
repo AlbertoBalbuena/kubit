@@ -1,5 +1,6 @@
 //! Ids, inputs and query results shared by every backend.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 macro_rules! id {
@@ -68,6 +69,64 @@ pub struct CylinderSpec {
     pub radius: f64,
     /// Height along the axis, mm.
     pub height: f64,
+}
+
+/// A planar profile to sweep: a plane frame, an outer loop and optional holes.
+///
+/// The plane is given by `origin`, a unit `x_axis` and a unit `normal`, which
+/// must be perpendicular; the frame's y axis is `normal × x_axis`. Loop
+/// coordinates are `(u, v)` in that frame: the point `origin + u·x + v·y`. All
+/// lengths are mm. Loops may be written in either orientation; the kernel
+/// orients them.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+pub struct Profile {
+    /// Origin of the plane frame, mm.
+    pub origin: [f64; 3],
+    /// Unit x axis of the plane frame.
+    pub x_axis: [f64; 3],
+    /// Unit normal of the plane; extrusion goes along `+normal`.
+    pub normal: [f64; 3],
+    /// The outer loop.
+    pub outer: ProfileLoop,
+    /// Holes, each inside the outer loop and outside every other.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub holes: Vec<ProfileLoop>,
+}
+
+/// One closed loop of a [`Profile`], in plane coordinates (mm).
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case", deny_unknown_fields)]
+pub enum ProfileLoop {
+    /// A full circle.
+    Circle {
+        /// Centre `(u, v)`.
+        center: [f64; 2],
+        /// Radius; > 0.
+        radius: f64,
+    },
+    /// A chain of segments from `start` that returns to `start`.
+    Segments {
+        /// Where the chain starts `(u, v)`.
+        start: [f64; 2],
+        /// Segments in walking order; the last one ends at `start`.
+        segments: Vec<ProfileSeg>,
+    },
+}
+
+/// One segment of a [`ProfileLoop::Segments`] chain, from where the previous one ended.
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case", deny_unknown_fields)]
+pub enum ProfileSeg {
+    /// Straight segment to a point `(u, v)`.
+    LineTo([f64; 2]),
+    /// Circular arc through `via` ending at `to`.
+    ArcTo {
+        /// End point `(u, v)`.
+        to: [f64; 2],
+        /// A point on the arc between its ends, which fixes centre and sense.
+        via: [f64; 2],
+    },
 }
 
 /// Boolean operation kind.
@@ -148,6 +207,8 @@ pub struct Capabilities {
     pub chamfer: bool,
     /// Shell with openings.
     pub shell: bool,
+    /// Extrusion of planar profiles.
+    pub extrude: bool,
     /// The backend reports generated/modified/deleted itself.
     pub native_history: bool,
     /// Exact mass properties.

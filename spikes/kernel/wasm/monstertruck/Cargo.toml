@@ -1,0 +1,24 @@
+[package]
+name = "wasm-monstertruck"
+version = "0.0.0"
+edition = "2021"
+license = "Apache-2.0"
+publish = false
+
+# Own workspace: excluded from the spike workspace (see ../README.md).
+[workspace]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+backend-monstertruck = { path = "../../backends/monstertruck" }
+harness = { path = "../../harness", default-features = false }
+serde_json = "1"
+wasm-bindgen = "=0.2.129"
+# Both getrandom majors in the tree need the JS backend on wasm32-unknown-unknown.
+getrandom_03 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
+getrandom_04 = { package = "getrandom", version = "0.4", features = ["wasm_js"] }
+
+[profile.release]
+debug = false

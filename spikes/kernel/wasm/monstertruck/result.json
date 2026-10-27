@@ -1,0 +1,139 @@
+{
+  "backend": "monstertruck",
+  "compiles": true,
+  "raw_bytes": 3117419,
+  "gzip_bytes": 818259,
+  "run": "6/18 ok, 1 invalid, 5 N/E, 6 failed, 0 trap in node",
+  "note": "sizes are the cargo wasm (pre wasm-bindgen, no wasm-opt); times in results[].ms from Node performance.now()",
+  "results": [
+    {
+      "id": "1a",
+      "status": "ok",
+      "step_bytes": 57578,
+      "valid": true,
+      "volume": 227440.7501581167,
+      "volume_rel_err": 0.00003130923291822148,
+      "ms": 327
+    },
+    {
+      "id": "1b",
+      "status": "ok",
+      "step_bytes": 36734,
+      "valid": true,
+      "volume": 233720.36559123098,
+      "volume_rel_err": 0.000015193166205099707,
+      "ms": 204.4
+    },
+    {
+      "error": "or: invalid output shell for `or`: This shell is not oriented and closed..",
+      "id": "2a",
+      "status": "failed",
+      "ms": 1.5
+    },
+    {
+      "error": "or: invalid output shell for `or`: This shell is not oriented and closed..",
+      "id": "2b",
+      "status": "failed",
+      "ms": 0.6
+    },
+    {
+      "id": "3a",
+      "status": "ok",
+      "step_bytes": 15844,
+      "valid": true,
+      "volume": 271398.129256289,
+      "volume_rel_err": 0.00006557197964064905,
+      "ms": 495.8
+    },
+    {
+      "error": "or: invalid output shell for `or`: This shell is not oriented and closed..",
+      "id": "3b",
+      "status": "failed",
+      "ms": 37.6
+    },
+    {
+      "error": "or: invalid output shell for `or`: This shell is not oriented and closed..",
+      "id": "4",
+      "status": "failed",
+      "ms": 31.5
+    },
+    {
+      "id": "5a",
+      "status": "ok",
+      "step_bytes": 31765,
+      "valid": true,
+      "volume": 239462.6894121737,
+      "volume_rel_err": 0.0000033658421236374,
+      "ms": 127.5
+    },
+    {
+      "id": "5b",
+      "status": "ok",
+      "step_bytes": 36825,
+      "valid": false,
+      "volume": null,
+      "volume_rel_err": null,
+      "ms": 56.9
+    },
+    {
+      "error": "fillet result is not a solid: This shell is not oriented and closed.",
+      "id": "5c",
+      "status": "failed",
+      "ms": 4.5
+    },
+    {
+      "id": "5d",
+      "status": "ok",
+      "step_bytes": 32200,
+      "valid": true,
+      "volume": 239627.45976157067,
+      "volume_rel_err": 0.000002352486338477421,
+      "ms": 116.1
+    },
+    {
+      "error": "fillet_edges returned Ok on 2 edge(s) but added no face (8 faces before and after)",
+      "id": "6",
+      "status": "failed",
+      "ms": 117.4
+    },
+    {
+      "id": "7a",
+      "status": "ok",
+      "step_bytes": 22938,
+      "valid": true,
+      "volume": 238749.99999999994,
+      "volume_rel_err": 2.438017211035284E-16,
+      "ms": 4.7
+    },
+    {
+      "error": "distance–angle chamfer: FilletProfile::Chamfer is equal-setback only",
+      "id": "7b",
+      "status": "not_exposed",
+      "ms": 0.1
+    },
+    {
+      "error": "shell/hollow solid: no B-rep shell operation (surface offsets only)",
+      "id": "8a",
+      "status": "not_exposed",
+      "ms": 0
+    },
+    {
+      "error": "shell/hollow solid: no B-rep shell operation (surface offsets only)",
+      "id": "8b",
+      "status": "not_exposed",
+      "ms": 0
+    },
+    {
+      "error": "push/pull: no face offset/move operation",
+      "id": "9a",
+      "status": "not_exposed",
+      "ms": 0
+    },
+    {
+      "error": "push/pull: no face offset/move operation",
+      "id": "9b",
+      "status": "not_exposed",
+      "ms": 0
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"backend":"arris","compiles":true,"raw_bytes":4702077,"gzip_bytes":1472897,"run":"13/18 ok, 2 N/E, 3 failed, 0 trap in node","note":"sizes are the wasm-bindgen output (release, lto); per-case detail in run.json; Rust-side timings are 0 on wasm (timed() has no clock), JS times in run.json"}

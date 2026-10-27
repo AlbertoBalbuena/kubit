@@ -17,4 +17,4 @@ pub use format::{
     CONTAINER, FormatError, MAX_ENTRIES, MAX_ENTRY_BYTES, Manifest, from_json, from_kubit, to_json,
     to_kubit,
 };
-pub use naming::{NameParseError, TopoName};
+pub use naming::{EdgeName, EdgeNameParseError, NameParseError, TopoName};

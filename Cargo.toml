@@ -1,0 +1,42 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "apps/*", "xtask"]
+# The kernel spike is its own workspace (docs/adr/0002-kernel-backend.md).
+exclude = ["spikes"]
+
+[workspace.package]
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.90"
+license = "Apache-2.0"
+repository = "https://github.com/AlbertoBalbuena/kubit"
+publish = false
+
+[workspace.dependencies]
+kubit-math = { path = "crates/kubit-math" }
+kubit-kernel-api = { path = "crates/kubit-kernel-api" }
+kubit-mesh = { path = "crates/kubit-mesh" }
+kubit-render = { path = "crates/kubit-render" }
+kubit-doc = { path = "crates/kubit-doc" }
+kubit-io = { path = "crates/kubit-io" }
+kubit-engine = { path = "crates/kubit-engine" }
+kubit-mcp = { path = "crates/kubit-mcp" }
+kubit-ui = { path = "crates/kubit-ui" }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+# Production code never panics (CLAUDE.md rule 4). Tests may: see clippy.toml.
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+unreachable = "deny"
+dbg_macro = "deny"
+indexing_slicing = "warn"
+
+[profile.release]
+debug = "line-tables-only"

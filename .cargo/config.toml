@@ -1,0 +1,6 @@
+[alias]
+xtask = "run --quiet -p xtask --"
+
+[target.wasm32-unknown-unknown]
+# The kernel recurses; wasm has no stack guard page (solidcore README). 8 MiB like a native main thread.
+rustflags = ["-C", "link-arg=-zstack-size=8388608"]

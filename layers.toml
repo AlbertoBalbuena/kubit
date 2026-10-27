@@ -1,0 +1,32 @@
+# Layer map checked by `cargo xtask layers` (docs/ARCHITECTURE.md §1).
+# A crate may depend only on crates of a strictly lower layer, except where `same_layer` allows it.
+# `wasm = true` crates must build for wasm32-unknown-unknown (`cargo xtask wasm`).
+
+[forbidden]
+# Below L5 nothing may depend on these.
+ui_only = ["egui", "eframe", "egui_dock", "winit", "rfd", "egui-wgpu", "egui-winit"]
+# wgpu only in kubit-render and L5+.
+gpu_only = ["wgpu"]
+gpu_allowed = ["kubit-render"]
+# Only kubit-kernel-* crates may depend on a kernel library.
+kernel_libs = ["monstertruck", "truck-modeling", "truck-shapeops", "solidcore", "arris", "arris-ops"]
+
+[crates]
+kubit-math       = { layer = 0, wasm = true }
+kubit-kernel-api = { layer = 1, wasm = true }
+kubit-mesh       = { layer = 1, wasm = true }
+kubit-render     = { layer = 1, wasm = true }
+kubit-doc        = { layer = 2, wasm = true }
+kubit-io         = { layer = 3, wasm = true }
+kubit-engine     = { layer = 4 }
+kubit-mcp        = { layer = 4 }
+kubit-ui         = { layer = 5 }
+kubit            = { layer = 6 }
+kubit-cli        = { layer = 6 }
+
+# Backends match the pattern kubit-kernel-<name>: layer 1, wasm, may use kernel_libs,
+# and may depend on kubit-kernel-api (same layer).
+[patterns."kubit-kernel-*"]
+layer = 1
+wasm = true
+same_layer = ["kubit-kernel-api", "kubit-mesh"]

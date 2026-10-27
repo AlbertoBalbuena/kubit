@@ -660,6 +660,27 @@ same_layer = ["kubit-kernel-api"]
     }
 
     #[test]
+    fn same_layer_on_crate_entry() {
+        let text = MAP.replace(
+            "kubit-kernel-api = { layer = 1, wasm = true }",
+            "kubit-kernel-api = { layer = 1, wasm = true, same_layer = [\"kubit-mesh\"] }",
+        );
+        let m = LayerMap::parse(&text).unwrap();
+        let mut f = fixture();
+        f.g.depend(f.api, f.mesh);
+        assert!(check(&m, &f.g).violations.is_empty());
+        // The exception is one-way: mesh -> api is still a violation.
+        let mut f = fixture();
+        f.g.depend(f.mesh, f.api);
+        let v = check(&m, &f.g).violations;
+        assert_eq!(v.len(), 1, "{v:?}");
+        assert!(
+            v[0].contains("kubit-mesh (L1) depends on kubit-kernel-api"),
+            "{v:?}"
+        );
+    }
+
+    #[test]
     fn unknown_keys_are_rejected() {
         let err =
             LayerMap::parse("[forbidden]\n[crates]\na = { layer = 0, wsam = true }\n").unwrap_err();

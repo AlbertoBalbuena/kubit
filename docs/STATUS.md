@@ -15,6 +15,9 @@ Actualizado: 2026-10-27 03:40 CST. Coordina la sesión principal; las sesiones p
 - Revisión y aprobación de ADR-0003 (ADR-0002 aceptado el 2026-10-27).
 
 ## Deuda conocida
+- `Session::execute` se salta la habilitación por selección para `edge.fillet`, `edge.chamfer` y `body.shell` (sus parámetros ya nombran el objetivo); conviene un flag en `CommandSpec`.
+- El timeline no marca qué cuerpo consumió una booleana.
+- arris rechaza el vaciado de cuerpos con agujeros o cajas, y algunos push/pull después de una unión.
 - Los mensajes de error del motor se muestran en inglés dentro de un prefijo traducido.
 - La fusión de caras coplanares tras booleanas, el fillet de radio variable y el chaflán d-ángulo quedan para implementarse sobre arris (ADR-0002).
 - Los commits anteriores al 26-oct 23:55 no llevan `Signed-off-by` (DCO).

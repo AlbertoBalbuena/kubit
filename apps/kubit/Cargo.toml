@@ -12,8 +12,8 @@ publish.workspace = true
 [dependencies]
 kubit-ui.workspace = true
 kubit-engine.workspace = true
-# Phase 0 placeholder backend until ADR-0002 picks the real one (see src/backend.rs).
-kubit-kernel-api = { workspace = true, features = ["testing"] }
+kubit-kernel-api.workspace = true
+kubit-kernel-arris.workspace = true
 eframe.workspace = true
 clap.workspace = true
 serde_json.workspace = true

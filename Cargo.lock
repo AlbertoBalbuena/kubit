@@ -2090,6 +2090,7 @@ dependencies = [
  "eframe",
  "kubit-engine",
  "kubit-kernel-api",
+ "kubit-kernel-arris",
  "kubit-ui",
  "serde_json",
 ]
@@ -2103,6 +2104,7 @@ dependencies = [
  "kubit-engine",
  "kubit-io",
  "kubit-kernel-api",
+ "kubit-kernel-arris",
  "kubit-mcp",
  "kubit-render",
  "serde",

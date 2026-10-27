@@ -1,15 +1,11 @@
-//! Which kernel the desktop app runs on.
-//!
-//! Same placeholder as `kubit-cli` (apps/kubit-cli/src/backend.rs): until ADR-0002
-//! is accepted and its `kubit-kernel-<name>` crate lands, the app uses the exact
-//! reference box kernel from `kubit-kernel-api` (feature `testing`). It covers boxes
-//! and push/pull but not STEP, which then fails with a clean `Unsupported` error.
+//! Which kernel the desktop app runs on: arris, the initial backend chosen in ADR-0002.
+//! Swapping backends means changing only this factory.
 
 use kubit_engine::KernelFactory;
 use kubit_kernel_api::Kernel;
-use kubit_kernel_api::testing::BoxKernel;
+use kubit_kernel_arris::ArrisKernel;
 
 /// The kernel factory used by the app.
 pub fn factory() -> KernelFactory {
-    Box::new(|| Box::new(BoxKernel::new()) as Box<dyn Kernel>)
+    Box::new(|| Box::new(ArrisKernel::new()) as Box<dyn Kernel>)
 }

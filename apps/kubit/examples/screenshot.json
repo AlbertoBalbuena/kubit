@@ -1,0 +1,8 @@
+{
+  "description": "UI screenshot scene: a box with its top face pulled up and selected.",
+  "commands": [
+    { "command": "solid.box", "params": { "origin": [0, 0, 0], "size": [100, 60, 40] } },
+    { "command": "face.push_pull", "params": { "face": "F1:+Z", "distance": 10 } },
+    { "command": "selection.set", "params": { "faces": ["F1:+Z"] } }
+  ]
+}

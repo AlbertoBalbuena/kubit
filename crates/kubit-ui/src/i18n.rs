@@ -1,0 +1,230 @@
+//! UI strings in Spanish and English, keyed like `cmd.solid.box`.
+//!
+//! Command labels come from the registry (`CommandSpec::label`); every other UI
+//! string uses a `ui.` key. Missing Spanish strings fall back to English, and a
+//! missing English string shows the key itself, so a gap is visible, never a crash.
+
+/// A UI language.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum Lang {
+    /// English (fallback).
+    #[default]
+    En,
+    /// Spanish.
+    Es,
+}
+
+impl Lang {
+    /// From a BCP 47 tag such as `es-MX` or `en_US.UTF-8`; unknown tags give English.
+    pub fn from_tag(tag: &str) -> Self {
+        let primary = tag
+            .split(['-', '_', '.'])
+            .next()
+            .unwrap_or_default()
+            .to_ascii_lowercase();
+        match primary.as_str() {
+            "es" => Self::Es,
+            _ => Self::En,
+        }
+    }
+
+    /// The system language, or English if it cannot be read.
+    pub fn system() -> Self {
+        sys_locale::get_locale()
+            .map(|t| Self::from_tag(&t))
+            .unwrap_or_default()
+    }
+}
+
+/// String lookup for one language.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct I18n {
+    /// Current language.
+    pub lang: Lang,
+}
+
+impl I18n {
+    /// Lookup for `lang`.
+    pub const fn new(lang: Lang) -> Self {
+        Self { lang }
+    }
+
+    /// The string for `key`, falling back to English and then to the key.
+    pub fn tr<'a>(&self, key: &'a str) -> &'a str {
+        let table = match self.lang {
+            Lang::En => EN,
+            Lang::Es => ES,
+        };
+        find(table, key).or_else(|| find(EN, key)).unwrap_or(key)
+    }
+}
+
+fn find(table: &'static [(&'static str, &'static str)], key: &str) -> Option<&'static str> {
+    table.iter().find(|(k, _)| *k == key).map(|(_, v)| *v)
+}
+
+/// English strings.
+pub const EN: &[(&str, &str)] = &[
+    // Commands (labels from the registry).
+    ("cmd.solid.box", "Box"),
+    ("cmd.face.push_pull", "Push/Pull"),
+    ("cmd.edit.undo", "Undo"),
+    ("cmd.edit.redo", "Redo"),
+    ("cmd.selection.set", "Select"),
+    ("cmd.doc.new", "New"),
+    ("cmd.doc.open", "Open…"),
+    ("cmd.doc.save", "Save…"),
+    ("cmd.file.export_step", "Export STEP…"),
+    ("cmd.file.export_stl", "Export STL…"),
+    ("cmd.doc.inspect", "Inspect"),
+    ("cmd.body.faces", "List faces"),
+    ("cmd.body.measure", "Measure"),
+    // Toolbar groups.
+    ("ui.group.create", "Create"),
+    ("ui.group.modify", "Modify"),
+    ("ui.group.edit", "Edit"),
+    // Menus and panels.
+    ("ui.menu.file", "File"),
+    ("ui.menu.view", "View"),
+    ("ui.tab.viewport", "Viewport"),
+    ("ui.tab.features", "Features"),
+    (
+        "ui.features.empty",
+        "No features yet. Create a box to start.",
+    ),
+    ("ui.features.selection", "Selection"),
+    ("ui.features.none_selected", "Nothing selected"),
+    ("ui.features.kernel", "Kernel"),
+    ("ui.status.ready", "Ready"),
+    ("ui.status.hover", "Face"),
+    ("ui.status.no_gpu", "No GPU: the viewport is unavailable"),
+    // Views.
+    ("ui.view.fit", "Fit (F)"),
+    ("ui.view.iso", "Iso"),
+    ("ui.view.top", "Top"),
+    ("ui.view.front", "Front"),
+    ("ui.view.right", "Right"),
+    ("ui.view.theme_dark", "Dark theme"),
+    ("ui.view.theme_light", "Light theme"),
+    // Parameter popovers.
+    ("ui.param.size", "Size (mm)"),
+    ("ui.param.origin", "Origin (mm)"),
+    ("ui.param.face", "Face"),
+    ("ui.param.distance", "Distance (mm)"),
+    ("ui.param.need_face", "Select one face first."),
+    ("ui.apply", "Apply"),
+    ("ui.cancel", "Cancel"),
+    // Feature status.
+    ("ui.feature.ok", "OK"),
+    ("ui.feature.failed", "Failed"),
+    ("ui.feature.suppressed", "Suppressed"),
+];
+
+/// Spanish strings.
+pub const ES: &[(&str, &str)] = &[
+    ("cmd.solid.box", "Caja"),
+    ("cmd.face.push_pull", "Empujar/Jalar"),
+    ("cmd.edit.undo", "Deshacer"),
+    ("cmd.edit.redo", "Rehacer"),
+    ("cmd.selection.set", "Seleccionar"),
+    ("cmd.doc.new", "Nuevo"),
+    ("cmd.doc.open", "Abrir…"),
+    ("cmd.doc.save", "Guardar…"),
+    ("cmd.file.export_step", "Exportar STEP…"),
+    ("cmd.file.export_stl", "Exportar STL…"),
+    ("cmd.doc.inspect", "Inspeccionar"),
+    ("cmd.body.faces", "Listar caras"),
+    ("cmd.body.measure", "Medir"),
+    ("ui.group.create", "Crear"),
+    ("ui.group.modify", "Modificar"),
+    ("ui.group.edit", "Editar"),
+    ("ui.menu.file", "Archivo"),
+    ("ui.menu.view", "Vista"),
+    ("ui.tab.viewport", "Vista 3D"),
+    ("ui.tab.features", "Operaciones"),
+    (
+        "ui.features.empty",
+        "Aún no hay operaciones. Crea una caja para empezar.",
+    ),
+    ("ui.features.selection", "Selección"),
+    ("ui.features.none_selected", "Nada seleccionado"),
+    ("ui.features.kernel", "Kernel"),
+    ("ui.status.ready", "Listo"),
+    ("ui.status.hover", "Cara"),
+    (
+        "ui.status.no_gpu",
+        "Sin GPU: la vista 3D no está disponible",
+    ),
+    ("ui.view.fit", "Encuadrar (F)"),
+    ("ui.view.iso", "Iso"),
+    ("ui.view.top", "Superior"),
+    ("ui.view.front", "Frontal"),
+    ("ui.view.right", "Derecha"),
+    ("ui.view.theme_dark", "Tema oscuro"),
+    ("ui.view.theme_light", "Tema claro"),
+    ("ui.param.size", "Tamaño (mm)"),
+    ("ui.param.origin", "Origen (mm)"),
+    ("ui.param.face", "Cara"),
+    ("ui.param.distance", "Distancia (mm)"),
+    ("ui.param.need_face", "Selecciona primero una cara."),
+    ("ui.apply", "Aplicar"),
+    ("ui.cancel", "Cancelar"),
+    ("ui.feature.ok", "OK"),
+    ("ui.feature.failed", "Falló"),
+    ("ui.feature.suppressed", "Suprimida"),
+];
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::BTreeSet;
+
+    #[test]
+    fn tags_map_to_languages() {
+        assert_eq!(Lang::from_tag("es-MX"), Lang::Es);
+        assert_eq!(Lang::from_tag("es_ES.UTF-8"), Lang::Es);
+        assert_eq!(Lang::from_tag("en-US"), Lang::En);
+        assert_eq!(Lang::from_tag("fr-FR"), Lang::En);
+        assert_eq!(Lang::from_tag(""), Lang::En);
+    }
+
+    #[test]
+    fn lookup_falls_back_to_english_then_key() {
+        let es = I18n::new(Lang::Es);
+        assert_eq!(es.tr("cmd.solid.box"), "Caja");
+        assert_eq!(I18n::new(Lang::En).tr("cmd.solid.box"), "Box");
+        assert_eq!(es.tr("ui.missing.key"), "ui.missing.key");
+    }
+
+    #[test]
+    fn both_tables_have_the_same_keys_once() {
+        let keys = |t: &'static [(&'static str, &'static str)]| {
+            let set: BTreeSet<&str> = t.iter().map(|(k, _)| *k).collect();
+            assert_eq!(set.len(), t.len(), "duplicate key");
+            set
+        };
+        assert_eq!(keys(EN), keys(ES));
+    }
+
+    #[test]
+    fn every_registry_label_is_translated() {
+        let registry = kubit_engine::Session::new(Box::new(|| {
+            Box::new(kubit_kernel_api::testing::BoxKernel::new())
+        }))
+        .registry()
+        .clone();
+        for spec in registry.iter() {
+            for table in [EN, ES] {
+                assert!(
+                    find(table, spec.label).is_some(),
+                    "{} untranslated",
+                    spec.label
+                );
+            }
+            if let Some(group) = spec.toolbar_group {
+                let key = format!("ui.group.{group}");
+                assert!(find(EN, &key).is_some(), "{key} untranslated");
+            }
+        }
+    }
+}

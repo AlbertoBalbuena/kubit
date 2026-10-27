@@ -18,7 +18,7 @@ const MIN_MINOR_PX: f64 = 6.0;
 const FULL_MINOR_PX: f64 = 14.0;
 /// Most vertices [`grid_lines`] ever returns (sizes the GPU buffer).
 pub const MAX_GRID_VERTICES: usize =
-    ((2 * HALF_MAJORS as usize * 10 + 1) * 2 + 2) * SEGMENTS * 2 + 2;
+    ((2 * HALF_MAJORS as usize * 10 + 1) * 2 + 2) * SEGMENTS * 2 + 4 * SEGMENTS;
 
 /// One end of a grid line segment: position (mm) and sRGB colour with alpha.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -120,14 +120,18 @@ pub fn grid_lines(camera: &Camera, viewport: Viewport, style: &RenderStyle) -> V
     if (cx - half..=cx + half).contains(&0.0) {
         line([0.0, cy - half], [0.0, cy + half], style.axis_y);
     }
-    out.push(GridVertex {
-        position: [0.0; 3],
-        color: style.axis_z,
-    });
-    out.push(GridVertex {
-        position: [0.0, 0.0, major],
-        color: style.axis_z,
-    });
+    // Z spans as far as X and Y, fading with height like they fade with distance.
+    let z_fade = |z: f64| (1.0 - z.abs() / half).clamp(0.0, 1.0).powi(2);
+    for i in 0..2 * SEGMENTS {
+        let z0 = -half + 2.0 * half * i as f64 / (2 * SEGMENTS) as f64;
+        let z1 = -half + 2.0 * half * (i + 1) as f64 / (2 * SEGMENTS) as f64;
+        for z in [z0, z1] {
+            out.push(GridVertex {
+                position: [0.0, 0.0, z],
+                color: with_alpha(style.axis_z, z_fade(z)),
+            });
+        }
+    }
     out.truncate(MAX_GRID_VERTICES);
     out
 }
@@ -156,7 +160,11 @@ mod tests {
         assert!(lines.iter().any(|v| v.color.0[..3] == style.axis_x.0[..3]));
         assert!(lines.iter().any(|v| v.color.0[..3] == style.axis_y.0[..3]));
         let z_top = lines.iter().map(|v| v.position[2]).fold(0.0, f64::max);
-        assert!(z_top > 0.0, "the Z axis rises from the origin");
+        let z_bottom = lines.iter().map(|v| v.position[2]).fold(0.0, f64::min);
+        let (_, major) = grid_spacing(&camera);
+        let half = HALF_MAJORS as f64 * major;
+        assert!(z_top >= half * 0.999, "Z reaches as far as X and Y");
+        assert!(z_bottom <= -half * 0.999, "Z also runs below the grid");
     }
 
     #[test]

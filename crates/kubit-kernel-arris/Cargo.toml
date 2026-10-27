@@ -1,0 +1,20 @@
+[package]
+name = "kubit-kernel-arris"
+description = "Kernel backend over the arris B-rep kernel (L1)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+kubit-kernel-api.workspace = true
+kubit-mesh.workspace = true
+arris.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
+
+[lints]
+workspace = true

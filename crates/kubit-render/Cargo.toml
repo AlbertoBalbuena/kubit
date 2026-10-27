@@ -9,6 +9,15 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+kubit-mesh.workspace = true
+thiserror.workspace = true
+# Same wgpu major as egui-wgpu 0.37 so the UI has a single wgpu in the tree (README.md).
+wgpu = "30.0.1"
+bytemuck = { version = "1.25.2", features = ["derive"] }
+png = "0.18.1"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+pollster = "1.0.1"
 
 [lints]
 workspace = true

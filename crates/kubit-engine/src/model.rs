@@ -62,7 +62,9 @@ pub enum FeatureStatus {
     Ok,
     /// Failed; later features that depend on it may fail too.
     Failed(String),
-    /// Skipped because it is suppressed.
+    /// Skipped because it is suppressed, or because it lies after the rollback
+    /// marker (`Document::rollback`). The two are told apart by the document: a
+    /// rolled-back feature follows the marker and has `Feature::suppressed` unset.
     Suppressed,
 }
 
@@ -733,6 +735,43 @@ pub fn apply_feature<K: Kernel>(
         }
         other => Err(CommandError::UnknownFeature {
             feature: f.id.to_string(),
+            command: other.to_owned(),
+        }),
+    }
+}
+
+/// Parses `params` as the parameter type of timeline command `command` and
+/// returns them in canonical form (what the command itself would store).
+pub fn canonical_params(
+    command: &str,
+    params: &serde_json::Value,
+) -> Result<serde_json::Value, CommandError> {
+    fn round<T>(
+        command: &'static str,
+        p: &serde_json::Value,
+    ) -> Result<serde_json::Value, CommandError>
+    where
+        T: for<'de> Deserialize<'de> + Serialize,
+    {
+        let typed: T = parse(command, p)?;
+        serde_json::to_value(typed).map_err(|e| CommandError::Format(e.to_string()))
+    }
+    match command {
+        "solid.box" => {
+            let p: BoxParams = parse("solid.box", params)?;
+            validate_box(&p)?;
+            round::<BoxParams>("solid.box", params)
+        }
+        "solid.cylinder" => round::<CylinderParams>("solid.cylinder", params),
+        "face.push_pull" => round::<PushPullParams>("face.push_pull", params),
+        "edge.fillet" => round::<FilletParams>("edge.fillet", params),
+        "edge.chamfer" => round::<ChamferParams>("edge.chamfer", params),
+        "body.shell" => round::<ShellParams>("body.shell", params),
+        "body.boolean" => round::<BooleanParams>("body.boolean", params),
+        "solid.extrude" => round::<ExtrudeParams>("solid.extrude", params),
+        "sketch.create" => round::<crate::sketch::SketchParams>("sketch.create", params),
+        other => Err(CommandError::UnknownFeature {
+            feature: "edit".into(),
             command: other.to_owned(),
         }),
     }

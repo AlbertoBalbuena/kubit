@@ -141,6 +141,10 @@ pub struct Document {
     pub features: Vec<Feature>,
     /// Next id to hand out; ids are never reused, even after deleting a feature.
     pub next_feature: u32,
+    /// Rollback marker: the timeline is applied up to and including this feature;
+    /// later ones are rolled back. `None` means the end of the timeline.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rollback: Option<FeatureId>,
 }
 
 impl Default for Document {
@@ -152,6 +156,7 @@ impl Default for Document {
             parameters: IndexMap::new(),
             features: Vec::new(),
             next_feature: 1,
+            rollback: None,
         }
     }
 }
@@ -167,9 +172,12 @@ pub enum DocumentError {
         /// Version this build writes.
         supported: u32,
     },
-    /// Two features share an id, or ids are not increasing.
-    #[error("feature ids must be unique and increasing; offending id {0}")]
+    /// Two features share an id, or an id is not below `next_feature`.
+    #[error("feature ids must be unique; offending id {0}")]
     BadFeatureOrder(FeatureId),
+    /// The rollback marker names a feature that does not exist.
+    #[error("rollback marker {0} is not a feature of the document")]
+    BadRollback(FeatureId),
     /// `next_feature` would reuse an existing id.
     #[error("next_feature {0} is not above the last feature id")]
     BadNextFeature(u32),
@@ -200,7 +208,8 @@ impl Document {
         id
     }
 
-    /// Appends a feature with a fresh id and returns the id.
+    /// Inserts a feature with a fresh id right after the rollback marker (at the
+    /// end when there is none), moves the marker onto it, and returns the id.
     pub fn push_feature(
         &mut self,
         command: &str,
@@ -208,13 +217,21 @@ impl Document {
         author: Author,
     ) -> FeatureId {
         let id = self.allocate_feature_id();
-        self.features.push(Feature {
+        let feature = Feature {
             id,
             command: command.to_owned(),
             params,
             author,
             suppressed: false,
-        });
+        };
+        let at = self
+            .rollback
+            .and_then(|m| self.features.iter().position(|f| f.id == m))
+            .map_or(self.features.len(), |i| i + 1);
+        self.features.insert(at, feature);
+        if self.rollback.is_some() {
+            self.rollback = Some(id);
+        }
         id
     }
 
@@ -231,18 +248,24 @@ impl Document {
                 supported: FORMAT_VERSION,
             });
         }
+        let mut seen = std::collections::BTreeSet::new();
         let mut last = 0;
         for f in &self.features {
-            if f.id.0 <= last {
+            // Ids are unique but not sorted: a feature added while the timeline is
+            // rolled back sits in the middle with a fresh, larger id.
+            if !seen.insert(f.id) {
                 return Err(DocumentError::BadFeatureOrder(f.id));
             }
-            last = f.id.0;
+            last = last.max(f.id.0);
             if !all_finite(&f.params) {
                 return Err(DocumentError::NonFinite(f.id));
             }
         }
         if self.next_feature <= last {
             return Err(DocumentError::BadNextFeature(self.next_feature));
+        }
+        if let Some(m) = self.rollback.filter(|m| !seen.contains(m)) {
+            return Err(DocumentError::BadRollback(m));
         }
         Ok(())
     }
@@ -282,6 +305,21 @@ mod tests {
         let mut new = d;
         new.format_version = 99;
         assert!(matches!(new.validate(), Err(DocumentError::TooNew { .. })));
+    }
+
+    #[test]
+    fn push_inserts_after_the_marker_and_moves_it() {
+        let mut d = Document::new();
+        let a = d.push_feature("solid.box", serde_json::json!({}), Author::User);
+        let b = d.push_feature("face.push_pull", serde_json::json!({}), Author::User);
+        d.rollback = Some(a);
+        let c = d.push_feature("edge.fillet", serde_json::json!({}), Author::User);
+        let order: Vec<_> = d.features.iter().map(|f| f.id).collect();
+        assert_eq!(order, [a, c, b]);
+        assert_eq!(d.rollback, Some(c));
+        assert!(d.validate().is_ok());
+        d.rollback = Some(FeatureId(99));
+        assert!(matches!(d.validate(), Err(DocumentError::BadRollback(_))));
     }
 
     #[test]

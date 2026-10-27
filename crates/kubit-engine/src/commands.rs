@@ -54,6 +54,48 @@ struct BodyParams {
     body: Option<String>,
 }
 
+/// `feature.edit` parameters.
+#[derive(Debug, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+struct EditFeatureParams {
+    /// Feature to edit, e.g. `F3`.
+    feature: String,
+    /// New parameters, in the schema of that feature's own command.
+    params: serde_json::Value,
+}
+
+/// `feature.suppress` parameters.
+#[derive(Debug, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+struct SuppressParams {
+    /// Feature to suppress or restore, e.g. `F3`.
+    feature: String,
+    /// `true` skips the feature on rebuild; `false` restores it.
+    suppressed: bool,
+}
+
+/// `feature.delete` parameters.
+#[derive(Debug, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+struct DeleteFeatureParams {
+    /// Feature to remove, e.g. `F3`.
+    feature: String,
+}
+
+/// `timeline.set_marker` parameters.
+#[derive(Debug, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
+struct MarkerParams {
+    /// Last feature that stays applied, e.g. `F3`; later ones are rolled back.
+    /// `null` (or absent) puts the marker at the end of the timeline.
+    #[serde(default)]
+    after: Option<String>,
+}
+
+fn feature_id(text: &str) -> Result<FeatureId, CommandError> {
+    text.parse().map_err(CommandError::Reference)
+}
+
 /// A selection of faces and edges.
 #[derive(Debug, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
@@ -246,6 +288,77 @@ fn run_boolean(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, 
             "consumed": p.tool,
         }),
     })
+}
+
+// --- timeline ---------------------------------------------------------------
+
+fn run_feature_edit(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, CommandError> {
+    let p: EditFeatureParams = parse("feature.edit", v)?;
+    let id = feature_id(&p.feature)?;
+    s.edit_feature_checked(id, p.params)?;
+    Ok(CommandOutcome {
+        summary: format!("Edited {id}"),
+        data: json!({ "feature": id.to_string(), "failed": failed_features(s) }),
+    })
+}
+
+fn run_feature_suppress(
+    s: &mut Session,
+    v: serde_json::Value,
+) -> Result<CommandOutcome, CommandError> {
+    let p: SuppressParams = parse("feature.suppress", v)?;
+    let id = feature_id(&p.feature)?;
+    s.suppress_feature(id, p.suppressed)?;
+    let verb = if p.suppressed {
+        "Suppressed"
+    } else {
+        "Restored"
+    };
+    Ok(CommandOutcome {
+        summary: format!("{verb} {id}"),
+        data: json!({ "feature": id.to_string(), "failed": failed_features(s) }),
+    })
+}
+
+fn run_feature_delete(
+    s: &mut Session,
+    v: serde_json::Value,
+) -> Result<CommandOutcome, CommandError> {
+    let p: DeleteFeatureParams = parse("feature.delete", v)?;
+    let id = feature_id(&p.feature)?;
+    s.delete_feature(id)?;
+    Ok(CommandOutcome {
+        summary: format!("Deleted {id}"),
+        data: json!({ "feature": id.to_string(), "failed": failed_features(s) }),
+    })
+}
+
+fn run_set_marker(s: &mut Session, v: serde_json::Value) -> Result<CommandOutcome, CommandError> {
+    let p: MarkerParams = parse("timeline.set_marker", v)?;
+    let after = p.after.as_deref().map(feature_id).transpose()?;
+    s.set_rollback(after)?;
+    Ok(CommandOutcome {
+        summary: after.map_or_else(
+            || "Marker at the end of the timeline".to_owned(),
+            |id| format!("Marker after {id}"),
+        ),
+        data: json!({ "after": after.map(|id| id.to_string()), "failed": failed_features(s) }),
+    })
+}
+
+/// Features that failed in the last rebuild, in timeline order.
+fn failed_features(s: &Session) -> Vec<String> {
+    s.doc()
+        .features
+        .iter()
+        .filter(|f| {
+            matches!(
+                s.model().status.get(&f.id),
+                Some(crate::model::FeatureStatus::Failed(_))
+            )
+        })
+        .map(|f| f.id.to_string())
+        .collect()
 }
 
 // --- edit -------------------------------------------------------------------
@@ -683,6 +796,58 @@ pub fn builtin() -> Registry {
             schema_of::<BooleanParams>,
             has_two_bodies,
             run_boolean,
+        ),
+        spec(
+            "feature.edit",
+            "cmd.feature.edit",
+            "Replace the parameters of timeline feature `feature` (e.g. `F3`) with `params`, validated against that feature's own command schema, then rebuild. Features that no longer apply are reported as failed; if the edited feature itself fails, nothing changes.",
+            None,
+            None,
+            None,
+            true,
+            false,
+            schema_of::<EditFeatureParams>,
+            always,
+            run_feature_edit,
+        ),
+        spec(
+            "feature.suppress",
+            "cmd.feature.suppress",
+            "Suppress (`suppressed`: true) or restore (false) timeline feature `feature`, then rebuild.",
+            None,
+            None,
+            None,
+            true,
+            false,
+            schema_of::<SuppressParams>,
+            always,
+            run_feature_suppress,
+        ),
+        spec(
+            "feature.delete",
+            "cmd.feature.delete",
+            "Remove timeline feature `feature`, then rebuild. Features that depended on it are reported as failed.",
+            None,
+            None,
+            None,
+            true,
+            false,
+            schema_of::<DeleteFeatureParams>,
+            always,
+            run_feature_delete,
+        ),
+        spec(
+            "timeline.set_marker",
+            "cmd.timeline.set_marker",
+            "Move the rollback marker after feature `after` (e.g. `F3`): later features are rolled back and new features are inserted after the marker. `null` puts the marker at the end of the timeline.",
+            None,
+            None,
+            None,
+            true,
+            false,
+            schema_of::<MarkerParams>,
+            always,
+            run_set_marker,
         ),
         spec(
             "edit.undo",

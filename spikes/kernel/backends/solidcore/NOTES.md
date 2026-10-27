@@ -45,6 +45,9 @@ from that source.
 ## Shell (`offset::offset_executive::p2`)
 - `api_shell_brep_full(k, original: Option<BrepRef<'_, BrepId>>, options: ShellOptions, faces: &[Option<FaceKey>], copy: &ShellCopyIdentities<'_>, notifications: &mut OffsetNotifications<'_>) -> Result<Brep>`
 - `ShellOptions { offset: OffsetOptions { distance (negative = inset), extend_convex_edges, merge_results }, create_offset_solid, merge_sheet_side_walls }`.
+  **Surprise:** with every flag `false` the call returns `Ok` with the six untrimmed offset faces
+  (24 vertices, volume 0, not manifold) and no error. `merge_results: true` (or `extend_convex_edges`)
+  gives the exact hollow box (35712.000 mm³). The adapter uses `merge_results: true`.
 - `FaceKey = (BrepId, FaceId)`: the `BrepId` is an adapter handle that must match `BrepRef::handle`.
 - `OffsetNotifications` needs: a `BTreeMap<ObjectKey, Topology>` with every source record registered,
   an `AttributeStore`, key closures for source/result entities and curves, Boolean source-list handles,
@@ -58,6 +61,9 @@ from that source.
 - `sweep::api_brep::create_rotational_sweep(k, curves, base_pt, axis, angle_deg, cap_ends) -> Result<Brep>` (11a/11b). No face lists → history `None`.
 - `sweep::api_brep::create_curve_sweep(k, profile: &[Option<&Curve>], path: Option<&Curve>, scale_ref, scale, Option<&SweepOptions>) -> Result<CurveSweep>`;
   `CurveSweep { brep, start_faces, side_faces, end_faces }` → history `Partial`.
+  **Surprise (10a):** the profile circle is centred on the helix start (20,0,0), yet with default
+  options the section drifts off the meridian plane (ends at z≈30.0 instead of 32, volume −6.3 %).
+  `move_profile_center_to_path: true` gives the analytic volume (rel. err 2e-6); the adapter uses it.
   `SweepOptions { cap_ends, translational_sweep, move_profile_center_to_path, orient_profile_perpendicular_to_path, move_to_profile }`.
 - `sweep::api_surfaces::create_skin_primitive(k, curves_in_each_profile: &[usize], curves: &[Option<&Curve>], degree, cap_ends) -> Result<SkinPrimitive>`
   (same start/side/end face lists) — loft, degree 1 = ruled.
@@ -65,7 +71,9 @@ from that source.
 ## Measurements and checks
 - `mass::integrator::properties::brep_volume(k: &Kernel, &mut Brep, accuracy, &PropertyAttributes { store, key_of }) -> Result<f64>`
 - `mass::integrator::properties::brep_area(k: &Kernel, &mut Brep, accuracy) -> Result<f64>`; accuracy 1e-6.
-- Topology: `topology::brep::p1::{faces, edges, vertices}(b, None)`, `p1::shells(k: &mut Kernel, b, None)`,
+- Topology: `topology::brep::p1::{faces, edges, vertices}(b, None)`, `p1::shells(k: &mut Kernel, b, None)`
+  (region model: one shell per side of each face set, so a box has 2; the adapter counts only shells whose
+  `topology::shell::shell_region` is not `Brep::infinite_region()`),
   `topology::face::p2::loops(b, f, false, None)` (all loops of a face).
 - Closed: `topology::brep::p2::is_manifold_solid(b) -> Result<bool>`; valid: `topology::integrity::check(b) -> Result<()>`.
 - Picking: `edge::{start_end_vertices, curve, interval}`, `vertex::point`, `Curve::evaluate_point(k, t)`;
@@ -88,7 +96,15 @@ from that source.
   must be `topology::brep::p3::api_brep_copy` (solidcore#1144: `clone()` loses geometry ownership and
   breaks later fillets).
 
-## Status (paused 2026-10-26)
-- Done: adapter for every case (`src/lib.rs`), shell through a hand-built `OffsetNotifications` (`src/shell.rs`), STEP import, hostile families; `cargo build --release -p backend-solidcore` compiles with no warnings. wasm probe scaffolded in `wasm/solidcore/` (Cargo.toml, run.mjs, measure.sh), not built yet.
-- Not done: the corpus has **not** run yet (the first `spike all --backends solidcore` was killed, exit 144, before any output); no `result.json`.
-- Next: run `./target/release/spike all --backends solidcore`, fix the geometry against `results/table.md` (check 3a placement, 5d law direction, 10a profile frame, 11a/11b curve rotation), confirm whether `boolean_lists` really unites n-ary for case 4 (fall back to a fold if it fails), then run `wasm/solidcore/measure.sh` and commit `result.json`.
+## Corpus result (2026-10-27)
+- 22 ok, 4 not exposed (7b, 9a, 9b, hostile 15:9), 0 failed, 0 panics, 0 crashes, 0 timeouts; no `Unported` error hit.
+- Volumes (mass accuracy 1e-9; at 1e-6 the integrator itself adds up to 9e-6) within 8e-8 of the oracle,
+  except 10a at 2.2e-6 (the helix is a B-spline fit at tolerance 1e-4). 2b and 3a: the kernel reports the
+  edge/tangent contact as non-manifold (`is_manifold_solid` false, 2 shells), which is a correct verdict.
+- 5a–5d, 6, 7a: `integrity::check` fails after `fillet_edges` with "cached face shell: face N not found" —
+  the fillet API does not call `Brep::refresh_cached_topology` (upstream notes this as uncovered, #1127).
+  Volumes are still exact; the ⚠️ in the table comes from this check.
+- Hostile 15:1 and 15:5: 256/256 clean errors, 0 panics (a unit test confirms both families succeed on sane input).
+- The exit 144 of the first run was the parent being killed (signal 16), not a case: every case runs
+  alone in under 7 s.
+- 12rt: not exposed (no B-rep STEP export). 12imp: no fixtures under `fixtures/{nist,local}` in this checkout.

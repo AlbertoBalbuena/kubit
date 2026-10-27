@@ -24,7 +24,7 @@ use solidcore::{Brep, Kernel, Point3, SolidError, Vec3};
 pub struct Solidcore;
 
 /// Accuracy passed to the mass-property integrator.
-const MASS_ACCURACY: f64 = 1e-6;
+const MASS_ACCURACY: f64 = 1e-9;
 /// Distance tolerance for picking edges and faces by position.
 const PICK_TOL: f64 = 1e-6;
 

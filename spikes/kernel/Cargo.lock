@@ -223,6 +223,7 @@ dependencies = [
  "truck-modeling",
  "truck-shapeops",
  "truck-stepio",
+ "truck-topology",
 ]
 
 [[package]]

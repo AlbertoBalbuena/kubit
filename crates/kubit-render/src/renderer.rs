@@ -522,7 +522,20 @@ impl Renderer {
                 local_face: *local_face,
             }));
         }
-        let lines: Vec<[f32; 3]> = feature_edges(mesh, DEFAULT_CREASE_ANGLE)
+        // B-rep edges when the producer has them; otherwise edges guessed from the mesh.
+        let segments: Vec<[[f64; 3]; 2]> = if mesh.edges.is_empty() {
+            feature_edges(mesh, DEFAULT_CREASE_ANGLE)
+        } else {
+            mesh.edges
+                .iter()
+                .flat_map(|(_, points)| points.windows(2))
+                .filter_map(|w| match w {
+                    [a, b] => Some([*a, *b]),
+                    _ => None,
+                })
+                .collect()
+        };
+        let lines: Vec<[f32; 3]> = segments
             .into_iter()
             .flat_map(|[a, b]| [a.map(|v| v as f32), b.map(|v| v as f32)])
             .collect();

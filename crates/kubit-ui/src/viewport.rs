@@ -11,11 +11,13 @@ use eframe::egui_wgpu::{self, wgpu};
 use egui::{PointerButton, Rect, Sense, Ui};
 use kubit_doc::FeatureId;
 use kubit_engine::Session;
-use kubit_mesh::FaceTag;
+use kubit_mesh::{EdgeTag, FaceTag};
 use kubit_render::{
     Camera, DEPTH_FORMAT, FrameTargets, MeshId, PendingPick, RenderError, RenderStyle, Renderer,
     StandardView, Viewport,
 };
+use kubit_render::{EDGE_PICK_TOLERANCE_PX, nearest_edge, project_to_pixel};
+use std::collections::BTreeMap;
 
 /// Chord tolerance of the viewport tessellation, mm.
 const CHORD_MM: f64 = 0.1;
@@ -101,6 +103,27 @@ fn wheel_nav(events: &[egui::Event], zoom_delta: f32) -> WheelNav {
 
 /// A face of a document body, as the renderer sees it.
 pub type FaceHit = (MeshId, FaceTag);
+/// A B-rep edge of a document body.
+pub type EdgeHit = (MeshId, EdgeTag);
+
+/// What the cursor is on.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Hit {
+    /// A face.
+    Face(FaceHit),
+    /// An edge (wins over the face when within the pick tolerance).
+    Edge(EdgeHit),
+}
+
+/// A B-rep edge kept for picking and highlighting.
+#[derive(Clone, Debug, PartialEq)]
+struct EdgeEntry {
+    tag: EdgeTag,
+    points: Vec<[f64; 3]>,
+    /// The faces it bounds (when named); only these faces offer it for picking,
+    /// which keeps edges hidden behind the body from being picked through it.
+    faces: [Option<FaceTag>; 2],
+}
 
 /// Mesh id of a document body.
 pub fn mesh_id(body: FeatureId) -> MeshId {
@@ -194,8 +217,10 @@ impl Target {
 /// What happened in the viewport this frame.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct ViewportResponse {
-    /// A primary click: the face under the cursor, or `None` for empty space.
-    pub clicked: Option<Option<FaceHit>>,
+    /// A primary click: the edge or face under the cursor, or `None` for empty space.
+    pub clicked: Option<Option<Hit>>,
+    /// Whether Shift was held on that click (add to the selection).
+    pub shift: bool,
 }
 
 /// Viewport state: renderer, camera, offscreen target and picking.
@@ -207,6 +232,9 @@ pub struct Viewport3d {
     pub camera: Camera,
     pending: Option<PendingPick>,
     hovered: Option<FaceHit>,
+    hovered_edge: Option<EdgeHit>,
+    edges: BTreeMap<MeshId, Vec<EdgeEntry>>,
+    selected_edges: Vec<EdgeHit>,
     last_cursor: Option<[f64; 2]>,
     fitted: bool,
 }
@@ -227,6 +255,9 @@ impl Viewport3d {
             camera: Camera::default(),
             pending: None,
             hovered: None,
+            hovered_edge: None,
+            edges: BTreeMap::new(),
+            selected_edges: Vec::new(),
             last_cursor: None,
             fitted: false,
         })
@@ -235,6 +266,11 @@ impl Viewport3d {
     /// The face under the cursor, if any.
     pub fn hovered(&self) -> Option<FaceHit> {
         self.hovered
+    }
+
+    /// The edge under the cursor, if any (it takes precedence over the face).
+    pub fn hovered_edge(&self) -> Option<EdgeHit> {
+        self.hovered_edge
     }
 
     /// Re-uploads every body of the session and drops removed ones.
@@ -248,6 +284,7 @@ impl Viewport3d {
         for m in stale {
             self.renderer.remove(m);
         }
+        self.edges.clear();
         for body in bodies {
             let mesh = session
                 .body_mesh(body, CHORD_MM)
@@ -255,8 +292,19 @@ impl Viewport3d {
             self.renderer
                 .upload(mesh_id(body), mesh)
                 .map_err(|e| e.to_string())?;
+            let polylines = mesh.edges.clone();
+            let entries = polylines
+                .into_iter()
+                .map(|(tag, points)| EdgeEntry {
+                    tag,
+                    points,
+                    faces: edge_faces(session, body, tag),
+                })
+                .collect();
+            self.edges.insert(mesh_id(body), entries);
         }
         self.hovered = None;
+        self.hovered_edge = None;
         self.renderer.set_hovered(None);
         if !self.fitted && self.renderer.bounds().is_some() {
             self.fit();
@@ -279,6 +327,52 @@ impl Viewport3d {
             })
             .collect();
         self.renderer.set_selected(&faces);
+        self.selected_edges = session
+            .selection()
+            .edges
+            .iter()
+            .filter_map(|name| {
+                let (body, state) = model.body_of_edge(name)?;
+                let edge = state.edges.get(name)?;
+                Some((mesh_id(body), EdgeTag(edge.0)))
+            })
+            .collect();
+    }
+
+    /// The edge within the pick tolerance of `cursor` (physical pixels). With a
+    /// face under the cursor only that face's edges qualify; over empty space every
+    /// edge does (silhouettes).
+    fn edge_at(
+        &self,
+        face: Option<FaceHit>,
+        cursor: [f64; 2],
+        size: Viewport,
+        ppp: f64,
+    ) -> Option<EdgeHit> {
+        let candidates = self.edges.iter().flat_map(|(mesh, list)| {
+            list.iter()
+                .filter(move |e| match face {
+                    Some((m, f)) => m == *mesh && e.faces.contains(&Some(f)),
+                    None => true,
+                })
+                .map(move |e| ((*mesh, e.tag), e.points.as_slice()))
+        });
+        nearest_edge(
+            &self.camera,
+            size,
+            cursor,
+            EDGE_PICK_TOLERANCE_PX * ppp,
+            candidates,
+        )
+        .map(|(hit, _)| hit)
+    }
+
+    fn edge_points(&self, (mesh, tag): EdgeHit) -> Option<&[[f64; 3]]> {
+        self.edges
+            .get(&mesh)?
+            .iter()
+            .find(|e| e.tag == tag)
+            .map(|e| e.points.as_slice())
     }
 
     /// Frames every body.
@@ -308,6 +402,16 @@ impl Viewport3d {
 
         self.navigate(ui, &response, rect, size, ppp);
         self.update_hover(cursor, size, response.dragged());
+        self.hovered_edge = match cursor {
+            Some(c) if !response.dragged() => self.edge_at(self.hovered, c, size, ppp),
+            _ => None,
+        };
+        // An edge under the cursor takes the highlight from its face.
+        self.renderer.set_hovered(if self.hovered_edge.is_some() {
+            None
+        } else {
+            self.hovered
+        });
 
         let triad_center = rect.left_bottom() + egui::vec2(triad::INSET, -triad::INSET);
         let frame = self.camera.frame();
@@ -320,9 +424,13 @@ impl Viewport3d {
             if let Some(tip) = triad_hover {
                 self.set_view(tip.view());
             } else {
-                out.clicked = Some(
-                    cursor.and_then(|c| self.renderer.pick(&self.camera, size, c).ok().flatten()),
-                );
+                out.shift = ui.input(|i| i.modifiers.shift);
+                out.clicked = Some(cursor.and_then(|c| {
+                    let face = self.renderer.pick(&self.camera, size, c).ok().flatten();
+                    self.edge_at(face, c, size, ppp)
+                        .map(Hit::Edge)
+                        .or(face.map(Hit::Face))
+                }));
             }
         }
 
@@ -339,8 +447,31 @@ impl Viewport3d {
             let [r, g, b, _] = c.0.map(|v| (v.clamp(0.0, 1.0) * 255.0).round() as u8);
             egui::Color32::from_rgb(r, g, b)
         };
+        let painter = ui.painter().with_clip_rect(rect);
+        let to_screen = |p: [f64; 3]| {
+            project_to_pixel(&self.camera, size, p)
+                .map(|[x, y]| rect.min + egui::vec2((x / ppp) as f32, (y / ppp) as f32))
+        };
+        let stroke_edge = |hit: EdgeHit, color: egui::Color32| {
+            let Some(points) = self.edge_points(hit) else {
+                return;
+            };
+            for pair in points.windows(2) {
+                if let [a, b] = pair
+                    && let (Some(a), Some(b)) = (to_screen(*a), to_screen(*b))
+                {
+                    painter.line_segment([a, b], egui::Stroke::new(3.0, color));
+                }
+            }
+        };
+        for hit in &self.selected_edges {
+            stroke_edge(*hit, opaque(style.selected));
+        }
+        if let Some(hit) = self.hovered_edge {
+            stroke_edge(hit, opaque(style.hover));
+        }
         triad::paint(
-            &ui.painter().with_clip_rect(rect),
+            &painter,
             &self.camera.frame(),
             triad_center,
             [
@@ -472,6 +603,16 @@ impl Viewport3d {
 }
 
 /// A point offset (points) to physical pixels.
+/// Mesh tags of the two faces an edge bounds, from its persistent name.
+fn edge_faces(session: &Session, body: FeatureId, tag: EdgeTag) -> [Option<FaceTag>; 2] {
+    let Some(name) = session.edge_name(body, tag) else {
+        return [None, None];
+    };
+    let state = session.model().bodies.get(&body);
+    name.faces()
+        .map(|face| state.and_then(|s| s.names.get(face)).map(|f| FaceTag(f.0)))
+}
+
 fn to_px(v: egui::Vec2, ppp: f64) -> [f64; 2] {
     [f64::from(v.x) * ppp, f64::from(v.y) * ppp]
 }

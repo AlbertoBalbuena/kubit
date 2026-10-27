@@ -24,7 +24,7 @@ pub use edge_pick::{EDGE_PICK_TOLERANCE_PX, nearest_edge, polyline_distance_px, 
 pub use edges::{DEFAULT_CREASE_ANGLE, feature_edges};
 pub use grid::{GridVertex, MAX_GRID_VERTICES, grid_lines, grid_spacing};
 pub use ids::{BACKGROUND_ID, FaceTable, IdMap, MeshId};
-pub use kubit_mesh::FaceTag;
+pub use kubit_mesh::{EdgeTag, FaceTag};
 pub use readback::ReadbackStatus;
 pub use renderer::{FrameTargets, Image, MAX_SELECTED, PendingPick, Renderer};
 pub use style::{RenderStyle, Srgba};

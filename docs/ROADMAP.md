@@ -22,6 +22,7 @@ Cada fase tiene un **criterio de salida** verificable. No se abre una fase sin c
 
 ## Fase 1 — Modelado híbrido núcleo
 - [x] Viewport: grid adaptativo, ejes X/Y/Z, tríada de orientación, navegación con trackpad y tema consistente
+- [x] Aristas B-rep seleccionables (hover, clic, Shift+clic) con nombres persistentes v0 (ADR-0004)
 - [ ] Croquis: líneas, arcos, círculos, rectángulos, splines básicas
 - [ ] Solver propio (LM con descomposición de grafo y diagnóstico de DOF), con ezpz (MIT) como referencia
 - [ ] Inferencias, cotas sugeridas y bloqueadas, colores de DOF

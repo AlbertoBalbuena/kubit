@@ -7,7 +7,7 @@
 
 use crate::i18n::{I18n, Lang};
 use crate::theme::{Theme, ThemeMode};
-use crate::viewport::{Viewport3d, body_of};
+use crate::viewport::{Hit, Viewport3d, body_of};
 use eframe::egui_wgpu;
 use egui::{Key, KeyboardShortcut, Modifiers, RichText, Ui};
 use egui_dock::{DockArea, DockState, NodeIndex, TabViewer};
@@ -361,9 +361,9 @@ impl State {
                 ui.label(
                     RichText::new(format!("{} {}", info.name, info.version)).color(p.text_weak),
                 );
-                if let Some(name) = self.hovered_face() {
+                if let Some(text) = self.hover_text() {
                     ui.separator();
-                    ui.label(format!("{}: {name}", self.tr("ui.status.hover")));
+                    ui.label(text);
                 }
             });
         });
@@ -372,11 +372,19 @@ impl State {
     /// Status text after `command` succeeded.
     fn done_message(&self, command: &str) -> String {
         if command == "selection.set" {
-            let n = self.session.selection().faces.len();
-            return if n == 0 {
+            let sel = self.session.selection();
+            let parts: Vec<String> = [
+                ("ui.status.selected_faces", sel.faces.len()),
+                ("ui.status.selected_edges", sel.edges.len()),
+            ]
+            .into_iter()
+            .filter(|(_, n)| *n > 0)
+            .map(|(key, n)| format!("{}: {n}", self.tr(key)))
+            .collect();
+            return if parts.is_empty() {
                 self.tr("ui.features.none_selected").to_owned()
             } else {
-                format!("{}: {n}", self.tr("ui.status.selected"))
+                parts.join(" · ")
             };
         }
         let key = format!("ui.done.{command}");
@@ -388,11 +396,19 @@ impl State {
         }
     }
 
-    fn hovered_face(&self) -> Option<String> {
-        let (mesh, tag) = self.viewport.as_ref()?.hovered()?;
+    /// "Face: F1:+Z" or "Edge: F1:+X|F1:+Z" for what is under the cursor.
+    fn hover_text(&self) -> Option<String> {
+        let vp = self.viewport.as_ref()?;
+        if let Some((mesh, tag)) = vp.hovered_edge() {
+            return self
+                .session
+                .edge_name(body_of(mesh)?, tag)
+                .map(|n| format!("{}: {n}", self.tr("ui.status.hover_edge")));
+        }
+        let (mesh, tag) = vp.hovered()?;
         self.session
             .face_name(body_of(mesh)?, tag)
-            .map(|n| n.to_string())
+            .map(|n| format!("{}: {n}", self.tr("ui.status.hover")))
     }
 
     fn features_panel(&mut self, ui: &mut Ui) {
@@ -429,12 +445,17 @@ impl State {
             }
             ui.add_space(self.theme.spacing.lg);
             ui.label(RichText::new(self.tr("ui.features.selection")).strong());
-            let faces = &self.session.selection().faces;
-            if faces.is_empty() {
+            let sel = self.session.selection();
+            if sel.faces.is_empty() && sel.edges.is_empty() {
                 ui.label(RichText::new(self.tr("ui.features.none_selected")).color(p.text_weak));
             }
-            for name in faces {
-                ui.label(RichText::new(name.to_string()).monospace());
+            let names = sel
+                .faces
+                .iter()
+                .map(ToString::to_string)
+                .chain(sel.edges.iter().map(ToString::to_string));
+            for name in names {
+                ui.label(RichText::new(name).monospace());
             }
         });
     }
@@ -452,12 +473,37 @@ impl State {
             ui.ctx().request_repaint();
         }
         if let Some(hit) = response.clicked {
-            let faces: Vec<String> = hit
-                .and_then(|(mesh, tag)| self.session.face_name(body_of(mesh)?, tag))
-                .map(|n| n.to_string())
-                .into_iter()
-                .collect();
-            self.execute("selection.set", json!({ "faces": faces }));
+            let (mut faces, mut edges): (Vec<String>, Vec<String>) = if response.shift {
+                let sel = self.session.selection();
+                (
+                    sel.faces.iter().map(ToString::to_string).collect(),
+                    sel.edges.iter().map(ToString::to_string).collect(),
+                )
+            } else {
+                (Vec::new(), Vec::new())
+            };
+            // Shift+click toggles: a second Shift+click removes the entity.
+            let toggle = |list: &mut Vec<String>, name: String| {
+                if let Some(i) = list.iter().position(|n| *n == name) {
+                    list.remove(i);
+                } else {
+                    list.push(name);
+                }
+            };
+            match hit {
+                Some(Hit::Face((mesh, tag))) => {
+                    if let Some(name) = body_of(mesh).and_then(|b| self.session.face_name(b, tag)) {
+                        toggle(&mut faces, name.to_string());
+                    }
+                }
+                Some(Hit::Edge((mesh, tag))) => {
+                    if let Some(name) = body_of(mesh).and_then(|b| self.session.edge_name(b, tag)) {
+                        toggle(&mut edges, name.to_string());
+                    }
+                }
+                None => {}
+            }
+            self.execute("selection.set", json!({ "faces": faces, "edges": edges }));
         }
     }
 
@@ -792,11 +838,16 @@ mod tests {
         assert_eq!(app.state.done_message("solid.box"), "Caja creada");
         app.state
             .execute("selection.set", json!({ "faces": ["F1:+Z"] }));
+        assert_eq!(app.state.done_message("selection.set"), "Caras: 1");
+        assert_eq!(app.state.done_message("body.measure"), "Medir ✓");
+        app.state.execute(
+            "selection.set",
+            json!({ "faces": ["F1:+Z"], "edges": ["F1:+X|F1:+Z", "F1:+Z|F1:-Y"] }),
+        );
         assert_eq!(
             app.state.done_message("selection.set"),
-            "Caras seleccionadas: 1"
+            "Caras: 1 · Aristas: 2"
         );
-        assert_eq!(app.state.done_message("body.measure"), "Medir ✓");
     }
 
     #[test]

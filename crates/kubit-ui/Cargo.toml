@@ -3,12 +3,30 @@ name = "kubit-ui"
 description = "egui/eframe user interface and viewport (L5)."
 version.workspace = true
 edition.workspace = true
-rust-version.workspace = true
+# egui 0.36 needs Rust 1.95 (the workspace default is 1.90).
+rust-version = "1.95"
 license.workspace = true
 repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+kubit-engine.workspace = true
+kubit-doc.workspace = true
+kubit-mesh.workspace = true
+kubit-render.workspace = true
+egui.workspace = true
+eframe.workspace = true
+egui_dock.workspace = true
+serde_json.workspace = true
+# File dialogs (UI layer only). MIT.
+rfd = "0.17.2"
+# System language for the default UI locale. MIT OR Apache-2.0.
+sys-locale = "0.3.2"
+# Blocks on device creation for offscreen screenshots. Apache-2.0 OR MIT.
+pollster = "1.0.1"
+
+[dev-dependencies]
+kubit-kernel-api = { workspace = true, features = ["testing"] }
 
 [lints]
 workspace = true

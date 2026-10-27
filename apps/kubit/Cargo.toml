@@ -3,12 +3,20 @@ name = "kubit"
 description = "Kubit desktop application."
 version.workspace = true
 edition.workspace = true
-rust-version.workspace = true
+# egui 0.36 needs Rust 1.95 (the workspace default is 1.90).
+rust-version = "1.95"
 license.workspace = true
 repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+kubit-ui.workspace = true
+kubit-engine.workspace = true
+# Phase 0 placeholder backend until ADR-0002 picks the real one (see src/backend.rs).
+kubit-kernel-api = { workspace = true, features = ["testing"] }
+eframe.workspace = true
+clap.workspace = true
+serde_json.workspace = true
 
 [lints]
 workspace = true

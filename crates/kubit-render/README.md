@@ -75,8 +75,7 @@ Render into a `RenderTarget` from an egui-wgpu callback's `prepare` (it receives
 `render` per renderer per queue submission: uniforms are written with
 `Queue::write_buffer`.
 
-## Status (paused 2026-10-26)
+## Status (2026-10-27)
 
-- **Done:** camera, edges, ids, shaders, renderer, picking, PNG snapshots. 28 tests pass on Metal. Native clippy `-D warnings` and fmt pass. The wasm32 build passes.
-- **Next:** gate `RenderTarget` import and `check_gpu_errors` behind `cfg(not(wasm32))` (2 wasm-only warnings), re-run wasm clippy.
-- **Next:** regenerate `tests/snapshots/cube.png` (`KUBIT_UPDATE_SNAPSHOTS=1 cargo test -p kubit-render`) after the tilted-headlight change, run `cargo deny`, final report.
+- **Done:** camera, edges, ids, shaders, renderer, picking, PNG snapshots; 28 tests pass on Metal; fmt, clippy `-D warnings` (native and wasm32), wasm build and `cargo deny` pass.
+- **Needs (outside this crate):** `layers.toml` must allow `kubit-render = { layer = 1, wasm = true, same_layer = ["kubit-mesh"] }`, or `cargo xtask layers` fails.

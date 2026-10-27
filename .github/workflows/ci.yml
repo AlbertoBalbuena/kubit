@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ci:
+    name: ci (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Linux system libraries (future winit/wgpu app)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libxkbcommon-dev libwayland-dev libx11-dev libxcursor-dev libxi-dev \
+            libxrandr-dev libgl1-mesa-dev libegl1-mesa-dev libvulkan-dev pkg-config
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
+      - name: cargo xtask ci
+        run: cargo xtask ci
+
+  dco:
+    name: DCO sign-off
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Check Signed-off-by on every commit
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          missing=0
+          for sha in $(git rev-list --no-merges "$BASE..$HEAD"); do
+            if ! git show -s --format=%B "$sha" | grep -qE '^Signed-off-by: .+ <.+@.+>'; then
+              echo "::error::Commit $sha is missing a Signed-off-by line (use git commit -s)"
+              missing=1
+            fi
+          done
+          exit $missing

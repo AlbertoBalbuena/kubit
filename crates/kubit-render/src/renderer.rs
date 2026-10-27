@@ -753,7 +753,11 @@ impl Renderer {
         pass.set_pipeline(&self.face_pipeline);
         self.draw_faces(&mut pass);
         pass.set_pipeline(&self.edge_pipeline);
-        for mesh in self.meshes.values().filter(|m| m.edge_vertices > 0) {
+        for mesh in self
+            .meshes
+            .values()
+            .filter(|m| style.show_edges && m.edge_vertices > 0)
+        {
             pass.set_vertex_buffer(0, mesh.edges.slice(..));
             pass.draw(0..mesh.edge_vertices, 0..1);
         }

@@ -263,6 +263,8 @@ pub struct Viewport3d {
     pull: Option<PullDrag>,
     /// Face/edge picking, hover and the push/pull handle (off in sketch mode).
     pub pick_enabled: bool,
+    /// Bodies not drawn (view state).
+    hidden: std::collections::BTreeSet<FeatureId>,
     last_cursor: Option<[f64; 2]>,
     fitted: bool,
 }
@@ -290,6 +292,7 @@ impl Viewport3d {
             pull_face: None,
             pull: None,
             pick_enabled: true,
+            hidden: std::collections::BTreeSet::new(),
             last_cursor: None,
             fitted: false,
         })
@@ -305,9 +308,20 @@ impl Viewport3d {
         self.hovered_edge
     }
 
+    /// Sets the bodies not to draw; takes effect at the next `sync_meshes`.
+    pub fn set_hidden(&mut self, hidden: std::collections::BTreeSet<FeatureId>) {
+        self.hidden = hidden;
+    }
+
     /// Re-uploads every body of the session and drops removed ones.
     pub fn sync_meshes(&mut self, session: &mut Session) -> Result<(), String> {
-        let bodies: Vec<FeatureId> = session.model().bodies.keys().copied().collect();
+        let bodies: Vec<FeatureId> = session
+            .model()
+            .bodies
+            .keys()
+            .copied()
+            .filter(|b| !self.hidden.contains(b))
+            .collect();
         let stale: Vec<MeshId> = self
             .renderer
             .mesh_ids()
@@ -470,7 +484,7 @@ impl Viewport3d {
             self.hovered
         });
 
-        let triad_center = rect.left_bottom() + egui::vec2(triad::INSET, -triad::INSET);
+        let triad_center = rect.right_top() + egui::vec2(-triad::INSET, triad::INSET);
         let frame = self.camera.frame();
         let triad_hover = response
             .hover_pos()

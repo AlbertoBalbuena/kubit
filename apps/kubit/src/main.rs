@@ -21,6 +21,9 @@ struct Args {
     /// Open this sketch feature (e.g. `F1`) in sketch mode after `--run`.
     #[arg(long)]
     edit_sketch: Option<String>,
+    /// Start with the side panels collapsed.
+    #[arg(long)]
+    collapsed: bool,
     /// Pixels per point of `--screenshot`.
     #[arg(long, default_value_t = 2.0)]
     scale: f32,
@@ -87,6 +90,7 @@ fn main() -> ExitCode {
         },
         startup,
         edit_sketch: args.edit_sketch,
+        collapsed: args.collapsed,
     };
     if let Some(path) = args.screenshot {
         let written = kubit_ui::screenshot_png(

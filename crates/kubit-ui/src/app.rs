@@ -1,21 +1,27 @@
-//! The eframe application: dock layout, registry-driven toolbar, parameter
-//! popovers, shortcuts and the status bar.
+//! The eframe application. Layout (top to bottom): the top bar (logo menu, undo,
+//! command search), the ribbon (the one home of modelling commands), the canvas
+//! between the collapsible Navigator and Properties panels, and the history bar.
+//! Next to the model there are only values (inline fields, drag arrows).
 //!
 //! Every change to the document goes through `Session::execute`. Commands never
 //! open dialogs; the UI opens file dialogs first and passes the chosen path as a
 //! parameter.
 
+mod chrome;
+mod history;
+mod panels;
+mod ribbon;
+
 use crate::i18n::{I18n, Lang};
+use crate::icons;
 use crate::sketch_ui::{self, SketchMode, Tool, ViewInfo};
 use crate::theme::{Theme, ThemeMode};
 use crate::value_input::{FieldAction, ValueField};
 use crate::viewport::{Hit, Viewport3d, body_of};
 use eframe::egui_wgpu;
 use egui::{Key, KeyboardShortcut, Modifiers, RichText, Ui};
-use egui_dock::{DockArea, DockState, NodeIndex, TabViewer};
 use kubit_doc::FeatureId;
-use kubit_engine::{CommandSpec, Enablement, Event, FeatureStatus, KernelFactory, Session};
-use kubit_render::StandardView;
+use kubit_engine::{CommandSpec, Enablement, Event, KernelFactory, Session};
 use serde_json::{Value, json};
 
 /// One step of a startup script (same format as `kubit-cli run`).
@@ -38,15 +44,8 @@ pub struct AppOptions {
     pub startup: Vec<ScriptStep>,
     /// Open this sketch feature (e.g. `F1`) in sketch mode after the startup commands.
     pub edit_sketch: Option<String>,
-}
-
-/// Dock tabs.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Tab {
-    /// The 3D viewport.
-    Viewport,
-    /// Feature list, selection and kernel.
-    Features,
+    /// Start with the Navigator and Properties panels collapsed.
+    pub collapsed: bool,
 }
 
 /// Which multi-field parameter window is open.
@@ -219,7 +218,7 @@ enum Status {
 /// Largest accepted parameter magnitude in the popovers, mm.
 const MAX_MM: f64 = 100_000.0;
 
-/// Everything except the dock tree (so the tab viewer can borrow it mutably).
+/// The app state.
 struct State {
     session: Session,
     i18n: I18n,
@@ -241,11 +240,27 @@ struct State {
     region: Option<(FeatureId, u32)>,
     /// The viewport's camera and placement last frame.
     view: Option<ViewInfo>,
+    /// Active ribbon tab (outside sketch mode).
+    ribbon_tab: ribbon::RibbonTab,
+    /// Navigator and Properties panels expanded.
+    left_open: bool,
+    right_open: bool,
+    /// The command palette, when open.
+    palette: Option<chrome::Palette>,
+    /// Bodies hidden from the view (view state, not document).
+    hidden_bodies: std::collections::BTreeSet<FeatureId>,
+    /// Sketch visibility overrides (default: shown until extruded).
+    sketch_visibility: std::collections::BTreeMap<FeatureId, bool>,
+    /// Timeline feature shown in Properties.
+    selected_feature: Option<FeatureId>,
+    /// A Properties edit waiting for the pointer to be released.
+    pending_edit: Option<(FeatureId, Value)>,
+    /// Draw B-rep edges over the shading.
+    show_edges: bool,
 }
 
 /// The Kubit desktop app.
 pub struct KubitApp {
-    dock: DockState<Tab>,
     state: State,
 }
 
@@ -274,9 +289,7 @@ impl KubitApp {
     ) -> Self {
         let theme = Theme::new(options.theme);
         theme.apply(ctx);
-        let mut dock = DockState::new(vec![Tab::Viewport]);
-        dock.main_surface_mut()
-            .split_right(NodeIndex::root(), 0.76, vec![Tab::Features]);
+        icons::install_fonts(ctx);
         let viewport = render_state.and_then(|rs| Viewport3d::new(rs).ok());
         let mut state = State {
             session: Session::new(factory),
@@ -297,6 +310,15 @@ impl KubitApp {
             sketch_mode: None,
             region: None,
             view: None,
+            ribbon_tab: ribbon::RibbonTab::default(),
+            left_open: !options.collapsed,
+            right_open: !options.collapsed,
+            palette: None,
+            hidden_bodies: std::collections::BTreeSet::new(),
+            sketch_visibility: std::collections::BTreeMap::new(),
+            selected_feature: None,
+            pending_edit: None,
+            show_edges: true,
         };
         for step in options.startup {
             state.execute(&step.command, step.params);
@@ -307,7 +329,7 @@ impl KubitApp {
         {
             state.enter_sketch(id);
         }
-        Self { dock, state }
+        Self { state }
     }
 }
 
@@ -555,30 +577,6 @@ impl State {
         self.execute(op.command(), params);
     }
 
-    /// Commands that fit the current selection (context toolbar and menu).
-    fn context_commands(&self) -> Vec<CommandSpec> {
-        let sel = self.session.selection();
-        let ids: &[&str] = if self.region.is_some() {
-            &["solid.extrude"]
-        } else if !sel.edges.is_empty() {
-            &["edge.fillet", "edge.chamfer"]
-        } else if !sel.faces.is_empty() {
-            &["face.push_pull", "body.shell", "sketch.create"]
-        } else if self.session.model().bodies.len() >= 2 {
-            &[
-                "sketch.create",
-                "solid.box",
-                "solid.cylinder",
-                "body.boolean",
-            ]
-        } else {
-            &["sketch.create", "solid.box", "solid.cylinder"]
-        };
-        ids.iter()
-            .filter_map(|id| self.session.registry().get(id).copied())
-            .collect()
-    }
-
     /// The inline value field, if one is open.
     fn inline_value(&mut self, ctx: &egui::Context) {
         let Some(mut inline) = self.inline.take() else {
@@ -613,169 +611,114 @@ impl State {
         }
     }
 
-    /// Context toolbar over the viewport's top-left corner.
-    fn context_toolbar(&mut self, ctx: &egui::Context, rect: egui::Rect) {
-        if self.sketch_mode.is_some() {
-            self.sketch_toolbar(ctx, rect);
-            return;
-        }
-        let specs = self.context_commands();
-        if specs.is_empty() {
-            return;
-        }
-        egui::Area::new(egui::Id::new("kubit-context-toolbar"))
-            .order(egui::Order::Middle)
-            .fade_in(false)
-            .fixed_pos(rect.left_top() + egui::vec2(10.0, 10.0))
-            .show(ctx, |ui| {
-                egui::Frame::popup(ui.style()).show(ui, |ui| {
-                    ui.horizontal(|ui| {
-                        for spec in &specs {
-                            self.command_button(ui, spec);
-                        }
-                    });
-                });
-            });
-    }
-
-    /// Sketch tools, construction toggle, DOF and conflicts, and Finish.
-    fn sketch_toolbar(&mut self, ctx: &egui::Context, rect: egui::Rect) {
-        let Some(mode) = self.sketch_mode.as_ref() else {
-            return;
-        };
-        let feature = mode.feature;
-        let (tool, construction) = (mode.tool, mode.construction);
-        let state = self.session.model().sketches.get(&feature).cloned();
-        let i18n = self.i18n;
-        let p = self.theme.palette;
-        let mut pick = None;
-        let mut toggle = false;
-        let mut finish = false;
-        let mut remove = None;
-        egui::Area::new(egui::Id::new("kubit-context-toolbar"))
-            .order(egui::Order::Middle)
-            .fade_in(false)
-            .fixed_pos(rect.left_top() + egui::vec2(10.0, 10.0))
-            .show(ctx, |ui| {
-                egui::Frame::popup(ui.style()).show(ui, |ui| {
-                    ui.horizontal(|ui| {
-                        for t in Tool::ALL {
-                            let label = format!("{} ({:?})", i18n.tr(t.label_key()), t.key());
-                            if ui.selectable_label(tool == t, label).clicked() {
-                                pick = Some(t);
-                            }
-                        }
-                        ui.separator();
-                        if ui
-                            .selectable_label(
-                                construction,
-                                format!("{} (X)", i18n.tr("ui.sketch.construction")),
-                            )
-                            .clicked()
-                        {
-                            toggle = true;
-                        }
-                        ui.separator();
-                        if ui
-                            .button(RichText::new(i18n.tr("ui.sketch.finish")).strong())
-                            .clicked()
-                        {
-                            finish = true;
-                        }
-                    });
-                    if let Some(st) = &state {
-                        ui.horizontal(|ui| {
-                            let dof = st.report.dof;
-                            let (text, color) = if !st.report.conflicting.is_empty() {
-                                (i18n.tr("ui.sketch.conflict").to_owned(), p.error)
-                            } else if dof == 0 {
-                                (i18n.tr("ui.sketch.fully").to_owned(), p.ok)
-                            } else {
-                                (format!("{}: {dof}", i18n.tr("ui.sketch.dof")), p.hover)
-                            };
-                            ui.label(RichText::new(text).color(color));
-                            for c in &st.report.conflicting {
-                                let kind = st
-                                    .sketch
-                                    .constraints
-                                    .get(c)
-                                    .map_or("?", |r| r.constraint.kind());
-                                if ui
-                                    .button(format!("{} {c} ({kind})", i18n.tr("ui.sketch.remove")))
-                                    .clicked()
-                                {
-                                    remove = Some(*c);
-                                }
-                            }
-                            if !st.report.redundant.is_empty() {
-                                ui.label(
-                                    RichText::new(format!(
-                                        "{}: {}",
-                                        i18n.tr("ui.sketch.redundant"),
-                                        st.report.redundant.len()
-                                    ))
-                                    .color(p.text_weak),
-                                );
-                            }
-                        });
-                    }
-                });
-            });
-        if let Some(mode) = self.sketch_mode.as_mut() {
-            if let Some(t) = pick {
-                mode.set_tool(t);
-            }
-            if toggle {
-                mode.construction = !mode.construction;
-            }
-        }
-        if let Some(c) = remove {
-            self.execute(
-                "sketch.delete",
-                json!({ "sketch": feature.to_string(), "constraints": [c.0] }),
-            );
-        }
-        if finish {
-            self.exit_sketch();
-        }
-    }
-
     /// The right-click menu, if open.
     fn context_menu(&mut self, ctx: &egui::Context) {
         let Some(at) = self.menu_at else {
             return;
         };
-        let specs = self.context_commands();
-        let extra: Vec<CommandSpec> = ["edit.undo", "edit.redo"]
-            .iter()
-            .filter_map(|id| self.session.registry().get(id).copied())
-            .collect();
-        let mut chosen = false;
+        // View and selection actions only: modelling commands live in the ribbon.
+        let selected: std::collections::BTreeSet<FeatureId> = {
+            let sel = self.session.selection();
+            let model = self.session.model();
+            sel.faces
+                .iter()
+                .filter_map(|f| model.body_of_face(f).map(|(b, _)| b))
+                .chain(
+                    sel.edges
+                        .iter()
+                        .filter_map(|e| model.body_of_edge(e).map(|(b, _)| b)),
+                )
+                .collect()
+        };
+        let i18n = self.i18n;
+        let mut action = None;
         let area = egui::Area::new(egui::Id::new("kubit-context-menu"))
             .order(egui::Order::Foreground)
             .fixed_pos(at)
             .show(ctx, |ui| {
                 egui::Frame::menu(ui.style()).show(ui, |ui| {
-                    ui.set_min_width(140.0);
-                    for spec in &specs {
-                        chosen |= self.command_button(ui, spec);
-                    }
-                    ui.separator();
-                    for spec in &extra {
-                        chosen |= self.command_button(ui, spec);
-                    }
-                    if ui.button(self.i18n.tr("ui.view.fit")).clicked() {
-                        if let Some(vp) = &mut self.viewport {
-                            vp.fit();
+                    ui.set_min_width(160.0);
+                    let some = !selected.is_empty();
+                    for (key, enabled, which) in [
+                        ("ui.menu.hide", some, 0),
+                        ("ui.menu.isolate", some, 1),
+                        ("ui.menu.show_all", !self.hidden_bodies.is_empty(), 2),
+                        ("ui.view.fit", true, 3),
+                        ("ui.menu.deselect", some || self.region.is_some(), 4),
+                    ] {
+                        if ui
+                            .add_enabled(enabled, egui::Button::new(i18n.tr(key)))
+                            .clicked()
+                        {
+                            action = Some(which);
                         }
-                        chosen = true;
                     }
                 });
             });
-        if chosen || area.response.clicked_elsewhere() || ctx.input(|i| i.key_pressed(Key::Escape))
+        match action {
+            Some(0) => {
+                self.hidden_bodies.extend(selected);
+                self.execute("selection.set", json!({ "faces": [], "edges": [] }));
+                self.sync_hidden();
+            }
+            Some(1) => {
+                let all: Vec<FeatureId> = self.session.model().bodies.keys().copied().collect();
+                self.hidden_bodies = all.into_iter().filter(|b| !selected.contains(b)).collect();
+                self.sync_hidden();
+            }
+            Some(2) => {
+                self.hidden_bodies.clear();
+                self.sync_hidden();
+            }
+            Some(3) => {
+                if let Some(vp) = &mut self.viewport {
+                    vp.fit();
+                }
+            }
+            Some(4) => {
+                self.region = None;
+                self.execute("selection.set", json!({ "faces": [], "edges": [] }));
+            }
+            _ => {}
+        }
+        if action.is_some()
+            || area.response.clicked_elsewhere()
+            || ctx.input(|i| i.key_pressed(Key::Escape))
         {
             self.menu_at = None;
         }
+    }
+
+    /// Applies a Properties edit once the pointer is released.
+    fn flush_edit(&mut self, ctx: &egui::Context) {
+        if self.pending_edit.is_some()
+            && !ctx.input(|i| i.pointer.any_down())
+            && let Some((id, params)) = self.pending_edit.take()
+        {
+            self.execute(
+                "feature.edit",
+                json!({ "feature": id.to_string(), "params": params }),
+            );
+        }
+    }
+
+    /// Pushes the hidden-body set to the viewport.
+    fn sync_hidden(&mut self) {
+        let hidden = self.hidden_bodies.clone();
+        if let Some(vp) = &mut self.viewport {
+            vp.set_hidden(hidden);
+            if let Err(e) = vp.sync_meshes(&mut self.session) {
+                self.status = Status::Error(e);
+            }
+        }
+    }
+
+    /// Whether a sketch is drawn in 3D: shown until extruded, unless overridden.
+    fn sketch_shown(&self, id: FeatureId) -> bool {
+        self.sketch_visibility
+            .get(&id)
+            .copied()
+            .unwrap_or_else(|| self.visible_sketches().contains(&id))
     }
 
     /// Starts the command a toolbar button, menu entry or shortcut stands for.
@@ -830,146 +773,6 @@ impl State {
         (spec.enabled)(&self.session)
     }
 
-    /// A button for `spec`: translated label, tooltip with description, shortcut
-    /// and (when disabled) the reason.
-    /// A button for `spec`; returns whether it was clicked.
-    fn command_button(&mut self, ui: &mut Ui, spec: &CommandSpec) -> bool {
-        let enablement = self.enabled(spec);
-        let mut tip = spec.description.to_owned();
-        if let Some(s) = spec.shortcut {
-            tip = format!("{tip}\n{}", display_shortcut(s));
-        }
-        if let Enablement::Disabled(reason) = enablement {
-            tip = format!("{tip}\n({reason})");
-        }
-        let label = self.tr(spec.label);
-        let clicked = ui
-            .add_enabled(enablement == Enablement::Enabled, egui::Button::new(label))
-            .on_hover_text(tip)
-            .on_disabled_hover_text(match enablement {
-                Enablement::Disabled(r) => r,
-                Enablement::Enabled => "",
-            })
-            .clicked();
-        if clicked {
-            self.invoke(spec);
-        }
-        clicked
-    }
-
-    fn menu_bar(&mut self, ui: &mut Ui) {
-        egui::MenuBar::new().ui(ui, |ui| {
-            ui.menu_button(self.tr("ui.menu.file"), |ui| {
-                for id in [
-                    "doc.new",
-                    "doc.open",
-                    "doc.save",
-                    "file.export_step",
-                    "file.export_stl",
-                ] {
-                    if let Some(spec) = self.session.registry().get(id).copied() {
-                        self.command_button(ui, &spec);
-                    }
-                }
-            });
-            ui.menu_button(self.tr("ui.menu.view"), |ui| {
-                self.view_buttons(ui);
-                ui.separator();
-                let (key, mode) = match self.theme.mode {
-                    ThemeMode::Dark => ("ui.view.theme_light", ThemeMode::Light),
-                    ThemeMode::Light => ("ui.view.theme_dark", ThemeMode::Dark),
-                };
-                if ui.button(self.tr(key)).clicked() {
-                    self.theme = Theme::new(mode);
-                    self.theme.apply(ui.ctx());
-                }
-            });
-        });
-    }
-
-    fn view_buttons(&mut self, ui: &mut Ui) {
-        let Some(vp) = &mut self.viewport else {
-            return;
-        };
-        if ui.button(self.i18n.tr("ui.view.fit")).clicked() {
-            vp.fit();
-        }
-        for (key, view) in [
-            ("ui.view.iso", StandardView::Iso),
-            ("ui.view.top", StandardView::Top),
-            ("ui.view.front", StandardView::Front),
-            ("ui.view.right", StandardView::Right),
-        ] {
-            if ui.button(self.i18n.tr(key)).clicked() {
-                vp.set_view(view);
-            }
-        }
-    }
-
-    /// Toolbar: registry commands with a `toolbar_group`, grouped in registration order.
-    fn toolbar(&mut self, ui: &mut Ui) {
-        let mut groups: Vec<(&'static str, Vec<CommandSpec>)> = Vec::new();
-        for spec in self.session.registry().iter() {
-            let Some(g) = spec.toolbar_group else {
-                continue;
-            };
-            match groups.iter_mut().find(|(name, _)| *name == g) {
-                Some((_, specs)) => specs.push(*spec),
-                None => groups.push((g, vec![*spec])),
-            }
-        }
-        ui.horizontal(|ui| {
-            for (i, (group, specs)) in groups.iter().enumerate() {
-                if i > 0 {
-                    ui.separator();
-                }
-                let key = format!("ui.group.{group}");
-                ui.label(
-                    RichText::new(self.i18n.tr(&key))
-                        .small()
-                        .color(self.theme.palette.text_weak),
-                );
-                for spec in specs {
-                    self.command_button(ui, spec);
-                }
-            }
-            ui.separator();
-            self.view_buttons(ui);
-        });
-    }
-
-    fn status_bar(&self, ui: &mut Ui) {
-        let p = &self.theme.palette;
-        ui.horizontal(|ui| {
-            match &self.status {
-                Status::Ready => {
-                    ui.label(self.tr("ui.status.ready"));
-                }
-                Status::Done(command) => {
-                    ui.label(self.done_message(command));
-                }
-                Status::Failed { command, detail } => {
-                    let label = self.tr(&format!("cmd.{command}")).to_owned();
-                    let text = format!("{} {label}: {detail}", self.tr("ui.status.failed"));
-                    ui.label(RichText::new(text).color(p.error));
-                }
-                Status::Error(s) => {
-                    ui.label(RichText::new(self.tr(s)).color(p.error));
-                }
-            }
-            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                let info = self.session.kernel_info();
-                ui.label(
-                    RichText::new(format!("{} {}", info.name, info.version)).color(p.text_weak),
-                );
-                if let Some(text) = self.hover_text() {
-                    ui.separator();
-                    ui.label(text);
-                }
-            });
-        });
-    }
-
     /// Status text after `command` succeeded.
     fn done_message(&self, command: &str) -> String {
         if command == "selection.set" {
@@ -991,7 +794,11 @@ impl State {
         let key = format!("ui.done.{command}");
         let text = self.tr(&key);
         if text == key {
-            format!("{} ✓", self.tr(&format!("cmd.{command}")))
+            format!(
+                "{} {}",
+                self.tr(&format!("cmd.{command}")),
+                icons::glyph("finish").unwrap_or("·")
+            )
         } else {
             text.to_owned()
         }
@@ -1010,62 +817,6 @@ impl State {
         self.session
             .face_name(body_of(mesh)?, tag)
             .map(|n| format!("{}: {n}", self.tr("ui.status.hover")))
-    }
-
-    fn features_panel(&mut self, ui: &mut Ui) {
-        let p = self.theme.palette;
-        let mut reopen = None;
-        egui::ScrollArea::vertical().show(ui, |ui| {
-            let doc = self.session.doc();
-            if doc.features.is_empty() {
-                ui.label(RichText::new(self.tr("ui.features.empty")).color(p.text_weak));
-            }
-            for f in &doc.features {
-                let label = self
-                    .session
-                    .registry()
-                    .get(&f.command)
-                    .map_or(f.command.as_str(), |s| self.i18n.tr(s.label));
-                let (color, tip) = match self.session.model().status.get(&f.id) {
-                    Some(FeatureStatus::Ok) => (p.ok, self.tr("ui.feature.ok").to_owned()),
-                    Some(FeatureStatus::Failed(m)) => {
-                        (p.error, format!("{}: {m}", self.tr("ui.feature.failed")))
-                    }
-                    Some(FeatureStatus::Suppressed) | None => {
-                        (p.text_weak, self.tr("ui.feature.suppressed").to_owned())
-                    }
-                };
-                ui.horizontal(|ui| {
-                    status_dot(ui, color).on_hover_text(tip);
-                    ui.label(
-                        RichText::new(f.id.to_string())
-                            .monospace()
-                            .color(p.text_weak),
-                    );
-                    let item = ui.add(egui::Label::new(label).sense(egui::Sense::click()));
-                    if f.command == "sketch.create" && item.double_clicked() {
-                        reopen = Some(f.id);
-                    }
-                });
-            }
-            ui.add_space(self.theme.spacing.lg);
-            ui.label(RichText::new(self.tr("ui.features.selection")).strong());
-            let sel = self.session.selection();
-            if sel.faces.is_empty() && sel.edges.is_empty() {
-                ui.label(RichText::new(self.tr("ui.features.none_selected")).color(p.text_weak));
-            }
-            let names = sel
-                .faces
-                .iter()
-                .map(ToString::to_string)
-                .chain(sel.edges.iter().map(ToString::to_string));
-            for name in names {
-                ui.label(RichText::new(name).monospace());
-            }
-        });
-        if let Some(id) = reopen {
-            self.enter_sketch(id);
-        }
     }
 
     fn sketch_colors(&self) -> sketch_ui::Palette {
@@ -1154,7 +905,15 @@ impl State {
         let painter = ui.painter().with_clip_rect(view.rect);
         let pointer = response.response.as_ref().and_then(|r| r.hover_pos());
         let mut hovered = None;
-        for id in self.visible_sketches() {
+        let ids: Vec<FeatureId> = self
+            .session
+            .model()
+            .sketches
+            .keys()
+            .copied()
+            .filter(|id| self.sketch_shown(*id))
+            .collect();
+        for id in ids {
             let Some(state) = self.session.model().sketches.get(&id) else {
                 continue;
             };
@@ -1177,7 +936,8 @@ impl State {
     }
 
     fn viewport_tab(&mut self, ui: &mut Ui) {
-        let style = self.theme.render_style();
+        let mut style = self.theme.render_style();
+        style.show_edges = self.show_edges;
         let Some(vp) = &mut self.viewport else {
             ui.centered_and_justified(|ui| {
                 ui.label(self.i18n.tr("ui.status.no_gpu"));
@@ -1191,10 +951,10 @@ impl State {
         }
         self.viewport_rect = Some(rect);
         self.view = response.view;
+        let ctx = ui.ctx().clone();
+        self.view_controls(&ctx, rect);
         if self.sketch_mode.is_some() {
             self.sketch_frame(ui, &response);
-            let ctx = ui.ctx().clone();
-            self.context_toolbar(&ctx, rect);
             return;
         }
         let region_hit = self.sketches_3d(ui, &response);
@@ -1207,8 +967,6 @@ impl State {
             self.forms.distance = mm;
             self.execute("face.push_pull", json!({ "face": face, "distance": mm }));
         }
-        let ctx = ui.ctx().clone();
-        self.context_toolbar(&ctx, rect);
         if let Some(hit) = response.clicked {
             // A sketch region drawn over a face takes the click.
             if let Some(region) = region_hit {
@@ -1434,14 +1192,6 @@ impl State {
     }
 }
 
-/// A small filled circle (feature status), sized like a line of text.
-fn status_dot(ui: &mut Ui, color: egui::Color32) -> egui::Response {
-    let h = ui.text_style_height(&egui::TextStyle::Body);
-    let (rect, response) = ui.allocate_exact_size(egui::vec2(h * 0.6, h), egui::Sense::hover());
-    ui.painter().circle_filled(rect.center(), h * 0.22, color);
-    response
-}
-
 fn file_dialog() -> rfd::FileDialog {
     rfd::FileDialog::new().add_filter("Kubit", &["kubit", "json"])
 }
@@ -1482,66 +1232,66 @@ fn display_shortcut(text: &str) -> String {
     }
 }
 
-struct Viewer<'a> {
-    state: &'a mut State,
-}
-
-impl TabViewer for Viewer<'_> {
-    type Tab = Tab;
-
-    fn id(&mut self, tab: &mut Tab) -> egui::Id {
-        egui::Id::new(("kubit-tab", *tab as u8))
-    }
-
-    fn title(&mut self, tab: &mut Tab) -> egui::WidgetText {
-        let key = match tab {
-            Tab::Viewport => "ui.tab.viewport",
-            Tab::Features => "ui.tab.features",
-        };
-        self.state.tr(key).into()
-    }
-
-    fn ui(&mut self, ui: &mut Ui, tab: &mut Tab) {
-        match tab {
-            Tab::Viewport => self.state.viewport_tab(ui),
-            Tab::Features => self.state.features_panel(ui),
-        }
-    }
-
-    fn is_closeable(&self, _tab: &Tab) -> bool {
-        false
-    }
-}
-
 impl KubitApp {
     /// Draws one frame into the root `ui` (eframe and the offscreen screenshot).
     pub fn draw(&mut self, ui: &mut Ui) {
         let ctx = ui.ctx().clone();
         let state = &mut self.state;
         state.pointer = ctx.input(|i| i.pointer.latest_pos());
+        state.flush_edit(&ctx);
         state.shortcuts(&ctx);
         let p = state.theme.palette;
         let m = state.theme.spacing.sm;
-        egui::Panel::top("kubit-menu")
-            .frame(egui::Frame::new().fill(p.base).inner_margin(m))
-            .show(ui, |ui| state.menu_bar(ui));
-        egui::Panel::top("kubit-toolbar")
-            .frame(egui::Frame::new().fill(p.panel).inner_margin(m))
-            .show(ui, |ui| state.toolbar(ui));
-        egui::Panel::bottom("kubit-status")
-            .frame(egui::Frame::new().fill(p.base).inner_margin(m))
-            .show(ui, |ui| state.status_bar(ui));
-        egui::CentralPanel::no_frame().show(ui, |ui| {
-            DockArea::new(&mut self.dock)
-                .style(egui_dock::Style::from_egui(ui.style().as_ref()))
-                .show_close_buttons(false)
-                .show_leaf_close_all_buttons(false)
-                .show_leaf_collapse_buttons(false)
-                .show_inside(ui, &mut Viewer { state: &mut *state });
-        });
+        egui::Panel::top("kubit-topbar")
+            .frame(
+                egui::Frame::new()
+                    .fill(p.base)
+                    .inner_margin(egui::Margin::symmetric(m as i8, 4)),
+            )
+            .show(ui, |ui| state.top_bar(ui));
+        egui::Panel::top("kubit-ribbon")
+            .frame(
+                egui::Frame::new()
+                    .fill(p.panel)
+                    .inner_margin(egui::Margin::symmetric(m as i8, 4)),
+            )
+            .show(ui, |ui| state.ribbon(ui));
+        egui::Panel::bottom("kubit-history")
+            .frame(
+                egui::Frame::new()
+                    .fill(p.base)
+                    .inner_margin(egui::Margin::symmetric(m as i8, 4)),
+            )
+            .show(ui, |ui| state.history_bar(ui));
+        let side = egui::Frame::new().fill(p.panel).inner_margin(m);
+        let left = egui::Panel::left("kubit-navigator")
+            .frame(side)
+            .show_separator_line(true);
+        let left = if state.left_open {
+            left.resizable(true)
+                .default_size(220.0)
+                .size_range(160.0..=420.0)
+        } else {
+            left.resizable(false).exact_size(panels::RAIL)
+        };
+        left.show(ui, |ui| state.navigator(ui));
+        let right = egui::Panel::right("kubit-properties")
+            .frame(side)
+            .show_separator_line(true);
+        let right = if state.right_open {
+            right
+                .resizable(true)
+                .default_size(260.0)
+                .size_range(180.0..=460.0)
+        } else {
+            right.resizable(false).exact_size(panels::RAIL)
+        };
+        right.show(ui, |ui| state.properties(ui));
+        egui::CentralPanel::no_frame().show(ui, |ui| state.viewport_tab(ui));
         state.popovers(&ctx);
         state.inline_value(&ctx);
         state.context_menu(&ctx);
+        state.palette(&ctx);
     }
 
     /// Whether a viewport exists (false without a GPU).
@@ -1653,7 +1403,10 @@ mod tests {
         app.state
             .execute("selection.set", json!({ "faces": ["F1:+Z"] }));
         assert_eq!(app.state.done_message("selection.set"), "Caras: 1");
-        assert_eq!(app.state.done_message("body.measure"), "Medir ✓");
+        assert_eq!(
+            app.state.done_message("body.measure"),
+            format!("Medir {}", icons::glyph("finish").unwrap_or("·"))
+        );
         app.state.execute(
             "selection.set",
             json!({ "faces": ["F1:+Z"], "edges": ["F1:+X|F1:+Z", "F1:+Z|F1:-Y"] }),
@@ -1676,18 +1429,8 @@ mod tests {
         let inline = app.state.inline.clone();
         assert_eq!(inline.map(|i| i.op), Some(ValueOp::Fillet));
         assert_eq!(
-            app.state
-                .context_commands()
-                .iter()
-                .map(|s| s.id)
-                .collect::<Vec<_>>(),
-            app.state
-                .session
-                .registry()
-                .iter()
-                .map(|s| s.id)
-                .filter(|id| ["edge.fillet", "edge.chamfer"].contains(id))
-                .collect::<Vec<_>>()
+            app.state.relevant_commands(),
+            vec!["edge.fillet", "edge.chamfer"]
         );
     }
 

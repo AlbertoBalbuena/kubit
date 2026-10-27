@@ -56,6 +56,8 @@ pub struct RenderStyle {
     pub axis_z: Srgba,
     /// Whether the ground grid and axes are drawn.
     pub show_grid: bool,
+    /// Whether B-rep edges are drawn over the shading.
+    pub show_edges: bool,
     /// Ambient light, 0..1.
     pub ambient: f32,
     /// Headlight diffuse strength, 0..1.
@@ -78,6 +80,7 @@ impl Default for RenderStyle {
             axis_y: Srgba::from_rgba8(0x4c, 0xc2, 0x6a, 0xd0),
             axis_z: Srgba::from_rgba8(0x4a, 0x8c, 0xf0, 0xd0),
             show_grid: true,
+            show_edges: true,
             ambient: 0.35,
             diffuse: 0.65,
             hover_mix: 0.55,

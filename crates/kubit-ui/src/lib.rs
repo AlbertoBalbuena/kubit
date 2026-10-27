@@ -7,6 +7,7 @@
 mod app;
 mod handle;
 pub mod i18n;
+mod icons;
 mod screenshot;
 mod sketch_ui;
 pub mod theme;
@@ -14,7 +15,7 @@ mod triad;
 mod value_input;
 pub mod viewport;
 
-pub use app::{AppOptions, KubitApp, ScriptStep, Tab, parse_shortcut};
+pub use app::{AppOptions, KubitApp, ScriptStep, parse_shortcut};
 pub use i18n::{I18n, Lang};
 pub use screenshot::screenshot_png;
 pub use theme::{Theme, ThemeMode};

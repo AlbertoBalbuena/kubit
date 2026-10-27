@@ -121,6 +121,18 @@ impl Tool {
         }
     }
 
+    /// Icon name (`crate::icons`).
+    pub fn icon(self) -> &'static str {
+        match self {
+            Self::Select => "select",
+            Self::Line => "line",
+            Self::Rectangle => "rectangle",
+            Self::Circle => "circle",
+            Self::Arc => "arc",
+            Self::Dimension => "dimension",
+        }
+    }
+
     /// Single-key shortcut.
     pub fn key(self) -> egui::Key {
         match self {
@@ -130,6 +142,74 @@ impl Tool {
             Self::Circle => egui::Key::C,
             Self::Arc => egui::Key::A,
             Self::Dimension => egui::Key::D,
+        }
+    }
+}
+
+/// A constraint applied by hand to the selected entities.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ConstraintKind {
+    /// Selected lines horizontal.
+    Horizontal,
+    /// Selected lines vertical.
+    Vertical,
+    /// Two lines parallel.
+    Parallel,
+    /// Two lines perpendicular.
+    Perpendicular,
+    /// A line and a circle/arc, or two circles/arcs, tangent.
+    Tangent,
+    /// Two points together, or a point on a curve.
+    Coincident,
+    /// A point at the middle of a line.
+    Midpoint,
+    /// Two lines of equal length, or two circles/arcs of equal radius.
+    Equal,
+    /// Selected points fixed where they are.
+    Fix,
+}
+
+impl ConstraintKind {
+    /// In ribbon order.
+    pub const ALL: [Self; 9] = [
+        Self::Horizontal,
+        Self::Vertical,
+        Self::Parallel,
+        Self::Perpendicular,
+        Self::Tangent,
+        Self::Coincident,
+        Self::Midpoint,
+        Self::Equal,
+        Self::Fix,
+    ];
+
+    /// Icon name.
+    pub fn icon(self) -> &'static str {
+        match self {
+            Self::Horizontal => "horizontal",
+            Self::Vertical => "vertical",
+            Self::Parallel => "parallel",
+            Self::Perpendicular => "perpendicular",
+            Self::Tangent => "tangent",
+            Self::Coincident => "coincident",
+            Self::Midpoint => "midpoint",
+            Self::Equal => "equal",
+            Self::Fix => "fix",
+        }
+    }
+
+    /// i18n key.
+    pub fn label_key(self) -> &'static str {
+        match self {
+            Self::Horizontal => "ui.constraint.horizontal",
+            Self::Vertical => "ui.constraint.vertical",
+            Self::Parallel => "ui.constraint.parallel",
+            Self::Perpendicular => "ui.constraint.perpendicular",
+            Self::Tangent => "ui.constraint.tangent",
+            Self::Coincident => "ui.constraint.coincident",
+            Self::Midpoint => "ui.constraint.midpoint",
+            Self::Equal => "ui.constraint.equal",
+            Self::Fix => "ui.constraint.fix",
         }
     }
 }
@@ -840,6 +920,97 @@ impl SketchMode {
                 }
             }
         }
+    }
+
+    /// The `sketch.add` that applies `kind` to the selection, or `None` when the
+    /// selection does not fit it (the ribbon disables the button).
+    pub fn constraint_command(
+        &self,
+        kind: ConstraintKind,
+        sketch: &Sketch,
+    ) -> Option<(&'static str, Value)> {
+        let of = |pred: fn(&Entity) -> bool| -> Vec<u32> {
+            self.selected
+                .iter()
+                .filter(|id| sketch.entity(**id).is_ok_and(pred))
+                .map(|id| id.0)
+                .collect()
+        };
+        let points = of(|e| matches!(e, Entity::Point { .. }));
+        let lines = of(|e| matches!(e, Entity::Line { .. }));
+        let rounds = of(|e| matches!(e, Entity::Circle { .. } | Entity::Arc { .. }));
+        let n = self.selected.len();
+        let pair = |a: &[u32], b: &[u32]| match (a, b) {
+            ([x], [y]) => Some((*x, *y)),
+            _ => None,
+        };
+        let constraints: Vec<Value> = match kind {
+            ConstraintKind::Horizontal | ConstraintKind::Vertical
+                if !lines.is_empty() && lines.len() == n =>
+            {
+                let k = if kind == ConstraintKind::Horizontal {
+                    "horizontal"
+                } else {
+                    "vertical"
+                };
+                lines
+                    .iter()
+                    .map(|l| json!({ "kind": k, "line": l }))
+                    .collect()
+            }
+            ConstraintKind::Parallel | ConstraintKind::Perpendicular
+                if lines.len() == 2 && n == 2 =>
+            {
+                let k = if kind == ConstraintKind::Parallel {
+                    "parallel"
+                } else {
+                    "perpendicular"
+                };
+                let [a, b] = lines.as_slice() else {
+                    return None;
+                };
+                vec![json!({ "kind": k, "a": a, "b": b })]
+            }
+            ConstraintKind::Tangent
+                if n == 2 && !rounds.is_empty() && lines.len() + rounds.len() == 2 =>
+            {
+                let all: Vec<u32> = lines.iter().chain(&rounds).copied().collect();
+                let [a, b] = all.as_slice() else { return None };
+                vec![json!({ "kind": "tangent", "a": a, "b": b })]
+            }
+            ConstraintKind::Equal if n == 2 && (lines.len() == 2 || rounds.len() == 2) => {
+                let all: Vec<u32> = lines.iter().chain(&rounds).copied().collect();
+                let [a, b] = all.as_slice() else { return None };
+                vec![json!({ "kind": "equal", "a": a, "b": b })]
+            }
+            ConstraintKind::Coincident if n == 2 => {
+                if let [a, b] = points.as_slice() {
+                    vec![json!({ "kind": "coincident", "a": a, "b": b })]
+                } else if let Some((p, l)) = pair(&points, &lines) {
+                    vec![json!({ "kind": "point_on_line", "point": p, "line": l })]
+                } else if let Some((p, c)) = pair(&points, &rounds) {
+                    vec![json!({ "kind": "point_on_circle", "point": p, "circle": c })]
+                } else {
+                    return None;
+                }
+            }
+            ConstraintKind::Midpoint if n == 2 => {
+                let (p, l) = pair(&points, &lines)?;
+                vec![json!({ "kind": "midpoint", "point": p, "line": l })]
+            }
+            ConstraintKind::Fix if !points.is_empty() && points.len() == n => points
+                .iter()
+                .filter_map(|p| {
+                    let at = sketch.point(EntityId(*p)).ok()?;
+                    Some(json!({ "kind": "fix", "point": p, "at": at }))
+                })
+                .collect(),
+            _ => return None,
+        };
+        Some((
+            "sketch.add",
+            json!({ "sketch": self.feature.to_string(), "first_id": sketch.next_id, "constraints": constraints }),
+        ))
     }
 
     /// Delete key: removes the selection.

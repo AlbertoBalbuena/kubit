@@ -1,6 +1,6 @@
 # kubit-ui
 
-Desktop UI (layer 5): eframe + egui_dock over `kubit_engine::Session`. Every
+Desktop UI (layer 5): eframe + egui over `kubit_engine::Session`. Every
 document change is a `Session::execute` call (toolbar, shortcuts, popovers,
 viewport clicks); commands never open dialogs, the UI opens file dialogs (rfd)
 and passes the path as a parameter.
@@ -9,8 +9,8 @@ and passes the path as a parameter.
 
 | Crate | Version | Licence | Why |
 |---|---|---|---|
-| `eframe`, `egui` | 0.36.2 | MIT OR Apache-2.0 | App shell and widgets. Not 0.37: `egui_dock` 0.21.1 (newest) requires egui `^0.36`. egui-wgpu 0.36 uses wgpu `^30`, the same wgpu as `kubit-render`. |
-| `egui_dock` | 0.21.1 | MIT | Dockable tabs (viewport, features). |
+| `eframe`, `egui` | 0.36.2 | MIT OR Apache-2.0 | App shell and widgets. Not 0.37: `egui-phosphor` 0.14 requires egui `^0.36`. egui-wgpu 0.36 uses wgpu `^30`, the same wgpu as `kubit-render`. |
+| `egui-phosphor` | 0.14.0 | MIT OR Apache-2.0 (icons MIT) | Generic icons (undo, open, eye…); CAD icons are drawn in `icons.rs`. |
 | `rfd` | 0.17.2 | MIT | Native file dialogs. |
 | `sys-locale` | 0.3.2 | MIT OR Apache-2.0 | System language for the default UI locale. |
 | `pollster` | 1.0.1 | Apache-2.0 OR MIT | Blocks on device creation for offscreen screenshots. |

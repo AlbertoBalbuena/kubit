@@ -108,3 +108,6 @@ from that source.
 - The exit 144 of the first run was the parent being killed (signal 16), not a case: every case runs
   alone in under 7 s.
 - 12rt: not exposed (no B-rep STEP export). 12imp: no fixtures under `fixtures/{nist,local}` in this checkout.
+- wasm32 (`wasm/solidcore/result.json`): compiles; 16.4 MB raw, 5.07 MB gzip (opt-level s, lto);
+  in Node 15/18 ok, 3 N/E (7b, 9a, 9b), 0 traps, volumes match native. Case 4 takes ~2.5 s in wasm
+  (≈0.8 s native).

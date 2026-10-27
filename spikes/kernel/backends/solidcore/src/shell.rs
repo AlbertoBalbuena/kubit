@@ -159,7 +159,10 @@ fn register(records: &mut BTreeMap<ObjectKey, Topology>, brep: &mut Brep, namesp
 }
 
 /// Shells `source` by `distance` (negative = inward), removing `open` faces.
+/// `merge_results` is needed: without it (and without `extend_convex_edges`) the kernel
+/// returns `Ok` with the untrimmed offset faces, a zero-volume non-manifold sheet.
 pub fn shell(k: &mut Kernel, mut source: Brep, open: &[FaceId], distance: f64) -> SpikeResult<Brep> {
+    let offset = OffsetOptions { distance, extend_convex_edges: false, merge_results: true };
     let mut records = BTreeMap::new();
     let mut attributes = AttributeStore::default();
     register(&mut records, &mut source, NS_SOURCE);
@@ -178,7 +181,7 @@ pub fn shell(k: &mut Kernel, mut source: Brep, open: &[FaceId], distance: f64) -
     };
     let faces: Vec<Option<FaceKey>> = open.iter().map(|f| Some((SOURCE, *f))).collect();
     let options = ShellOptions {
-        offset: OffsetOptions { distance, extend_convex_edges: false, merge_results: false },
+        offset,
         create_offset_solid: false,
         merge_sheet_side_walls: false,
     };

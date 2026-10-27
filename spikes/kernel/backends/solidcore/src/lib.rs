@@ -359,14 +359,17 @@ fn build_case(k: &mut Kernel, id: &str) -> SpikeResult<Built> {
                 // Circle in XY about (HELIX_R, 0, 0), turned into the XZ (meridian) plane.
                 let mut c = Curve::from(create_circle(p(HELIX_R, 0.0, 0.0), HELIX_PROFILE_R).ctx("create_circle")?);
                 rotate_curve(k, &mut c, Vec3::new(1.0, 0.0, 0.0), 90.0)?;
-                let options = SweepOptions { cap_ends: true, ..SweepOptions::default() };
+                // The profile already sits at the helix start, but with the default flags the
+                // section drifts off the meridian plane (end at z≈30.0, not 32; volume −6.3 %).
+                // `move_profile_center_to_path` gives the analytic volume.
+                let options = SweepOptions { cap_ends: true, move_profile_center_to_path: true, ..SweepOptions::default() };
                 create_curve_sweep(k, &[Some(&c)], Some(&helix), None, None, Some(&options))
                     .ctx("create_curve_sweep")
             });
             let sw = r?;
             let h = sweep_history(sw.start_faces.len(), sw.side_faces.len(), sw.end_faces.len());
             let mut out = built(sw.brep, s, h);
-            out.notes.push("create_helix (B-spline, tol 1e-4) + create_curve_sweep, default options (path frame)".into());
+            out.notes.push("create_helix (B-spline, tol 1e-4) + create_curve_sweep with move_profile_center_to_path (defaults: −6.3 % volume)".into());
             Ok(out)
         }
         "10b" | "10c" => {
@@ -450,8 +453,13 @@ fn topo(k: &mut Kernel, b: &Brep, notes: &mut Vec<String>) -> Option<Topo> {
             }
         }
     }
+    // Every face set has one shell per side; only the shells of finite regions bound
+    // material, which is what Euler–Poincaré counts.
     let shells = match p1::shells(k, b, None) {
-        Ok(s) => s.len(),
+        Ok(s) => s
+            .iter()
+            .filter(|id| matches!(solidcore::topology::shell::shell_region(b, **id), Ok(Some(r)) if b.infinite_region() != Some(r)))
+            .count(),
         Err(e) => {
             notes.push(format!("p1::shells: {e}"));
             0
@@ -578,5 +586,18 @@ impl Backend for Solidcore {
             }
             Hostile::PushPull => not_exposed("push/pull: no public face offset/move"),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The hostile families succeed on sane input, so their clean errors come from the inputs.
+    #[test]
+    fn hostile_families_accept_sane_input() {
+        let b = Solidcore;
+        assert!(b.hostile(Hostile::BoxMinusCylinder, &[100.0, 60.0, 40.0, 10.0]).is_ok());
+        assert!(b.hostile(Hostile::FilletEdge, &[100.0, 60.0, 40.0, 5.0]).is_ok());
     }
 }
